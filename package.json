@@ -40,8 +40,7 @@
     "changelog": "standard-version",
     "release": "yarn reset && yarn test && yarn docs:publish && yarn changelog",
     "reset": "git clean -dfx && git reset --hard && yarn",
-    "ci": "yarn test",
-    "postinstall": "yarn build"
+    "ci": "yarn test"
   },
   "scripts-info": {
     "info": "Display information about the scripts",
