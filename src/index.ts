@@ -1,2 +1,2 @@
 
-console.log('hello world!')
+export * from './coreConnector'
