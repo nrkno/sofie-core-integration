@@ -200,6 +200,7 @@ export class DDPConnector extends EventEmitter {
 	private _onClientMessage (message: any) {
 		// console.log('message',message);
 		// message
+		this.emit('message', message)
 	}
 	private _onClientError (error: Error) {
 		console.log(error)

@@ -126,4 +126,9 @@ export class CoreConnection extends EventEmitter {
 			})
 		})
 	}
+
+	currentTime () {
+		// @todo: implement synced time yo
+		return Date.now()
+	}
 }
