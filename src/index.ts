@@ -1,3 +1,3 @@
 
-export * from './coreConnection'
-export * from './corePeripherals'
+export * from './lib/coreConnection'
+export * from './lib/corePeripherals'
