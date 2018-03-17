@@ -1,6 +1,6 @@
 
 import {CoreConnection} from '../index'
-import {PeripheralDeviceAPI as P} from '../corePeripherals'
+import {PeripheralDeviceAPI as P} from '../lib/corePeripherals'
 
 test('Integration: Test connection and basic Core functionality', async () => {
 

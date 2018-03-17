@@ -1,2 +1,2 @@
 
-export * from './coreConnector'
+export * from './lib/coreConnection'
