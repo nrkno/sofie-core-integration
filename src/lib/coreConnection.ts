@@ -3,6 +3,10 @@ import { EventEmitter } from 'events'
 import {DDPConnector, DDPConnectorOptions} from './ddpConnector'
 import {PeripheralDeviceAPI as P} from './corePeripherals'
 
+const Random = require('ddp-random')
+
+const DataStore = require('data-store')
+
 export enum DeviceType {
 	MOSDEVICE = 0,
 	PLAYOUT = 1
@@ -12,23 +16,49 @@ export interface InitOptions {
 	name: string
 }
 
-export interface CoreOptions {
+export interface CoreCredentials {
 	deviceId: string,
-	deviceToken: string,
+	deviceToken: string
+}
+
+export interface CoreOptions extends CoreCredentials {
 	deviceType: DeviceType
 	deviceName: string,
 
 }
+
 
 export class CoreConnection extends EventEmitter {
 
 	private _ddp: DDPConnector
 	private _coreOptions: CoreOptions
 
-	constructor (coreOptions) {
+	constructor (coreOptions: CoreOptions) {
 		super()
 
 		this._coreOptions = coreOptions
+	}
+	static getCredentials (name: string): CoreCredentials {
+		let store = DataStore(name)
+
+		let credentials: CoreCredentials = store.get('CoreCredentials')
+		if (!credentials) {
+			credentials = CoreConnection.generateCredentials()
+			store.set('CoreCredentials', credentials)
+		}
+
+		return credentials
+	}
+	static deleteCredentials (name: string) {
+		let store = DataStore(name)
+
+		store.set('CoreCredentials', null)
+	}
+	static generateCredentials (): CoreCredentials {
+		return {
+			deviceId: Random.id(),
+			deviceToken: Random.id()
+		}
 	}
 
 	init (ddpOptions?: DDPConnectorOptions): Promise<string> {
