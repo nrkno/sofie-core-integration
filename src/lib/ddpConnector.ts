@@ -150,6 +150,9 @@ export class DDPConnector extends EventEmitter {
 	public forceReconnect (): void {
 		this.createClient()
 	}
+	public get connectionId () {
+		return this._connectionId
+	}
 
 	private _onclientConnectionChange (connected: boolean) {
 		if (connected !== this._connected) {

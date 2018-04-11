@@ -13,7 +13,8 @@ export enum DeviceType {
 }
 export interface InitOptions {
 	type: DeviceType,
-	name: string
+	name: string,
+	connectionId: string
 }
 
 export interface CoreCredentials {
@@ -31,7 +32,7 @@ export class CoreConnection extends EventEmitter {
 
 	private _ddp: DDPConnector
 	private _parent: CoreConnection
-	private _children: Array<CoreConnection>
+	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
 
 	constructor (coreOptions: CoreOptions) {
@@ -64,10 +65,12 @@ export class CoreConnection extends EventEmitter {
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
 
 		let doInit = () => {
+			console.log('doInit')
 			// at this point, we're connected to Core
 			let options: InitOptions = {
 				type: this._coreOptions.deviceType,
-				name: this._coreOptions.deviceName
+				name: this._coreOptions.deviceName,
+				connectionId: this.ddp.connectionId
 			}
 
 			return new Promise<string>((resolve, reject) => {
