@@ -65,13 +65,13 @@ export class CoreConnection extends EventEmitter {
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
 
 		let doInit = () => {
-			console.log('doInit')
 			// at this point, we're connected to Core
 			let options: InitOptions = {
 				type: this._coreOptions.deviceType,
 				name: this._coreOptions.deviceName,
 				connectionId: this.ddp.connectionId
 			}
+			// console.log('doInit', options)
 
 			return new Promise<string>((resolve, reject) => {
 				this.ddp.ddpClient.call(P.methods.initialize, [
@@ -171,7 +171,7 @@ export class CoreConnection extends EventEmitter {
 			})
 		})
 	}
-	call (methodName: string, attrs?: Array<any>): Promise<any> {
+	callMethod (methodName: string, attrs?: Array<any>): Promise<any> {
 		return new Promise((resolve, reject) => {
 
 			let fullAttrs = [
@@ -189,9 +189,10 @@ export class CoreConnection extends EventEmitter {
 		})
 	}
 	unInitialize (): Promise<string> {
-		return this.call(P.methods.unInitialize)
+		return this.callMethod(P.methods.unInitialize)
 	}
 	mosManipulate (method: string, ...attrs: Array<any>) {
-		return this.call(method, attrs)
+		// console.log('mosManipulate', method, attrs)
+		return this.callMethod(method, attrs)
 	}
 }
