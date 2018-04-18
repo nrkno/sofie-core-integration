@@ -1,26 +1,49 @@
+# Core-integration
 
-Dev install instructions:
+This library is used to connec to to the Core (https://github.com/nrkno/tv-automation-server-core) from other Node processes.
 
+# Getting started 
+
+## Typescript
+```typescript
+import {CoreConnection, DeviceType} from "core-integration"
+
+let core = new CoreConnection({
+	deviceId: "MyTest",
+	deviceToken: "abcd",
+	deviceType: DeviceType.PLAYOUT,
+	deviceName: "Jest test framework"
+})
+// Initiate connection to Core:
+core.init({
+	host: "192.168.177.128",
+	port: 3000
+}).then(() => {
+    return core.setStatus({
+		statusCode: 1,
+		messages: ["I'm alive!"]
+	})
+})
+.then(() => {
+    // Whatever
+})
+.catch((err) => {
+    console.log(err)
+})
+```
+
+## Dev tips:
 * Install yarn
 	https://yarnpkg.com
-	This is like npm, but better
-
 * Install jest
 	yarn global add jest
-	This is our resting framework
-
+	This is our testing framework
 * Install dependencies
 	yarn
-	or
-	yarn install
-
-Then you can:
-
-* Build:
+* Then you can:
+   * Build:
 	yarn build
-
-* run test
+   * run test
 	jest
-
-* watch
+   * watch
 	yarn watch
