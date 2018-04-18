@@ -111,6 +111,9 @@ export class CoreConnection extends EventEmitter {
 			this._ddp.onConnected = () => {
 				this.emit('connected')
 			}
+			this._ddp.onConnectionChanged = () => {
+				this.emit('connectionChanged')
+			}
 			return new Promise((resolve) => {
 				this._ddp.createClient()
 				resolve()
@@ -143,6 +146,9 @@ export class CoreConnection extends EventEmitter {
 	}
 	onConnected (cb: () => void ) {
 		this.on('connected', cb)
+	}
+	onConnectionChanged (cb: () => void ) {
+		this.on('connectionChanged', cb)
 	}
 	get ddp () {
 		if (this._parent) return this._parent.ddp

@@ -1,5 +1,5 @@
 
-import {CoreConnection} from '../index'
+import {CoreConnection, DeviceType} from '../index'
 import {PeripheralDeviceAPI as P} from '../lib/corePeripherals'
 
 test('Integration: Test connection and basic Core functionality', async () => {
@@ -9,7 +9,7 @@ test('Integration: Test connection and basic Core functionality', async () => {
 	let core = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: 0,
+		deviceType: DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 
