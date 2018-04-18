@@ -83,7 +83,12 @@ export class TimeSync {
 			// log.verbose('triggerSync ' + (this.localTime() - this._lastSyncTime))
 			this._lastSyncTime = this.localTime()
 
-			this.syncTime()
+			setTimeout(() => {
+				this.syncTime()
+				.catch((err) => {
+					console.log(err)
+				})
+			},1)
 
 		}
 	}

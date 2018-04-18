@@ -97,7 +97,7 @@ test('Integration: Connection timeout', async () => {
 	core.onConnectionChanged(onConnectionChanged)
 	core.onConnected(onConnected)
 	core.onDisconnected(onDisconnected)
-	// core.onFailed(onFailed)
+	core.onFailed(onFailed)
 	core.onError(onError)
 
 	expect(core.connected).toEqual(false)
@@ -207,7 +207,7 @@ test('Integration: Parent destroy', async () => {
 		deviceType: DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
-	let id = await coreParent.init({
+	await coreParent.init({
 		host: '127.0.0.1',
 		port: 3000
 	})
@@ -225,7 +225,7 @@ test('Integration: Parent destroy', async () => {
 	coreChild.onConnected(onChildConnected)
 	coreChild.onDisconnected(onChildDisconnected)
 
-	let idChild = await coreChild.init(coreParent)
+	await coreChild.init(coreParent)
 
 	expect(coreChild.connected).toEqual(true)
 
@@ -261,7 +261,7 @@ test('Integration: Child destroy', async () => {
 		deviceType: DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
-	let id = await coreParent.init({
+	await coreParent.init({
 		host: '127.0.0.1',
 		port: 3000
 	})
@@ -279,7 +279,7 @@ test('Integration: Child destroy', async () => {
 	coreChild.onConnected(onChildConnected)
 	coreChild.onDisconnected(onChildDisconnected)
 
-	let idChild = await coreChild.init(coreParent)
+	await coreChild.init(coreParent)
 
 	expect(coreChild.connected).toEqual(true)
 
