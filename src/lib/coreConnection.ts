@@ -65,73 +65,13 @@ export class CoreConnection extends EventEmitter {
 			deviceToken: Random.id()
 		}
 	}
-	maybeSendInit (): Promise<any> {
-		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
-			return this.sendInit()
-		} else {
-			return Promise.resolve()
-		}
-	}
-	sendInit (): Promise<string> {
-		if (!this.ddp) throw Error('Not connected to Core')
-
-		let options: InitOptions = {
-			type: this._coreOptions.deviceType,
-			name: this._coreOptions.deviceName,
-			connectionId: this.ddp.connectionId
-		}
-		// console.log('doInit', options)
-		this._sentConnectionId = options.connectionId
-
-		return new Promise<string>((resolve, reject) => {
-			this.ddp.ddpClient.call(P.methods.initialize, [
-				this._coreOptions.deviceId,
-				this._coreOptions.deviceToken,
-				options
-			], (err: Error, id: string) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(id)
-				}
-			})
-		})
-	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
-
-		// let doInit = () => {
-
-
-			// at this point, we're connected to Core
-			/*
-			let options: InitOptions = {
-				type: this._coreOptions.deviceType,
-				name: this._coreOptions.deviceName,
-				connectionId: this.ddp.connectionId
-			}
-			// console.log('doInit', options)
-
-			return new Promise<string>((resolve, reject) => {
-				this.ddp.ddpClient.call(P.methods.initialize, [
-					this._coreOptions.deviceId,
-					this._coreOptions.deviceToken,
-					options
-				], (err: Error, id: string) => {
-					if (err) {
-						reject(err)
-					} else {
-						resolve(id)
-					}
-				})
-			})
-			*/
-		// }
 		if (ddpOptionsORParent instanceof CoreConnection ) {
 			this._setParent(ddpOptionsORParent)
 
 			return Promise.resolve()
 				.then(() => {
-					return this.sendInit()
+					return this._sendInit()
 				})
 		} else {
 			let ddpOptions = ddpOptionsORParent || {
@@ -149,7 +89,10 @@ export class CoreConnection extends EventEmitter {
 			this._ddp.on('connectionChanged', (connected: boolean) => {
 				this.emit('connectionChanged', connected)
 
-				this.maybeSendInit()
+				this._maybeSendInit()
+				.catch((err) => {
+					this.emit('error', err)
+				})
 			})
 			this._ddp.on('connected', () => {
 				this.emit('connected')
@@ -163,7 +106,7 @@ export class CoreConnection extends EventEmitter {
 			}).then(() => {
 				return this._ddp.connect()
 			}).then(() => {
-				return this.sendInit()
+				return this._sendInit()
 			})
 		}
 	}
@@ -254,6 +197,39 @@ export class CoreConnection extends EventEmitter {
 	mosManipulate (method: string, ...attrs: Array<any>) {
 		// console.log('mosManipulate', method, attrs)
 		return this.callMethod(method, attrs)
+	}
+	private _maybeSendInit (): Promise<any> {
+		// If the connectionId has changed, we should report that to Core:
+		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
+			return this._sendInit()
+		} else {
+			return Promise.resolve()
+		}
+	}
+	private _sendInit (): Promise<string> {
+		if (!this.ddp) throw Error('Not connected to Core')
+
+		let options: InitOptions = {
+			type: this._coreOptions.deviceType,
+			name: this._coreOptions.deviceName,
+			connectionId: this.ddp.connectionId
+		}
+		// console.log('doInit', options)
+		this._sentConnectionId = options.connectionId
+
+		return new Promise<string>((resolve, reject) => {
+			this.ddp.ddpClient.call(P.methods.initialize, [
+				this._coreOptions.deviceId,
+				this._coreOptions.deviceToken,
+				options
+			], (err: Error, id: string) => {
+				if (err) {
+					reject(err)
+				} else {
+					resolve(id)
+				}
+			})
+		})
 	}
 	private _removeParent () {
 		if (this._parent) this._parent.removeChild(this)
