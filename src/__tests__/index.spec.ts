@@ -2,6 +2,13 @@
 import {CoreConnection, DeviceType} from '../index'
 import {PeripheralDeviceAPI as P} from '../lib/corePeripherals'
 
+function wait (time: number): Promise<void> {
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			resolve()
+		}, time)
+	})
+}
 test('Integration: Test connection and basic Core functionality', async () => {
 
 	// Note: This is an integration test, that require a Core to connect to
@@ -121,6 +128,48 @@ test('Integration: Connection timeout', async () => {
 	// ).rejects.toEqual('aaa')
 
 	expect(core.connected).toEqual(false)
+})
+test('Integration: Connection recover from close', async () => {
+
+	// Note: This is an integration test, that require a Core to connect to
+
+	let core = new CoreConnection({
+		deviceId: 'JestTest',
+		deviceToken: 'abcd',
+		deviceType: DeviceType.PLAYOUT,
+		deviceName: 'Jest test framework'
+	})
+
+	let onConnectionChanged = jest.fn()
+	let onConnected = jest.fn()
+	let onDisconnected = jest.fn()
+	let onFailed = jest.fn()
+	let onError = jest.fn()
+	core.onConnectionChanged(onConnectionChanged)
+	core.onConnected(onConnected)
+	core.onDisconnected(onDisconnected)
+	core.onFailed(onFailed)
+	core.onError(onError)
+
+	expect(core.connected).toEqual(false)
+	// Initiate connection to Core:
+
+	await core.init({
+		host: '127.0.0.1',
+		port: 3000
+	})
+	expect(core.connected).toEqual(true)
+
+	// Force-close the socket:
+	core.ddp.ddpClient.socket.close()
+
+	await wait(10)
+	expect(core.connected).toEqual(false)
+
+	await wait(1300)
+	// should have reconnected by now
+
+	expect(core.connected).toEqual(true)
 })
 test('Integration: Parent connections', async () => {
 

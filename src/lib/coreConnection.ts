@@ -35,10 +35,13 @@ export class CoreConnection extends EventEmitter {
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
 
+	private _sentConnectionId: string = ''
+
 	constructor (coreOptions: CoreOptions) {
 		super()
 
 		this._coreOptions = coreOptions
+
 	}
 	static getCredentials (name: string): CoreCredentials {
 		let store = DataStore(name)
@@ -62,13 +65,45 @@ export class CoreConnection extends EventEmitter {
 			deviceToken: Random.id()
 		}
 	}
+	maybeSendInit (): Promise<any> {
+		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
+			return this.sendInit()
+		} else {
+			return Promise.resolve()
+		}
+	}
+	sendInit (): Promise<string> {
+		if (!this.ddp) throw Error('Not connected to Core')
+
+		let options: InitOptions = {
+			type: this._coreOptions.deviceType,
+			name: this._coreOptions.deviceName,
+			connectionId: this.ddp.connectionId
+		}
+		// console.log('doInit', options)
+		this._sentConnectionId = options.connectionId
+
+		return new Promise<string>((resolve, reject) => {
+			this.ddp.ddpClient.call(P.methods.initialize, [
+				this._coreOptions.deviceId,
+				this._coreOptions.deviceToken,
+				options
+			], (err: Error, id: string) => {
+				if (err) {
+					reject(err)
+				} else {
+					resolve(id)
+				}
+			})
+		})
+	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
 
-		let doInit = () => {
+		// let doInit = () => {
 
-			if (!this.ddp) throw Error('Not connected to Core')
 
 			// at this point, we're connected to Core
+			/*
 			let options: InitOptions = {
 				type: this._coreOptions.deviceType,
 				name: this._coreOptions.deviceName,
@@ -89,12 +124,15 @@ export class CoreConnection extends EventEmitter {
 					}
 				})
 			})
-		}
+			*/
+		// }
 		if (ddpOptionsORParent instanceof CoreConnection ) {
 			this._setParent(ddpOptionsORParent)
 
 			return Promise.resolve()
-				.then(doInit)
+				.then(() => {
+					return this.sendInit()
+				})
 		} else {
 			let ddpOptions = ddpOptionsORParent || {
 				host: '127.0.0.1',
@@ -110,6 +148,8 @@ export class CoreConnection extends EventEmitter {
 			})
 			this._ddp.on('connectionChanged', (connected: boolean) => {
 				this.emit('connectionChanged', connected)
+
+				this.maybeSendInit()
 			})
 			this._ddp.on('connected', () => {
 				this.emit('connected')
@@ -122,7 +162,9 @@ export class CoreConnection extends EventEmitter {
 				resolve()
 			}).then(() => {
 				return this._ddp.connect()
-			}).then(doInit)
+			}).then(() => {
+				return this.sendInit()
+			})
 		}
 	}
 	destroy (): Promise<void> {
@@ -147,7 +189,7 @@ export class CoreConnection extends EventEmitter {
 			this._children.splice(removeIndex, 1)
 		}
 	}
-	onConnectionChanged (cb: () => void ) {
+	onConnectionChanged (cb: (connected: boolean) => void ) {
 		this.on('connectionChanged', cb)
 	}
 	onConnected (cb: () => void ) {
