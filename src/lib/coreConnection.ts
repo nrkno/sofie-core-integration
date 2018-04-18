@@ -114,7 +114,6 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	destroy (): Promise<void> {
-		this.ddpIsOpen = false
 		if (this._parent) {
 			this._removeParent()
 		} else {
