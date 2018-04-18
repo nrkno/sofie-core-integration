@@ -31,7 +31,7 @@ export interface CoreOptions extends CoreCredentials {
 export class CoreConnection extends EventEmitter {
 
 	private _ddp: DDPConnector
-	private _parent: CoreConnection
+	private _parent: CoreConnection | null = null
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
 
@@ -65,6 +65,9 @@ export class CoreConnection extends EventEmitter {
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
 
 		let doInit = () => {
+
+			if (!this.ddp) throw Error('Not connected to Core')
+
 			// at this point, we're connected to Core
 			let options: InitOptions = {
 				type: this._coreOptions.deviceType,
@@ -88,9 +91,7 @@ export class CoreConnection extends EventEmitter {
 			})
 		}
 		if (ddpOptionsORParent instanceof CoreConnection ) {
-			let parent = ddpOptionsORParent
-			this._parent = parent
-			parent.addChild(this)
+			this._setParent(ddpOptionsORParent)
 
 			return Promise.resolve()
 				.then(doInit)
@@ -102,18 +103,20 @@ export class CoreConnection extends EventEmitter {
 			this._ddp = new DDPConnector(ddpOptions)
 
 			this._ddp.on('error', (err) => {
-				console.log('Error', err)
+				this.emit('error', err)
 			})
 			this._ddp.on('failed', (err) => {
-				console.log('Failed: ', err.toString())
+				this.emit('failed', err)
 			})
-
-			this._ddp.onConnected = () => {
+			this._ddp.on('connectionChanged', (connected: boolean) => {
+				this.emit('connectionChanged', connected)
+			})
+			this._ddp.on('connected', () => {
 				this.emit('connected')
-			}
-			this._ddp.onConnectionChanged = () => {
-				this.emit('connectionChanged')
-			}
+			})
+			this._ddp.on('disconnected', () => {
+				this.emit('disconnected')
+			})
 			return new Promise((resolve) => {
 				this._ddp.createClient()
 				resolve()
@@ -124,7 +127,7 @@ export class CoreConnection extends EventEmitter {
 	}
 	destroy (): Promise<void> {
 		if (this._parent) {
-			this._parent.removeChild(this)
+			this._removeParent()
 		} else {
 			if (this._ddp) {
 				this._ddp.close()
@@ -144,18 +147,27 @@ export class CoreConnection extends EventEmitter {
 			this._children.splice(removeIndex, 1)
 		}
 	}
+	onConnectionChanged (cb: () => void ) {
+		this.on('connectionChanged', cb)
+	}
 	onConnected (cb: () => void ) {
 		this.on('connected', cb)
 	}
-	onConnectionChanged (cb: () => void ) {
-		this.on('connectionChanged', cb)
+	onDisconnected (cb: () => void ) {
+		this.on('disconnected', cb)
+	}
+	onError (cb: (err: Error) => void ) {
+		this.on('error', cb)
+	}
+	onFailed (cb: (err: Error) => void ) {
+		this.on('failed', cb)
 	}
 	get ddp () {
 		if (this._parent) return this._parent.ddp
 		else return this._ddp
 	}
 	get connected () {
-		return this.ddp.connected
+		return (this.ddp ? this.ddp.connected : false)
 	}
 	get deviceId () {
 		return this._coreOptions.deviceId
@@ -200,5 +212,27 @@ export class CoreConnection extends EventEmitter {
 	mosManipulate (method: string, ...attrs: Array<any>) {
 		// console.log('mosManipulate', method, attrs)
 		return this.callMethod(method, attrs)
+	}
+	private _removeParent () {
+		if (this._parent) this._parent.removeChild(this)
+		this._parent = null
+
+		this.emit('connectionChanged', false)
+		this.emit('disconnected')
+	}
+	private _setParent (parent: CoreConnection) {
+		this._parent = parent
+		parent.addChild(this)
+
+		parent.on('connectionChanged', (connected) => { this.emit('connectionChanged', connected) })
+		parent.on('connected', () => { this.emit('connected') })
+		parent.on('disconnected', () => { this.emit('disconnected') })
+
+		if (this.connected) {
+			this.emit('connected')
+		} else {
+			this.emit('disconnected')
+		}
+		this.emit('connectionChanged', this.connected)
 	}
 }

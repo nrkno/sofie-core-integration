@@ -48,10 +48,6 @@ export interface DDPClient {
 export class DDPConnector extends EventEmitter {
 	public ddpClient: DDPClient
 
-	onConnectionChanged?: (connected: boolean) => void
-	onConnected?: () => void
-	onDisconnected?: () => void
-
 	private _options: DDPConnectorOptions
 	private _connected: boolean = false
 	private _connecting: boolean = false
@@ -124,7 +120,6 @@ export class DDPConnector extends EventEmitter {
 				this._connecting = true
 
 				// console.log('connecting', this.ddpClient.host)
-
 				this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
 					this._connecting = false
 
@@ -143,6 +138,7 @@ export class DDPConnector extends EventEmitter {
 			this.ddpClient.close()
 			delete this.ddpClient
 		}
+		this._onclientConnectionChange(false)
 	}
 	public get connected (): boolean {
 		return this._connected
@@ -163,25 +159,10 @@ export class DDPConnector extends EventEmitter {
 			}
 
 			// log.debug("DDP: _onclientConnectionChange "+connected);
+			this.emit('connectionChanged', this._connected)
+			if (this._connected) this.emit('connected')
+			else this.emit('disconnected')
 
-			if (this.onConnectionChanged) {
-				this.onConnectionChanged(this._connected)
-			}
-			if (this.onConnected && this._connected) {
-				this.onConnected()
-			}
-			if (this.onDisconnected && !this._connected) {
-				this.onDisconnected()
-			}
-
-			/*if(!this._connected && this.autoReconnect){
-				this._createClient();
-				this.handleAutoReconnect();
-			}
-			if (this._connected) {
-				this._failedConnectionAttempts = 0;
-			}
-			*/
 		}
 	}
 	private _onClientConnectionFailed (error: Error) {
@@ -206,7 +187,7 @@ export class DDPConnector extends EventEmitter {
 		this.emit('message', message)
 	}
 	private _onClientError (error: Error) {
-		console.log(error)
+		// console.log(error)
 		this.emit('error', error)
 	}
 }
