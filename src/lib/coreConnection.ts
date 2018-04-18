@@ -78,6 +78,9 @@ export class CoreConnection extends EventEmitter {
 				host: '127.0.0.1',
 				port: 3000
 			}
+			ddpOptions.autoReconnect = true
+			ddpOptions.autoReconnectTimer = 1000
+
 			this._ddp = new DDPConnector(ddpOptions)
 
 			this._ddp.on('error', (err) => {
@@ -111,6 +114,7 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	destroy (): Promise<void> {
+		this.ddpIsOpen = false
 		if (this._parent) {
 			this._removeParent()
 		} else {
@@ -195,7 +199,6 @@ export class CoreConnection extends EventEmitter {
 		return this.callMethod(P.methods.unInitialize)
 	}
 	mosManipulate (method: string, ...attrs: Array<any>) {
-		// console.log('mosManipulate', method, attrs)
 		return this.callMethod(method, attrs)
 	}
 	private _maybeSendInit (): Promise<any> {
@@ -214,7 +217,6 @@ export class CoreConnection extends EventEmitter {
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId
 		}
-		// console.log('doInit', options)
 		this._sentConnectionId = options.connectionId
 
 		return new Promise<string>((resolve, reject) => {
