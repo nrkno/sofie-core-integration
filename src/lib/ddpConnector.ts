@@ -15,6 +15,7 @@ export interface Observer {
 	added: (id: string) => void
 	changed: (id: string, oldFields: any, clearedFields: any, newFields: any) => void
 	removed: (id: string, oldValue: any) => void
+	stop: () => void
 }
 export interface DDPClient {
 	on: (event: string, data?: any) => void,

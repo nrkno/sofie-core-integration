@@ -1,6 +1,7 @@
 import { EventEmitter } from 'events'
+import * as _ from 'underscore'
 
-import {DDPConnector, DDPConnectorOptions} from './ddpConnector'
+import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
 import {PeripheralDeviceAPI as P} from './corePeripherals'
 
 const Random = require('ddp-random')
@@ -26,6 +27,14 @@ export interface CoreOptions extends CoreCredentials {
 	deviceType: DeviceType
 	deviceName: string,
 
+}
+export interface CollectionObj {
+	_id: string
+	[key: string]: any
+}
+export interface Collection {
+	find: (selector: any) => Array<CollectionObj>
+	findOne: (selector: any) => CollectionObj
 }
 
 export class CoreConnection extends EventEmitter {
@@ -80,30 +89,29 @@ export class CoreConnection extends EventEmitter {
 			}
 			ddpOptions.autoReconnect = true
 			ddpOptions.autoReconnectTimer = 1000
+			return new Promise((resolve) => {
+				this._ddp = new DDPConnector(ddpOptions)
 
-			this._ddp = new DDPConnector(ddpOptions)
-
-			this._ddp.on('error', (err) => {
-				this.emit('error', err)
-			})
-			this._ddp.on('failed', (err) => {
-				this.emit('failed', err)
-			})
-			this._ddp.on('connectionChanged', (connected: boolean) => {
-				this.emit('connectionChanged', connected)
-
-				this._maybeSendInit()
-				.catch((err) => {
+				this._ddp.on('error', (err) => {
 					this.emit('error', err)
 				})
-			})
-			this._ddp.on('connected', () => {
-				this.emit('connected')
-			})
-			this._ddp.on('disconnected', () => {
-				this.emit('disconnected')
-			})
-			return new Promise((resolve) => {
+				this._ddp.on('failed', (err) => {
+					this.emit('failed', err)
+				})
+				this._ddp.on('connectionChanged', (connected: boolean) => {
+					this.emit('connectionChanged', connected)
+
+					this._maybeSendInit()
+					.catch((err) => {
+						this.emit('error', err)
+					})
+				})
+				this._ddp.on('connected', () => {
+					this.emit('connected')
+				})
+				this._ddp.on('disconnected', () => {
+					this.emit('disconnected')
+				})
 				this._ddp.createClient()
 				resolve()
 			}).then(() => {
@@ -150,7 +158,7 @@ export class CoreConnection extends EventEmitter {
 	onFailed (cb: (err: Error) => void ) {
 		this.on('failed', cb)
 	}
-	get ddp () {
+	get ddp (): DDPConnector {
 		if (this._parent) return this._parent.ddp
 		else return this._ddp
 	}
@@ -200,6 +208,48 @@ export class CoreConnection extends EventEmitter {
 	mosManipulate (method: string, ...attrs: Array<any>) {
 		return this.callMethod(method, attrs)
 	}
+	getPeripheralDevice (): Promise<any> {
+		return this.callMethod(P.methods.getPeripheralDevice)
+	}
+	getCollection (collectionName: string): Collection {
+		let collection = this.ddp.ddpClient.collections[collectionName] || {}
+
+		let c: Collection = {
+			find (selector?: any): Array<CollectionObj> {
+				if (_.isUndefined(selector)) {
+					return _.values(collection)
+				} else if (_.isObject(selector)) {
+					return _.where(_.values(collection), selector)
+				} else {
+					return [collection[selector]]
+				}
+			},
+			findOne (selector: any): CollectionObj {
+				return c.find(selector)[0]
+			}
+		}
+		return c
+	}
+	subscribe (publicationName: string, ...params: Array<any>) {
+		return new Promise((resolve, reject) => {
+			try {
+				this.ddp.ddpClient.subscribe(
+					publicationName,	// name of Meteor Publish function to subscribe to
+					params.concat([this._coreOptions.deviceToken]), // parameters used by the Publish function
+					() => { 		// callback when the subscription is complete
+						resolve()
+					}
+				)
+			} catch (e) {
+				console.log(this.ddp.ddpClient )
+				reject(e)
+			}
+		})
+	}
+	observe (collectionName: string): Observer {
+		return this.ddp.ddpClient.observe(collectionName)
+	}
+
 	private _maybeSendInit (): Promise<any> {
 		// If the connectionId has changed, we should report that to Core:
 		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
