@@ -1,7 +1,12 @@
 import { EventEmitter } from 'events'
+import * as _ from 'underscore'
 
-import {DDPConnector, DDPConnectorOptions} from './ddpConnector'
+import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
 import {PeripheralDeviceAPI as P} from './corePeripherals'
+
+const Random = require('ddp-random')
+
+const DataStore = require('data-store')
 
 export enum DeviceType {
 	MOSDEVICE = 0,
@@ -9,95 +14,165 @@ export enum DeviceType {
 }
 export interface InitOptions {
 	type: DeviceType,
-	name: string
+	name: string,
+	connectionId: string
 }
 
-export interface CoreOptions {
+export interface CoreCredentials {
 	deviceId: string,
-	deviceToken: string,
+	deviceToken: string
+}
+
+export interface CoreOptions extends CoreCredentials {
 	deviceType: DeviceType
 	deviceName: string,
 
+}
+export interface CollectionObj {
+	_id: string
+	[key: string]: any
+}
+export interface Collection {
+	find: (selector: any) => Array<CollectionObj>
+	findOne: (selector: any) => CollectionObj
 }
 
 export class CoreConnection extends EventEmitter {
 
 	private _ddp: DDPConnector
+	private _parent: CoreConnection | null = null
+	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
 
-	constructor (coreOptions) {
+	private _sentConnectionId: string = ''
+
+	constructor (coreOptions: CoreOptions) {
 		super()
 
 		this._coreOptions = coreOptions
+
 	}
+	static getCredentials (name: string): CoreCredentials {
+		let store = DataStore(name)
 
-	init (ddpOptions?: DDPConnectorOptions): Promise<string> {
-
-		ddpOptions = ddpOptions || {
-			host: '127.0.0.1',
-			port: 3000
+		let credentials: CoreCredentials = store.get('CoreCredentials')
+		if (!credentials) {
+			credentials = CoreConnection.generateCredentials()
+			store.set('CoreCredentials', credentials)
 		}
 
-		this._ddp = new DDPConnector(ddpOptions)
+		return credentials
+	}
+	static deleteCredentials (name: string) {
+		let store = DataStore(name)
 
-		this._ddp.on('error', (err) => {
-			console.log('Error', err)
-		})
-		this._ddp.on('failed', (err) => {
-			console.log('Failed: ', err.toString())
-		})
-
-		this._ddp.onConnected = () => {
-			this.emit('connected')
+		store.set('CoreCredentials', null)
+	}
+	static generateCredentials (): CoreCredentials {
+		return {
+			deviceId: Random.id(),
+			deviceToken: Random.id()
 		}
+	}
+	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
+		if (ddpOptionsORParent instanceof CoreConnection ) {
+			this._setParent(ddpOptionsORParent)
 
-		return new Promise((resolve) => {
-
-			this._ddp.createClient()
-
-			resolve()
-
-		}).then(() => {
-			return this._ddp.connect()
-		}).then(() => {
-
-			// at this point, we're connected to Core
-			let options: InitOptions = {
-				type: this._coreOptions.deviceType,
-				name: this._coreOptions.deviceName
-			}
-
-			return new Promise<string>((resolve, reject) => {
-				this._ddp.ddpClient.call(P.methods.initialize, [
-					this._coreOptions.deviceId,
-					this._coreOptions.deviceToken,
-					options
-				], (err: Error, id: string) => {
-					if (err) {
-						reject(err)
-					} else {
-						resolve(id)
-					}
+			return Promise.resolve()
+				.then(() => {
+					return this._sendInit()
 				})
-			})
-		})
-	}
+		} else {
+			let ddpOptions = ddpOptionsORParent || {
+				host: '127.0.0.1',
+				port: 3000
+			}
+			ddpOptions.autoReconnect = true
+			ddpOptions.autoReconnectTimer = 1000
+			return new Promise((resolve) => {
+				this._ddp = new DDPConnector(ddpOptions)
 
+				this._ddp.on('error', (err) => {
+					this.emit('error', err)
+				})
+				this._ddp.on('failed', (err) => {
+					this.emit('failed', err)
+				})
+				this._ddp.on('connectionChanged', (connected: boolean) => {
+					this.emit('connectionChanged', connected)
+
+					this._maybeSendInit()
+					.catch((err) => {
+						this.emit('error', err)
+					})
+				})
+				this._ddp.on('connected', () => {
+					this.emit('connected')
+				})
+				this._ddp.on('disconnected', () => {
+					this.emit('disconnected')
+				})
+				this._ddp.createClient()
+				resolve()
+			}).then(() => {
+				return this._ddp.connect()
+			}).then(() => {
+				return this._sendInit()
+			})
+		}
+	}
+	destroy (): Promise<void> {
+		if (this._parent) {
+			this._removeParent()
+		} else {
+			if (this._ddp) {
+				this._ddp.close()
+			}
+		}
+		return Promise.resolve()
+	}
+	addChild (child: CoreConnection) {
+		this._children.push(child)
+	}
+	removeChild (childToRemove: CoreConnection) {
+		let removeIndex = -1
+		this._children.forEach((c, i) => {
+			if (c === childToRemove) removeIndex = i
+		})
+		if (removeIndex !== -1) {
+			this._children.splice(removeIndex, 1)
+		}
+	}
+	onConnectionChanged (cb: (connected: boolean) => void ) {
+		this.on('connectionChanged', cb)
+	}
 	onConnected (cb: () => void ) {
 		this.on('connected', cb)
 	}
+	onDisconnected (cb: () => void ) {
+		this.on('disconnected', cb)
+	}
+	onError (cb: (err: Error) => void ) {
+		this.on('error', cb)
+	}
+	onFailed (cb: (err: Error) => void ) {
+		this.on('failed', cb)
+	}
+	get ddp (): DDPConnector {
+		if (this._parent) return this._parent.ddp
+		else return this._ddp
+	}
 	get connected () {
-		return this._ddp.connected
+		return (this.ddp ? this.ddp.connected : false)
 	}
 	get deviceId () {
 		return this._coreOptions.deviceId
 	}
-
 	setStatus (status: P.StatusObject): Promise<P.StatusObject> {
 
 		return new Promise((resolve, reject) => {
 
-			this._ddp.ddpClient.call(P.methods.setStatus, [
+			this.ddp.ddpClient.call(P.methods.setStatus, [
 				this._coreOptions.deviceId,
 				this._coreOptions.deviceToken,
 				status
@@ -110,13 +185,94 @@ export class CoreConnection extends EventEmitter {
 			})
 		})
 	}
-
-	unInitialize (): Promise<string> {
+	callMethod (methodName: string, attrs?: Array<any>): Promise<any> {
 		return new Promise((resolve, reject) => {
 
-			this._ddp.ddpClient.call(P.methods.unInitialize, [
+			let fullAttrs = [
 				this._coreOptions.deviceId,
 				this._coreOptions.deviceToken
+			].concat(attrs || [])
+
+			this.ddp.ddpClient.call(methodName, fullAttrs, (err: Error, id: string) => {
+				if (err) {
+					reject(err)
+				} else {
+					resolve(id)
+				}
+			})
+		})
+	}
+	unInitialize (): Promise<string> {
+		return this.callMethod(P.methods.unInitialize)
+	}
+	mosManipulate (method: string, ...attrs: Array<any>) {
+		return this.callMethod(method, attrs)
+	}
+	getPeripheralDevice (): Promise<any> {
+		return this.callMethod(P.methods.getPeripheralDevice)
+	}
+	getCollection (collectionName: string): Collection {
+		let collection = this.ddp.ddpClient.collections[collectionName] || {}
+
+		let c: Collection = {
+			find (selector?: any): Array<CollectionObj> {
+				if (_.isUndefined(selector)) {
+					return _.values(collection)
+				} else if (_.isObject(selector)) {
+					return _.where(_.values(collection), selector)
+				} else {
+					return [collection[selector]]
+				}
+			},
+			findOne (selector: any): CollectionObj {
+				return c.find(selector)[0]
+			}
+		}
+		return c
+	}
+	subscribe (publicationName: string, ...params: Array<any>) {
+		return new Promise((resolve, reject) => {
+			try {
+				this.ddp.ddpClient.subscribe(
+					publicationName,	// name of Meteor Publish function to subscribe to
+					params.concat([this._coreOptions.deviceToken]), // parameters used by the Publish function
+					() => { 		// callback when the subscription is complete
+						resolve()
+					}
+				)
+			} catch (e) {
+				console.log(this.ddp.ddpClient )
+				reject(e)
+			}
+		})
+	}
+	observe (collectionName: string): Observer {
+		return this.ddp.ddpClient.observe(collectionName)
+	}
+
+	private _maybeSendInit (): Promise<any> {
+		// If the connectionId has changed, we should report that to Core:
+		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
+			return this._sendInit()
+		} else {
+			return Promise.resolve()
+		}
+	}
+	private _sendInit (): Promise<string> {
+		if (!this.ddp) throw Error('Not connected to Core')
+
+		let options: InitOptions = {
+			type: this._coreOptions.deviceType,
+			name: this._coreOptions.deviceName,
+			connectionId: this.ddp.connectionId
+		}
+		this._sentConnectionId = options.connectionId
+
+		return new Promise<string>((resolve, reject) => {
+			this.ddp.ddpClient.call(P.methods.initialize, [
+				this._coreOptions.deviceId,
+				this._coreOptions.deviceToken,
+				options
 			], (err: Error, id: string) => {
 				if (err) {
 					reject(err)
@@ -125,5 +281,27 @@ export class CoreConnection extends EventEmitter {
 				}
 			})
 		})
+	}
+	private _removeParent () {
+		if (this._parent) this._parent.removeChild(this)
+		this._parent = null
+
+		this.emit('connectionChanged', false)
+		this.emit('disconnected')
+	}
+	private _setParent (parent: CoreConnection) {
+		this._parent = parent
+		parent.addChild(this)
+
+		parent.on('connectionChanged', (connected) => { this.emit('connectionChanged', connected) })
+		parent.on('connected', () => { this.emit('connected') })
+		parent.on('disconnected', () => { this.emit('disconnected') })
+
+		if (this.connected) {
+			this.emit('connected')
+		} else {
+			this.emit('disconnected')
+		}
+		this.emit('connectionChanged', this.connected)
 	}
 }

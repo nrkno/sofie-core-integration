@@ -1,7 +1,4 @@
-
 import {TimeSync} from '../timeSync'
-
-
 
 test('timeSync', async () => {
 	// let time = 1000
@@ -23,7 +20,6 @@ test('timeSync', async () => {
 				}, 5)
 			}, 5)
 		})
-
 	})
 
 	let ts = new TimeSync({}, getServerTime)

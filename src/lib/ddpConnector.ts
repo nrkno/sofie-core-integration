@@ -8,11 +8,14 @@ export interface DDPConnectorOptions {
 	path?: string
 	ssl?: boolean
 	debug?:	boolean
+	autoReconnect?: boolean // default: true
+	autoReconnectTimer?: number
 }
 export interface Observer {
 	added: (id: string) => void
 	changed: (id: string, oldFields: any, clearedFields: any, newFields: any) => void
 	removed: (id: string, oldValue: any) => void
+	stop: () => void
 }
 export interface DDPClient {
 	on: (event: string, data?: any) => void,
@@ -48,14 +51,13 @@ export interface DDPClient {
 export class DDPConnector extends EventEmitter {
 	public ddpClient: DDPClient
 
-	onConnectionChanged?: (connected: boolean) => void
-	onConnected?: () => void
-	onDisconnected?: () => void
-
 	private _options: DDPConnectorOptions
 	private _connected: boolean = false
 	private _connecting: boolean = false
 	private _connectionId: string
+
+	private ddpIsOpen: boolean = false
+	private _monitorDDPConnectionInterval: any = null
 
 	constructor (options: DDPConnectorOptions) {
 		super()
@@ -70,7 +72,7 @@ export class DDPConnector extends EventEmitter {
 			path: 					this._options.path || '',
 			ssl: 					this._options.ssl || false,
 			useSockJS: 				true,
-			autoReconnect: 			true,
+			autoReconnect: 			false, // we'll handle reconnections ourselves
 			autoReconnectTimer: 	1000,
 			maintain_collections: 	true,
 			ddpVersion: 			'1'
@@ -123,8 +125,6 @@ export class DDPConnector extends EventEmitter {
 
 				this._connecting = true
 
-				// console.log('connecting', this.ddpClient.host)
-
 				this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
 					this._connecting = false
 
@@ -133,22 +133,45 @@ export class DDPConnector extends EventEmitter {
 					} else {
 						this._connected = true
 						resolve()
+						this.ddpIsOpen = true
+						this._monitorDDPConnection()
 					}
 				})
 			}
 		})
 	}
 	public close () {
+		this.ddpIsOpen = false
 		if (this.ddpClient) {
 			this.ddpClient.close()
 			delete this.ddpClient
 		}
+		this._onclientConnectionChange(false)
 	}
 	public get connected (): boolean {
 		return this._connected
 	}
 	public forceReconnect (): void {
 		this.createClient()
+	}
+	public get connectionId () {
+		return this._connectionId
+	}
+	private _monitorDDPConnection (): void {
+
+		if (this._monitorDDPConnectionInterval) clearInterval(this._monitorDDPConnectionInterval)
+
+		this._monitorDDPConnectionInterval = setInterval(() => {
+
+			if (this.ddpClient && !this.connected && this.ddpIsOpen && this._options.autoReconnect !== false ) {
+				// reconnect:
+				this.ddpClient.connect()
+
+			} else {
+				// stop monitoring:
+				if (this._monitorDDPConnectionInterval) clearInterval(this._monitorDDPConnectionInterval)
+			}
+		},this._options.autoReconnectTimer || 1000)
 	}
 
 	private _onclientConnectionChange (connected: boolean) {
@@ -160,25 +183,12 @@ export class DDPConnector extends EventEmitter {
 			}
 
 			// log.debug("DDP: _onclientConnectionChange "+connected);
+			this.emit('connectionChanged', this._connected)
+			if (this._connected) this.emit('connected')
+			else this.emit('disconnected')
 
-			if (this.onConnectionChanged) {
-				this.onConnectionChanged(this._connected)
-			}
-			if (this.onConnected && this._connected) {
-				this.onConnected()
-			}
-			if (this.onDisconnected && !this._connected) {
-				this.onDisconnected()
-			}
+			if (!this._connected) this._monitorDDPConnection()
 
-			/*if(!this._connected && this.autoReconnect){
-				this._createClient();
-				this.handleAutoReconnect();
-			}
-			if (this._connected) {
-				this._failedConnectionAttempts = 0;
-			}
-			*/
 		}
 	}
 	private _onClientConnectionFailed (error: Error) {
@@ -188,21 +198,15 @@ export class DDPConnector extends EventEmitter {
 			this.emit('failed', error)
 		} else {
 			console.log('Failed',error)
-			// last resort retry strategy:
-			setTimeout(() => {
-				if (!this._connected) {
-					this.forceReconnect()
-				}
-			}, 5000)
 		}
+		this._monitorDDPConnection()
 	}
-
 	private _onClientMessage (message: any) {
-		// console.log('message',message);
 		// message
+		this.emit('message', message)
 	}
 	private _onClientError (error: Error) {
-		console.log(error)
 		this.emit('error', error)
+		this._monitorDDPConnection()
 	}
 }
