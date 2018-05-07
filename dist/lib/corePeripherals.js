@@ -18,6 +18,7 @@ var PeripheralDeviceAPI;
     })(DeviceType = PeripheralDeviceAPI.DeviceType || (PeripheralDeviceAPI.DeviceType = {}));
     let methods;
     (function (methods) {
+        methods["functionReply"] = "peripheralDevice.functionReply";
         methods["setStatus"] = "peripheralDevice.status";
         methods["initialize"] = "peripheralDevice.initialize";
         methods["unInitialize"] = "peripheralDevice.unInitialize";

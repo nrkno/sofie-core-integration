@@ -20,6 +20,7 @@ export declare namespace PeripheralDeviceAPI {
         name: string;
     }
     enum methods {
+        'functionReply' = "peripheralDevice.functionReply",
         'setStatus' = "peripheralDevice.status",
         'initialize' = "peripheralDevice.initialize",
         'unInitialize' = "peripheralDevice.unInitialize",
