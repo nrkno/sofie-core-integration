@@ -25,6 +25,7 @@ export interface InitOptions {
 }
 
 export enum methods {
+	'functionReply' = 'peripheralDevice.functionReply',
 	'setStatus' 	= 'peripheralDevice.status',
 	'initialize' 	= 'peripheralDevice.initialize',
 	'unInitialize' 	= 'peripheralDevice.unInitialize',
