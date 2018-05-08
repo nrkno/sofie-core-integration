@@ -198,10 +198,10 @@ class CoreConnection extends events_1.EventEmitter {
     subscribe(publicationName, ...params) {
         return new Promise((resolve, reject) => {
             try {
-                this.ddp.ddpClient.subscribe(publicationName, // name of Meteor Publish function to subscribe to
+                let subscriptionId = this.ddp.ddpClient.subscribe(publicationName, // name of Meteor Publish function to subscribe to
                 params.concat([this._coreOptions.deviceToken]), // parameters used by the Publish function
                 () => {
-                    resolve();
+                    resolve(subscriptionId);
                 });
             }
             catch (e) {
@@ -209,6 +209,9 @@ class CoreConnection extends events_1.EventEmitter {
                 reject(e);
             }
         });
+    }
+    unsubscribe(subscriptionId) {
+        this.ddp.ddpClient.unsubscribe(subscriptionId);
     }
     observe(collectionName) {
         return this.ddp.ddpClient.observe(collectionName);

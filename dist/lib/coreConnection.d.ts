@@ -55,7 +55,8 @@ export declare class CoreConnection extends EventEmitter {
     mosManipulate(method: string, ...attrs: Array<any>): Promise<any>;
     getPeripheralDevice(): Promise<any>;
     getCollection(collectionName: string): Collection;
-    subscribe(publicationName: string, ...params: Array<any>): Promise<{}>;
+    subscribe(publicationName: string, ...params: Array<any>): Promise<string>;
+    unsubscribe(subscriptionId: string): void;
     observe(collectionName: string): Observer;
     private _maybeSendInit();
     private _sendInit();
