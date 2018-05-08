@@ -62,6 +62,31 @@ test('Integration: Test connection and basic Core functionality', async () => {
 		statusCode: P.StatusCode.GOOD
 	})
 
+	// Observe data:
+	let observer = core.observe('peripheralDevices')
+	observer.added = jest.fn()
+	observer.changed = jest.fn()
+	observer.removed = jest.fn()
+
+	// Subscribe to data:
+	let coll0 = core.getCollection('peripheralDevices')
+	expect(coll0.findOne({_id: id})).toBeFalsy()
+	let subId = await core.subscribe('peripheralDevices', {
+		_id: id
+	})
+	let coll1 = core.getCollection('peripheralDevices')
+	expect(coll1.findOne({_id: id})).toMatchObject({
+		_id: id
+	})
+
+	expect(observer.added).toHaveBeenCalledTimes(1)
+	// Unsubscribe:
+	core.unsubscribe(subId)
+
+	await wait(200) // wait for unsubscription to go through
+
+	expect(observer.removed).toHaveBeenCalledTimes(1)
+
 	// Uninitialize
 
 	id = await core.unInitialize()

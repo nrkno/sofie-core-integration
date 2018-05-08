@@ -23,7 +23,8 @@ export interface DDPClient {
 	connect: (callback?: (error: Error, wasReconnect: boolean) => void) => void,
 
 	call: (methodName: string, data: Array<any>, callback: (err: Error, result: any) => void) => void
-	subscribe: (subscriptionName: string, data: Array<any>, callback: () => void) => void
+	subscribe: (subscriptionName: string, data: Array<any>, callback: () => void) => string
+	unsubscribe: (subscriptionId: string) => void
 	observe: (collectionName: string) => Observer
 
 	collections: {

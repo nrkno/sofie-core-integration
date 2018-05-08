@@ -230,14 +230,14 @@ export class CoreConnection extends EventEmitter {
 		}
 		return c
 	}
-	subscribe (publicationName: string, ...params: Array<any>) {
+	subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
 		return new Promise((resolve, reject) => {
 			try {
-				this.ddp.ddpClient.subscribe(
+				let subscriptionId = this.ddp.ddpClient.subscribe(
 					publicationName,	// name of Meteor Publish function to subscribe to
 					params.concat([this._coreOptions.deviceToken]), // parameters used by the Publish function
 					() => { 		// callback when the subscription is complete
-						resolve()
+						resolve(subscriptionId)
 					}
 				)
 			} catch (e) {
@@ -245,6 +245,9 @@ export class CoreConnection extends EventEmitter {
 				reject(e)
 			}
 		})
+	}
+	unsubscribe (subscriptionId: string): void {
+		this.ddp.ddpClient.unsubscribe(subscriptionId)
 	}
 	observe (collectionName: string): Observer {
 		return this.ddp.ddpClient.observe(collectionName)
