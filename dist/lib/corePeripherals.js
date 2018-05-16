@@ -24,6 +24,7 @@ var PeripheralDeviceAPI;
         methods["unInitialize"] = "peripheralDevice.unInitialize";
         methods["getPeripheralDevice"] = "peripheralDevice.getPeripheralDevice";
         methods["timelineTriggerTime"] = "peripheralDevice.timeline.setTimelineTriggerTime";
+        methods["segmentLinePlaybackStarted"] = "peripheralDevice.runningOrder.segmentLinePlaybackStarted";
         methods["mosRoCreate"] = "peripheralDevice.mos.roCreate";
         methods["mosRoReplace"] = "peripheralDevice.mos.roReplace";
         methods["mosRoDelete"] = "peripheralDevice.mos.roDelete";
