@@ -32,6 +32,7 @@ export enum methods {
 	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
 
 	'timelineTriggerTime'= 'peripheralDevice.timeline.setTimelineTriggerTime',
+	'segmentLinePlaybackStarted' = 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
