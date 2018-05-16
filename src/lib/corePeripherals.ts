@@ -31,6 +31,8 @@ export enum methods {
 	'unInitialize' 	= 'peripheralDevice.unInitialize',
 	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
 
+	'timelineTriggerTime'= 'peripheralDevice.timeline.setTimelineTriggerTime',
+
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
 	'mosRoDelete' 		= 'peripheralDevice.mos.roDelete',
