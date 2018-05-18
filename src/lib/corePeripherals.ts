@@ -17,7 +17,8 @@ export interface StatusObject {
 
 export enum DeviceType {
 	MOSDEVICE = 0,
-	PLAYOUT = 1
+	PLAYOUT = 1,
+	OTHER = 2 // i.e. sub-devices
 }
 export interface InitOptions {
 	type: DeviceType,

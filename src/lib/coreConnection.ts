@@ -8,12 +8,8 @@ const Random = require('ddp-random')
 
 const DataStore = require('data-store')
 
-export enum DeviceType {
-	MOSDEVICE = 0,
-	PLAYOUT = 1
-}
 export interface InitOptions {
-	type: DeviceType,
+	type: P.DeviceType,
 	name: string,
 	connectionId: string
 }
@@ -24,7 +20,7 @@ export interface CoreCredentials {
 }
 
 export interface CoreOptions extends CoreCredentials {
-	deviceType: DeviceType
+	deviceType: P.DeviceType
 	deviceName: string,
 
 }
@@ -220,6 +216,8 @@ export class CoreConnection extends EventEmitter {
 					return _.values(collection)
 				} else if (_.isObject(selector)) {
 					return _.where(_.values(collection), selector)
+				} else if (_.isFunction(selector)) {
+					return _.filter(_.values(collection), selector)
 				} else {
 					return [collection[selector]]
 				}
