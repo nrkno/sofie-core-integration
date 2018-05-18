@@ -6,11 +6,6 @@ const ddpConnector_1 = require("./ddpConnector");
 const corePeripherals_1 = require("./corePeripherals");
 const Random = require('ddp-random');
 const DataStore = require('data-store');
-var DeviceType;
-(function (DeviceType) {
-    DeviceType[DeviceType["MOSDEVICE"] = 0] = "MOSDEVICE";
-    DeviceType[DeviceType["PLAYOUT"] = 1] = "PLAYOUT";
-})(DeviceType = exports.DeviceType || (exports.DeviceType = {}));
 class CoreConnection extends events_1.EventEmitter {
     constructor(coreOptions) {
         super();
@@ -184,6 +179,9 @@ class CoreConnection extends events_1.EventEmitter {
                 }
                 else if (_.isObject(selector)) {
                     return _.where(_.values(collection), selector);
+                }
+                else if (_.isFunction(selector)) {
+                    return _.filter(_.values(collection), selector);
                 }
                 else {
                     return [collection[selector]];

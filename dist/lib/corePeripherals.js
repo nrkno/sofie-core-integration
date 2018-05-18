@@ -15,6 +15,7 @@ var PeripheralDeviceAPI;
     (function (DeviceType) {
         DeviceType[DeviceType["MOSDEVICE"] = 0] = "MOSDEVICE";
         DeviceType[DeviceType["PLAYOUT"] = 1] = "PLAYOUT";
+        DeviceType[DeviceType["OTHER"] = 2] = "OTHER"; // i.e. sub-devices
     })(DeviceType = PeripheralDeviceAPI.DeviceType || (PeripheralDeviceAPI.DeviceType = {}));
     let methods;
     (function (methods) {

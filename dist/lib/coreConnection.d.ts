@@ -2,12 +2,8 @@
 import { EventEmitter } from 'events';
 import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector';
 import { PeripheralDeviceAPI as P } from './corePeripherals';
-export declare enum DeviceType {
-    MOSDEVICE = 0,
-    PLAYOUT = 1,
-}
 export interface InitOptions {
-    type: DeviceType;
+    type: P.DeviceType;
     name: string;
     connectionId: string;
 }
@@ -16,7 +12,7 @@ export interface CoreCredentials {
     deviceToken: string;
 }
 export interface CoreOptions extends CoreCredentials {
-    deviceType: DeviceType;
+    deviceType: P.DeviceType;
     deviceName: string;
 }
 export interface CollectionObj {

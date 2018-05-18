@@ -14,6 +14,7 @@ export declare namespace PeripheralDeviceAPI {
     enum DeviceType {
         MOSDEVICE = 0,
         PLAYOUT = 1,
+        OTHER = 2,
     }
     interface InitOptions {
         type: DeviceType;
