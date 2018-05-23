@@ -26,14 +26,15 @@ export interface InitOptions {
 }
 
 export enum methods {
-	'functionReply' = 'peripheralDevice.functionReply',
-	'setStatus' 	= 'peripheralDevice.status',
-	'initialize' 	= 'peripheralDevice.initialize',
-	'unInitialize' 	= 'peripheralDevice.unInitialize',
+	'functionReply' 	= 'peripheralDevice.functionReply',
+
+	'setStatus' 		= 'peripheralDevice.status',
+	'initialize' 		= 'peripheralDevice.initialize',
+	'unInitialize' 		= 'peripheralDevice.unInitialize',
 	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
 
-	'timelineTriggerTime'= 'peripheralDevice.timeline.setTimelineTriggerTime',
-	'segmentLinePlaybackStarted' = 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
+	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
+	'segmentLinePlaybackStarted' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
@@ -53,7 +54,10 @@ export enum methods {
 	'mosRoItemDelete' 	= 'peripheralDevice.mos.RoItemDelete',
 	'mosRoItemSwap' 	= 'peripheralDevice.mos.RoItemSwap',
 	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
-	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory'
+	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
+
+	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
+	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject'
 }
 
 export type initialize = (id: string, token: string, options: InitOptions) => Promise<string>

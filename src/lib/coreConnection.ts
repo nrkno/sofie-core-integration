@@ -2,7 +2,7 @@ import { EventEmitter } from 'events'
 import * as _ from 'underscore'
 
 import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
-import {PeripheralDeviceAPI as P} from './corePeripherals'
+import {PeripheralDeviceAPI as P, PeripheralDeviceAPI} from './corePeripherals'
 
 const Random = require('ddp-random')
 
@@ -181,7 +181,7 @@ export class CoreConnection extends EventEmitter {
 			})
 		})
 	}
-	callMethod (methodName: string, attrs?: Array<any>): Promise<any> {
+	callMethod (methodName: PeripheralDeviceAPI.methods | string, attrs?: Array<any>): Promise<any> {
 		return new Promise((resolve, reject) => {
 
 			let fullAttrs = [
