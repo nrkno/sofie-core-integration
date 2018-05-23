@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from 'events';
 import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector';
-import { PeripheralDeviceAPI as P } from './corePeripherals';
+import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals';
 export interface InitOptions {
     type: P.DeviceType;
     name: string;
@@ -46,7 +46,7 @@ export declare class CoreConnection extends EventEmitter {
     readonly connected: boolean;
     readonly deviceId: string;
     setStatus(status: P.StatusObject): Promise<P.StatusObject>;
-    callMethod(methodName: string, attrs?: Array<any>): Promise<any>;
+    callMethod(methodName: PeripheralDeviceAPI.methods | string, attrs?: Array<any>): Promise<any>;
     unInitialize(): Promise<string>;
     mosManipulate(method: string, ...attrs: Array<any>): Promise<any>;
     getPeripheralDevice(): Promise<any>;

@@ -47,6 +47,8 @@ export declare namespace PeripheralDeviceAPI {
         'mosRoItemSwap' = "peripheralDevice.mos.RoItemSwap",
         'mosRoReadyToAir' = "peripheralDevice.mos.RoReadyToAir",
         'mosRoFullStory' = "peripheralDevice.mos.RoFullStory",
+        'getMediaObjectRevisions' = "peripheralDevice.mediaScanner.getMediaObjectRevisions",
+        'updateMediaObject' = "peripheralDevice.mediaScanner.updateMediaObject",
     }
     type initialize = (id: string, token: string, options: InitOptions) => Promise<string>;
     type unInitialize = (id: string, token: string, status: StatusObject) => Promise<StatusObject>;

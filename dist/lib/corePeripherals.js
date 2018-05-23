@@ -45,6 +45,8 @@ var PeripheralDeviceAPI;
         methods["mosRoItemSwap"] = "peripheralDevice.mos.RoItemSwap";
         methods["mosRoReadyToAir"] = "peripheralDevice.mos.RoReadyToAir";
         methods["mosRoFullStory"] = "peripheralDevice.mos.RoFullStory";
+        methods["getMediaObjectRevisions"] = "peripheralDevice.mediaScanner.getMediaObjectRevisions";
+        methods["updateMediaObject"] = "peripheralDevice.mediaScanner.updateMediaObject";
     })(methods = PeripheralDeviceAPI.methods || (PeripheralDeviceAPI.methods = {}));
 })(PeripheralDeviceAPI = exports.PeripheralDeviceAPI || (exports.PeripheralDeviceAPI = {}));
 //# sourceMappingURL=corePeripherals.js.map
