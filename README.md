@@ -6,12 +6,12 @@ This library is used to connec to to the Core (https://github.com/nrkno/tv-autom
 
 ## Typescript
 ```typescript
-import {CoreConnection, DeviceType} from "core-integration"
+import {CoreConnection, PeripheralDeviceAPI as P} from "core-integration"
 
 let core = new CoreConnection({
 	deviceId: "MyTest",
 	deviceToken: "abcd",
-	deviceType: DeviceType.PLAYOUT,
+	deviceType: P.DeviceType.PLAYOUT,
 	deviceName: "Jest test framework"
 })
 // Initiate connection to Core:

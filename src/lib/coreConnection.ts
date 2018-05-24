@@ -3,6 +3,7 @@ import * as _ from 'underscore'
 
 import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
 import {PeripheralDeviceAPI as P, PeripheralDeviceAPI} from './corePeripherals'
+import { TimeSync } from './timeSync'
 
 const Random = require('ddp-random')
 
@@ -39,6 +40,7 @@ export class CoreConnection extends EventEmitter {
 	private _parent: CoreConnection | null = null
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
+	private _timeSync: TimeSync
 
 	private _sentConnectionId: string = ''
 
@@ -114,6 +116,23 @@ export class CoreConnection extends EventEmitter {
 				return this._ddp.connect()
 			}).then(() => {
 				return this._sendInit()
+			})
+			.then((deviceId) => {
+				// console.log('syncing systemTime...')
+				this._timeSync = new TimeSync({
+					serverDelayTime: 0
+				}, () => {
+					return this.callMethod(PeripheralDeviceAPI.methods.getTimeDiff)
+					.then((stat) => {
+						return stat.currentTime
+					})
+				})
+
+				return this._timeSync.init()
+				.then(() => {
+					// console.log('Time synced! (diff: ' + this._timeSync.diff + ', quality: ' + this._timeSync.quality + ')')
+					return deviceId
+				})
 			})
 		}
 	}
@@ -249,6 +268,15 @@ export class CoreConnection extends EventEmitter {
 	}
 	observe (collectionName: string): Observer {
 		return this.ddp.ddpClient.observe(collectionName)
+	}
+	getCurrentTime (): number {
+		return this._timeSync.currentTime()
+	}
+	hasSyncedTime (): boolean {
+		return this._timeSync.isGood()
+	}
+	syncTimeQuality (): number | null {
+		return this._timeSync.quality
 	}
 
 	private _maybeSendInit (): Promise<any> {
