@@ -4,6 +4,7 @@ const events_1 = require("events");
 const _ = require("underscore");
 const ddpConnector_1 = require("./ddpConnector");
 const corePeripherals_1 = require("./corePeripherals");
+const timeSync_1 = require("./timeSync");
 const Random = require('ddp-random');
 const DataStore = require('data-store');
 class CoreConnection extends events_1.EventEmitter {
@@ -75,6 +76,22 @@ class CoreConnection extends events_1.EventEmitter {
                 return this._ddp.connect();
             }).then(() => {
                 return this._sendInit();
+            })
+                .then((deviceId) => {
+                // console.log('syncing systemTime...')
+                this._timeSync = new timeSync_1.TimeSync({
+                    serverDelayTime: 0
+                }, () => {
+                    return this.callMethod(corePeripherals_1.PeripheralDeviceAPI.methods.getTimeDiff)
+                        .then((stat) => {
+                        return stat.currentTime;
+                    });
+                });
+                return this._timeSync.init()
+                    .then(() => {
+                    // console.log('Time synced! (diff: ' + this._timeSync.diff + ', quality: ' + this._timeSync.quality + ')')
+                    return deviceId;
+                });
             });
         }
     }
@@ -213,6 +230,15 @@ class CoreConnection extends events_1.EventEmitter {
     }
     observe(collectionName) {
         return this.ddp.ddpClient.observe(collectionName);
+    }
+    getCurrentTime() {
+        return this._timeSync.currentTime();
+    }
+    hasSyncedTime() {
+        return this._timeSync.isGood();
+    }
+    syncTimeQuality() {
+        return this._timeSync.quality;
     }
     _maybeSendInit() {
         // If the connectionId has changed, we should report that to Core:

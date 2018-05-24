@@ -32,6 +32,9 @@ class TimeSync {
     get diff() {
         return this._syncDiff;
     }
+    isGood() {
+        return !!(this.quality && this.quality < this._options.minSyncQuality);
+    }
     init() {
         return tslib_1.__awaiter(this, void 0, void 0, function* () {
             setInterval(() => {

@@ -26,6 +26,7 @@ export declare class TimeSync {
     currentTime(): number;
     readonly quality: number | null;
     readonly diff: number;
+    isGood(): boolean;
     init(): Promise<boolean>;
     maybeTriggerSync(): void;
     private syncTime();

@@ -28,6 +28,7 @@ export declare class CoreConnection extends EventEmitter {
     private _parent;
     private _children;
     private _coreOptions;
+    private _timeSync;
     private _sentConnectionId;
     constructor(coreOptions: CoreOptions);
     static getCredentials(name: string): CoreCredentials;
@@ -54,6 +55,9 @@ export declare class CoreConnection extends EventEmitter {
     subscribe(publicationName: string, ...params: Array<any>): Promise<string>;
     unsubscribe(subscriptionId: string): void;
     observe(collectionName: string): Observer;
+    getCurrentTime(): number;
+    hasSyncedTime(): boolean;
+    syncTimeQuality(): number | null;
     private _maybeSendInit();
     private _sendInit();
     private _removeParent();
