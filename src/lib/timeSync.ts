@@ -69,6 +69,9 @@ export class TimeSync {
 	get diff () {
 		return this._syncDiff
 	}
+	public isGood (): boolean {
+		return !!(this.quality && this.quality < this._options.minSyncQuality)
+	}
 	public async init (): Promise<boolean> {
 
 		setInterval(() => {
