@@ -1,6 +1,6 @@
 
-import {CoreConnection, DeviceType} from '../index'
-import {PeripheralDeviceAPI as P} from '../lib/corePeripherals'
+import { CoreConnection, DeviceType } from '../index'
+import { PeripheralDeviceAPI as P } from '../lib/corePeripherals'
 
 function wait (time: number): Promise<void> {
 	return new Promise((resolve) => {
@@ -70,12 +70,12 @@ test('Integration: Test connection and basic Core functionality', async () => {
 
 	// Subscribe to data:
 	let coll0 = core.getCollection('peripheralDevices')
-	expect(coll0.findOne({_id: id})).toBeFalsy()
+	expect(coll0.findOne({ _id: id })).toBeFalsy()
 	let subId = await core.subscribe('peripheralDevices', {
 		_id: id
 	})
 	let coll1 = core.getCollection('peripheralDevices')
-	expect(coll1.findOne({_id: id})).toMatchObject({
+	expect(coll1.findOne({ _id: id })).toMatchObject({
 		_id: id
 	})
 
