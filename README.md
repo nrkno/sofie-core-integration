@@ -7,7 +7,7 @@ This library is used to connec to to the Core (https://github.com/nrkno/tv-autom
 
 ## Typescript
 ```typescript
-import {CoreConnection, DeviceType} from "core-integration"
+import {CoreConnection, DeviceType} from "tv-automation-server-core-integration"
 
 let core = new CoreConnection({
 	deviceId: "MyTest",
