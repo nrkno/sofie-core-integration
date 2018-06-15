@@ -1,5 +1,5 @@
 
-import { CoreConnection, DeviceType } from '../index'
+import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P } from '../lib/corePeripherals'
 
 function wait (time: number): Promise<void> {
@@ -16,7 +16,7 @@ test('Integration: Test connection and basic Core functionality', async () => {
 	let core = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 
@@ -117,7 +117,7 @@ test('Integration: Connection timeout', async () => {
 	let core = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 
@@ -161,7 +161,7 @@ test('Integration: Connection recover from close', async () => {
 	let core = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 
@@ -202,7 +202,7 @@ test('Integration: Parent connections', async () => {
 	let coreParent = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 
@@ -219,7 +219,7 @@ test('Integration: Parent connections', async () => {
 	let coreChild = new CoreConnection({
 		deviceId: 'JestTestChild',
 		deviceToken: 'abcd2',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework child'
 	})
 
@@ -278,7 +278,7 @@ test('Integration: Parent destroy', async () => {
 	let coreParent = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 	await coreParent.init({
@@ -289,7 +289,7 @@ test('Integration: Parent destroy', async () => {
 	let coreChild = new CoreConnection({
 		deviceId: 'JestTestChild',
 		deviceToken: 'abcd2',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework child'
 	})
 	let onChildConnectionChanged = jest.fn()
@@ -332,7 +332,7 @@ test('Integration: Child destroy', async () => {
 	let coreParent = new CoreConnection({
 		deviceId: 'JestTest',
 		deviceToken: 'abcd',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework'
 	})
 	await coreParent.init({
@@ -343,7 +343,7 @@ test('Integration: Child destroy', async () => {
 	let coreChild = new CoreConnection({
 		deviceId: 'JestTestChild',
 		deviceToken: 'abcd2',
-		deviceType: DeviceType.PLAYOUT,
+		deviceType: P.DeviceType.PLAYOUT,
 		deviceName: 'Jest test framework child'
 	})
 	let onChildConnectionChanged = jest.fn()
