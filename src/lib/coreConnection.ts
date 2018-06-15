@@ -5,13 +5,14 @@ import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 
-import DataStore = require('data-store')
+const DataStore = require('data-store')
 const Random = require('ddp-random')
 
 export interface InitOptions {
 	type: P.DeviceType,
 	name: string,
-	connectionId: string
+	connectionId: string,
+	parentDeviceId?: string
 }
 
 export interface CoreCredentials {
@@ -49,7 +50,7 @@ export class CoreConnection extends EventEmitter {
 		this._coreOptions = coreOptions
 
 	}
-	static getStore (name: string): DataStore {
+	static getStore (name: string) {
 		return new DataStore(name)
 	}
 	static getCredentials (name: string): CoreCredentials {
@@ -295,7 +296,8 @@ export class CoreConnection extends EventEmitter {
 		let options: InitOptions = {
 			type: this._coreOptions.deviceType,
 			name: this._coreOptions.deviceName,
-			connectionId: this.ddp.connectionId
+			connectionId: this.ddp.connectionId,
+			parentDeviceId: (this._parent && this._parent.deviceId) || undefined
 		}
 		this._sentConnectionId = options.connectionId
 
