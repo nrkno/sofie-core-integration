@@ -1,18 +1,18 @@
 import { EventEmitter } from 'events'
 import * as _ from 'underscore'
 
-import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
-import {PeripheralDeviceAPI as P, PeripheralDeviceAPI} from './corePeripherals'
+import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
+import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 
-const Random = require('ddp-random')
-
 const DataStore = require('data-store')
+const Random = require('ddp-random')
 
 export interface InitOptions {
 	type: P.DeviceType,
 	name: string,
-	connectionId: string
+	connectionId: string,
+	parentDeviceId?: string
 }
 
 export interface CoreCredentials {
@@ -50,8 +50,11 @@ export class CoreConnection extends EventEmitter {
 		this._coreOptions = coreOptions
 
 	}
+	static getStore (name: string) {
+		return new DataStore(name)
+	}
 	static getCredentials (name: string): CoreCredentials {
-		let store = DataStore(name)
+		let store = CoreConnection.getStore(name)
 
 		let credentials: CoreCredentials = store.get('CoreCredentials')
 		if (!credentials) {
@@ -62,7 +65,7 @@ export class CoreConnection extends EventEmitter {
 		return credentials
 	}
 	static deleteCredentials (name: string) {
-		let store = DataStore(name)
+		let store = CoreConnection.getStore(name)
 
 		store.set('CoreCredentials', null)
 	}
@@ -73,7 +76,7 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
-		if (ddpOptionsORParent instanceof CoreConnection ) {
+		if (ddpOptionsORParent instanceof CoreConnection) {
 			this._setParent(ddpOptionsORParent)
 
 			return Promise.resolve()
@@ -158,19 +161,19 @@ export class CoreConnection extends EventEmitter {
 			this._children.splice(removeIndex, 1)
 		}
 	}
-	onConnectionChanged (cb: (connected: boolean) => void ) {
+	onConnectionChanged (cb: (connected: boolean) => void) {
 		this.on('connectionChanged', cb)
 	}
-	onConnected (cb: () => void ) {
+	onConnected (cb: () => void) {
 		this.on('connected', cb)
 	}
-	onDisconnected (cb: () => void ) {
+	onDisconnected (cb: () => void) {
 		this.on('disconnected', cb)
 	}
-	onError (cb: (err: Error) => void ) {
+	onError (cb: (err: Error) => void) {
 		this.on('error', cb)
 	}
-	onFailed (cb: (err: Error) => void ) {
+	onFailed (cb: (err: Error) => void) {
 		this.on('failed', cb)
 	}
 	get ddp (): DDPConnector {
@@ -258,7 +261,7 @@ export class CoreConnection extends EventEmitter {
 					}
 				)
 			} catch (e) {
-				console.log(this.ddp.ddpClient )
+				console.log(this.ddp.ddpClient)
 				reject(e)
 			}
 		})
@@ -281,7 +284,7 @@ export class CoreConnection extends EventEmitter {
 
 	private _maybeSendInit (): Promise<any> {
 		// If the connectionId has changed, we should report that to Core:
-		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId ) {
+		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId) {
 			return this._sendInit()
 		} else {
 			return Promise.resolve()
@@ -293,7 +296,8 @@ export class CoreConnection extends EventEmitter {
 		let options: InitOptions = {
 			type: this._coreOptions.deviceType,
 			name: this._coreOptions.deviceName,
-			connectionId: this.ddp.connectionId
+			connectionId: this.ddp.connectionId,
+			parentDeviceId: (this._parent && this._parent.deviceId) || undefined
 		}
 		this._sentConnectionId = options.connectionId
 

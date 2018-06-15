@@ -1,4 +1,5 @@
 # Core-integration
+[![CircleCI](https://circleci.com/gh/nrkno/tv-automation-server-core-integration.svg?style=svg)](https://circleci.com/gh/nrkno/tv-automation-server-core-integration)
 
 This library is used to connec to to the Core (https://github.com/nrkno/tv-automation-server-core) from other Node processes.
 
@@ -6,12 +7,12 @@ This library is used to connec to to the Core (https://github.com/nrkno/tv-autom
 
 ## Typescript
 ```typescript
-import {CoreConnection, PeripheralDeviceAPI as P} from "core-integration"
+import {CoreConnection, DeviceType} from "tv-automation-server-core-integration"
 
 let core = new CoreConnection({
 	deviceId: "MyTest",
 	deviceToken: "abcd",
-	deviceType: P.DeviceType.PLAYOUT,
+	deviceType: DeviceType.PLAYOUT,
 	deviceName: "Jest test framework"
 })
 // Initiate connection to Core:

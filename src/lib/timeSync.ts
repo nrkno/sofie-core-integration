@@ -1,5 +1,3 @@
-// const log = require('electron-log')
-// const Request = require('request')
 import * as _ from 'underscore'
 
 export interface TimeSyncOptions {
@@ -81,7 +79,7 @@ export class TimeSync {
 		return this.syncTime()
 	}
 	public maybeTriggerSync () {
-		if (this.localTime() - this._lastSyncTime > this._options.syncPeriod ) {
+		if (this.localTime() - this._lastSyncTime > this._options.syncPeriod) {
 			// It's time to do a sync
 			// log.verbose('triggerSync ' + (this.localTime() - this._lastSyncTime))
 			this._lastSyncTime = this.localTime()
@@ -125,7 +123,7 @@ export class TimeSync {
 
 		for (let tryCount = 0; tryCount < this._options.maxTryCount; tryCount++) {
 			let syncResult = await doSync()
-			if (!_.isNull(syncResult.quality )) {
+			if (!_.isNull(syncResult.quality)) {
 				syncResults.push(syncResult)
 			}
 
@@ -134,10 +132,10 @@ export class TimeSync {
 
 				// The best result is the one earliest in time, since the best quality is
 				// caused by the lowest delay:
-				let bestResult: any = _.min(syncResults, (r) => {
+				let bestResult: any = _.min(syncResults, (r: SyncResult) => {
 					return (!_.isNull(r.quality) ? r.quality : 999999)
 				})
-				if (!bestResult) bestResult = {diff: 0, quality: null}
+				if (!bestResult) bestResult = { diff: 0, quality: null }
 
 				if (
 					!_.isNull(bestResult.quality) &&
@@ -154,7 +152,7 @@ export class TimeSync {
 		if (!selectedSyncResult) {
 			// We don't have a good sync result.
 
-			let bestResult: any = _.min(syncResults, (r) => {
+			let bestResult: any = _.min(syncResults, (r: SyncResult) => {
 				return (!_.isNull(r.quality) ? r.quality : 999999)
 			})
 			if (

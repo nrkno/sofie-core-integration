@@ -1,5 +1,5 @@
 
-import {CoreConnection} from '../coreConnection'
+import { CoreConnection } from '../coreConnection'
 
 test('CoreConnection credentials', () => {
 

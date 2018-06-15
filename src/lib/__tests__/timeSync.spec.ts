@@ -1,4 +1,4 @@
-import {TimeSync} from '../timeSync'
+import { TimeSync } from '../timeSync'
 
 test('timeSync', async () => {
 	// let time = 1000
