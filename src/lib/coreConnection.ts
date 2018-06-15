@@ -1,8 +1,8 @@
 import { EventEmitter } from 'events'
 import * as _ from 'underscore'
 
-import {DDPConnector, DDPConnectorOptions, Observer} from './ddpConnector'
-import {PeripheralDeviceAPI as P, PeripheralDeviceAPI} from './corePeripherals'
+import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
+import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 
 const Random = require('ddp-random')
