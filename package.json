@@ -9,12 +9,12 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://bitbucket.org/nrkno/tv-automation-server-core-integration"
+		"url": "git+https://github.com/nrkno/tv-automation-server-core-integration"
 	},
 	"bugs": {
-		"url": "https://bitbucket.org/nrkno/tv-automation-server-core-integration/issues"
+		"url": "https://github.com/nrkno/tv-automation-server-core-integration/issues"
 	},
-	"homepage": "https://bitbucket.org/nrkno/tv-automation-server-core-integration",
+	"homepage": "https://github.com/nrkno/tv-automation-server-core-integration",
 	"author": {
 		"name": "Johan Nyman",
 		"email": "johan@superfly.tv",
