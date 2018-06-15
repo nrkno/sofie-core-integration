@@ -15,7 +15,7 @@ module.exports = {
 		'**/__tests__/**/*.spec.(ts|js)'
 	],
 	testPathIgnorePatterns: [
-		'integrationTests'
+		'integrationTests',
 	],	
 	testEnvironment: 'node',
 	coverageThreshold: {
@@ -27,5 +27,9 @@ module.exports = {
 		}
 	},
 	coverageDirectory: "./coverage/",
-	collectCoverage: true
+	collectCoverage: true,
+	coveragePathIgnorePatterns: [
+		'/node_modules/',
+		'd.ts'
+	]
 }

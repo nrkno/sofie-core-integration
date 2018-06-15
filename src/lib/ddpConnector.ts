@@ -164,7 +164,7 @@ export class DDPConnector extends EventEmitter {
 
 		this._monitorDDPConnectionInterval = setInterval(() => {
 
-			if (this.ddpClient && !this.connected && this.ddpIsOpen && this._options.autoReconnect !== false ) {
+			if (this.ddpClient && !this.connected && this.ddpIsOpen && this._options.autoReconnect !== false) {
 				// reconnect:
 				this.ddpClient.connect()
 
