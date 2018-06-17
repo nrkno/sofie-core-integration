@@ -12,7 +12,10 @@ export interface InitOptions {
 	type: P.DeviceType,
 	name: string,
 	connectionId: string,
-	parentDeviceId?: string
+	parentDeviceId?: string,
+	versions?: {
+		[libraryName: string]: string
+	}
 }
 
 export interface CoreCredentials {
@@ -23,6 +26,9 @@ export interface CoreCredentials {
 export interface CoreOptions extends CoreCredentials {
 	deviceType: P.DeviceType
 	deviceName: string,
+	versions?: {
+		[libraryName: string]: string
+	}
 
 }
 export interface CollectionObj {
@@ -297,7 +303,8 @@ export class CoreConnection extends EventEmitter {
 			type: this._coreOptions.deviceType,
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId,
-			parentDeviceId: (this._parent && this._parent.deviceId) || undefined
+			parentDeviceId: (this._parent && this._parent.deviceId) || undefined,
+			versions: this._coreOptions.versions
 		}
 		this._sentConnectionId = options.connectionId
 
