@@ -4,6 +4,7 @@ import * as _ from 'underscore'
 import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
+import { WatchDog } from './watchDog'
 
 const DataStore = require('data-store')
 const Random = require('ddp-random')
@@ -28,7 +29,8 @@ export interface CoreOptions extends CoreCredentials {
 	deviceName: string,
 	versions?: {
 		[libraryName: string]: string
-	}
+	},
+	watchDog?: boolean
 
 }
 export interface CollectionObj {
@@ -47,6 +49,8 @@ export class CoreConnection extends EventEmitter {
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
 	private _timeSync: TimeSync
+	private _watchDog?: WatchDog
+	private _pingResponse: string = ''
 
 	private _sentConnectionId: string = ''
 
@@ -55,6 +59,11 @@ export class CoreConnection extends EventEmitter {
 
 		this._coreOptions = coreOptions
 
+		if (this._coreOptions.watchDog) {
+			this._watchDog = new WatchDog()
+			this._watchDog.on('message', msg => this.emit('error', msg))
+			this._watchDog.startWatching()
+		}
 	}
 	static getStore (name: string) {
 		return new DataStore(name)
@@ -115,9 +124,11 @@ export class CoreConnection extends EventEmitter {
 				})
 				this._ddp.on('connected', () => {
 					this.emit('connected')
+					if (this._watchDog) this._watchDog.addCheck(this._watchDogCheck)
 				})
 				this._ddp.on('disconnected', () => {
 					this.emit('disconnected')
+					if (this._watchDog) this._watchDog.removeCheck(this._watchDogCheck)
 				})
 				this._ddp.createClient()
 				resolve()
@@ -125,8 +136,7 @@ export class CoreConnection extends EventEmitter {
 				return this._ddp.connect()
 			}).then(() => {
 				return this._sendInit()
-			})
-			.then((deviceId) => {
+			}).then((deviceId) => {
 				// console.log('syncing systemTime...')
 				this._timeSync = new TimeSync({
 					serverDelayTime: 0
@@ -267,7 +277,7 @@ export class CoreConnection extends EventEmitter {
 					}
 				)
 			} catch (e) {
-				console.log(this.ddp.ddpClient)
+				// console.log(this.ddp.ddpClient)
 				reject(e)
 			}
 		})
@@ -286,6 +296,9 @@ export class CoreConnection extends EventEmitter {
 	}
 	syncTimeQuality (): number | null {
 		return this._timeSync.quality
+	}
+	setPingResponse (message: string) {
+		this._pingResponse = message
 	}
 
 	private _maybeSendInit (): Promise<any> {
@@ -343,5 +356,30 @@ export class CoreConnection extends EventEmitter {
 			this.emit('disconnected')
 		}
 		this.emit('connectionChanged', this.connected)
+	}
+	private _watchDogCheck = () => {
+		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
+		let message = 'ping_' + Math.random() * 10000
+		this.callMethod('peripheralDevice.pingWithCommand', [message])
+		.catch(e => this.emit('error',e))
+
+		return new Promise((resolve, reject) => {
+			let i = 0
+			let checkPingReply = () => {
+				if (this._pingResponse === message) {
+					resolve()
+				} else {
+					i++
+					if (i > 50) {
+						reject()
+					} else {
+						setTimeout(checkPingReply, 300)
+					}
+				}
+			}
+			checkPingReply()
+		}).then(() => {
+			return
+		})
 	}
 }
