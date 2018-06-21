@@ -41,6 +41,7 @@ export interface Collection {
 	find: (selector: any) => Array<CollectionObj>
 	findOne: (selector: any) => CollectionObj
 }
+const INIT_INTERVAL = 5 * 60 * 1000
 
 export class CoreConnection extends EventEmitter {
 
@@ -51,6 +52,7 @@ export class CoreConnection extends EventEmitter {
 	private _timeSync: TimeSync
 	private _watchDog?: WatchDog
 	private _pingResponse: string = ''
+	private _initInterval?: NodeJS.Timer
 
 	private _sentConnectionId: string = ''
 
@@ -91,10 +93,11 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
+		let p: Promise<string>
 		if (ddpOptionsORParent instanceof CoreConnection) {
 			this._setParent(ddpOptionsORParent)
 
-			return Promise.resolve()
+			p = Promise.resolve()
 				.then(() => {
 					return this._sendInit()
 				})
@@ -105,7 +108,7 @@ export class CoreConnection extends EventEmitter {
 			}
 			ddpOptions.autoReconnect = true
 			ddpOptions.autoReconnectTimer = 1000
-			return new Promise((resolve) => {
+			p = new Promise((resolve) => {
 				this._ddp = new DDPConnector(ddpOptions)
 
 				this._ddp.on('error', (err) => {
@@ -116,9 +119,10 @@ export class CoreConnection extends EventEmitter {
 				})
 				this._ddp.on('connectionChanged', (connected: boolean) => {
 					this.emit('connectionChanged', connected)
-
+					console.log('connectionChanged', connected)
 					this._maybeSendInit()
 					.catch((err) => {
+						console.log('error', err)
 						this.emit('error', err)
 					})
 				})
@@ -154,6 +158,15 @@ export class CoreConnection extends EventEmitter {
 				})
 			})
 		}
+		p = p.then((deviceId) => {
+			// send an init every now and then, to update the lastSeen status
+			this._initInterval = setInterval(() => {
+				this._sendInit()
+				.catch(e => this.emit('error', e))
+			}, INIT_INTERVAL)
+			return deviceId
+		})
+		return p
 	}
 	destroy (): Promise<void> {
 		if (this._parent) {
@@ -163,6 +176,7 @@ export class CoreConnection extends EventEmitter {
 				this._ddp.close()
 			}
 		}
+		if (this._initInterval) clearInterval(this._initInterval)
 		return Promise.resolve()
 	}
 	addChild (child: CoreConnection) {

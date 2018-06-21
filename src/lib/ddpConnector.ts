@@ -17,8 +17,8 @@ export interface Observer {
 	removed: (id: string, oldValue: any) => void
 	stop: () => void
 }
-export interface DDPClient {
-	on: (event: string, data?: any) => void,
+export interface DDPClient extends EventEmitter {
+	// on: (event: string, data?: any) => DDPClient,
 	close: () => void,
 	connect: (callback?: (error: Error, wasReconnect: boolean) => void) => void,
 
@@ -108,12 +108,7 @@ export class DDPConnector extends EventEmitter {
 			this.ddpClient.connect()
 
 		}
-
-		this.ddpClient.on('connected', () => {
-
-			this._onclientConnectionChange(true)
-		})
-		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+		this._addListeners()
 	}
 	public connect () {
 
@@ -165,7 +160,16 @@ export class DDPConnector extends EventEmitter {
 		this._monitorDDPConnectionInterval = setInterval(() => {
 
 			if (this.ddpClient && !this.connected && this.ddpIsOpen && this._options.autoReconnect !== false) {
-				// reconnect:
+				// Reconnect:
+
+				// console.log('reconnecting..')
+
+				// // First, remove all Listeners, because otherwise there are added too many inside the .connect function...
+				// this.ddpClient.removeAllListeners('connected')
+				// this.ddpClient.removeAllListeners('failed')
+
+				// this._addListeners()
+
 				this.ddpClient.connect()
 
 			} else {
@@ -174,7 +178,15 @@ export class DDPConnector extends EventEmitter {
 			}
 		},this._options.autoReconnectTimer || 1000)
 	}
-
+	private _addListeners () {
+		this.ddpClient.on('connected', () => {
+			// defer, to be sure this fires AFTER the ddp:s own connectionChanged
+			setTimeout(() => {
+				this._onclientConnectionChange(true)
+			},0)
+		})
+		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+	}
 	private _onclientConnectionChange (connected: boolean) {
 		if (connected !== this._connected) {
 			this._connected = connected
@@ -182,6 +194,7 @@ export class DDPConnector extends EventEmitter {
 			if (connected) {
 				this._connectionId = this.ddpClient.session
 			}
+			console.log('_onclientConnectionChange', connected)
 
 			// log.debug("DDP: _onclientConnectionChange "+connected);
 			this.emit('connectionChanged', this._connected)
