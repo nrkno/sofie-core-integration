@@ -163,6 +163,11 @@ export class CoreConnection extends EventEmitter {
 				this._ddp.close()
 			}
 		}
+		this.removeAllListeners('error')
+		this.removeAllListeners('connectionChanged')
+		this.removeAllListeners('connected')
+		this.removeAllListeners('disconnected')
+		this.removeAllListeners('failed')
 		return Promise.resolve()
 	}
 	addChild (child: CoreConnection) {
