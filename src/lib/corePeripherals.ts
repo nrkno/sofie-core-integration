@@ -32,6 +32,8 @@ export enum methods {
 	'initialize' 		= 'peripheralDevice.initialize',
 	'unInitialize' 		= 'peripheralDevice.unInitialize',
 	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
+	'pingWithCommand' 	= 'peripheralDevice.pingWithCommand',
+	'killProcess' 		= 'peripheralDevice.killProcess',
 
 	'determineDiffTime'		= 'systemTime.determineDiffTime',
 	'getTimeDiff'			= 'systemTime.getTimeDiff',

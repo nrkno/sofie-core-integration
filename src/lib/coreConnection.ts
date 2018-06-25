@@ -51,6 +51,10 @@ export class CoreConnection extends EventEmitter {
 	private _timeSync: TimeSync
 	private _watchDog?: WatchDog
 	private _pingResponse: string = ''
+	private _autoSubscriptions: { [subscriptionId: string]: {
+		publicationName: string,
+		params: Array<any>
+	}} = {}
 
 	private _sentConnectionId: string = ''
 
@@ -91,6 +95,8 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
+		this.on('connected', () => this._renewAutoSubscriptions())
+
 		if (ddpOptionsORParent instanceof CoreConnection) {
 			this._setParent(ddpOptionsORParent)
 
@@ -124,11 +130,11 @@ export class CoreConnection extends EventEmitter {
 				})
 				this._ddp.on('connected', () => {
 					this.emit('connected')
-					if (this._watchDog) this._watchDog.addCheck(this._watchDogCheck)
+					if (this._watchDog) this._watchDog.addCheck(() => this._watchDogCheck())
 				})
 				this._ddp.on('disconnected', () => {
 					this.emit('disconnected')
-					if (this._watchDog) this._watchDog.removeCheck(this._watchDogCheck)
+					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
 				})
 				this._ddp.createClient()
 				resolve()
@@ -163,6 +169,11 @@ export class CoreConnection extends EventEmitter {
 				this._ddp.close()
 			}
 		}
+		this.removeAllListeners('error')
+		this.removeAllListeners('connectionChanged')
+		this.removeAllListeners('connected')
+		this.removeAllListeners('disconnected')
+		this.removeAllListeners('failed')
 		return Promise.resolve()
 	}
 	addChild (child: CoreConnection) {
@@ -282,8 +293,22 @@ export class CoreConnection extends EventEmitter {
 			}
 		})
 	}
+	/**
+	 * Like a subscribe, but automatically renews it upon reconnection
+	 */
+	autoSubscribe (publicationName: string, ...params: Array<any>): Promise<string> {
+		return this.subscribe(publicationName, ...params)
+		.then((subscriptionId: string) => {
+			this._autoSubscriptions[subscriptionId] = {
+				publicationName: publicationName,
+				params: params
+			}
+			return subscriptionId
+		})
+	}
 	unsubscribe (subscriptionId: string): void {
 		this.ddp.ddpClient.unsubscribe(subscriptionId)
+		delete this._autoSubscriptions[subscriptionId]
 	}
 	observe (collectionName: string): Observer {
 		return this.ddp.ddpClient.observe(collectionName)
@@ -357,10 +382,10 @@ export class CoreConnection extends EventEmitter {
 		}
 		this.emit('connectionChanged', this.connected)
 	}
-	private _watchDogCheck = () => {
+	private _watchDogCheck () {
 		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
 		let message = 'ping_' + Math.random() * 10000
-		this.callMethod('peripheralDevice.pingWithCommand', [message])
+		this.callMethod(PeripheralDeviceAPI.methods.pingWithCommand, [message])
 		.catch(e => this.emit('error',e))
 
 		return new Promise((resolve, reject) => {
@@ -380,6 +405,12 @@ export class CoreConnection extends EventEmitter {
 			checkPingReply()
 		}).then(() => {
 			return
+		})
+	}
+	private _renewAutoSubscriptions () {
+		_.each(this._autoSubscriptions, (sub) => {
+			this.subscribe(sub.publicationName, ...sub.params)
+			.catch(e => this.emit('error', e))
 		})
 	}
 }

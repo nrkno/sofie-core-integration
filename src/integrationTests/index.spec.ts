@@ -1,6 +1,6 @@
 
 import { CoreConnection } from '../index'
-import { PeripheralDeviceAPI as P } from '../lib/corePeripherals'
+import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
 
 function wait (time: number): Promise<void> {
 	return new Promise((resolve) => {
@@ -195,6 +195,74 @@ test('Integration: Connection recover from close', async () => {
 	// should have reconnected by now
 
 	expect(core.connected).toEqual(true)
+})
+test('Integration: autoSubscription', async () => {
+
+	// Note: This is an integration test, that require a Core to connect to
+
+	let core = new CoreConnection({
+		deviceId: 'JestTest',
+		deviceToken: 'abcd',
+		deviceType: P.DeviceType.PLAYOUT,
+		deviceName: 'Jest test framework'
+	})
+
+	let onConnectionChanged = jest.fn()
+	let onConnected = jest.fn()
+	let onDisconnected = jest.fn()
+	let onFailed = jest.fn()
+	let onError = jest.fn()
+	core.onConnectionChanged(onConnectionChanged)
+	core.onConnected(onConnected)
+	core.onDisconnected(onDisconnected)
+	core.onFailed(onFailed)
+	core.onError(onError)
+
+	expect(core.connected).toEqual(false)
+	// Initiate connection to Core:
+
+	await core.init({
+		host: '127.0.0.1',
+		port: 3000
+	})
+	expect(core.connected).toEqual(true)
+
+	let observerAdded = jest.fn()
+	let observerChanged = jest.fn()
+	let observerRemoved = jest.fn()
+	let observer = core.observe('peripheralDevices')
+	observer.added = observerAdded
+	observer.changed = observerChanged
+	observer.removed = observerRemoved
+
+	await core.autoSubscribe('peripheralDevices', { _id: 'JestTest' })
+
+	expect(observerAdded).toHaveBeenCalledTimes(1)
+
+	await core.setStatus({
+		statusCode: PeripheralDeviceAPI.StatusCode.GOOD,
+		messages: ['Jest A ' + Date.now()]
+	})
+	await wait(300)
+	expect(observerChanged).toHaveBeenCalledTimes(1)
+
+	// Force-close the socket:
+	core.ddp.ddpClient.socket.close()
+
+	await wait(10)
+	expect(core.connected).toEqual(false)
+
+	await wait(1300)
+	// should have reconnected by now
+	expect(core.connected).toEqual(true)
+
+	observerChanged.mockClear()
+	await core.setStatus({
+		statusCode: PeripheralDeviceAPI.StatusCode.GOOD,
+		messages: ['Jest B' + Date.now()]
+	})
+	await wait(300)
+	expect(observerChanged).toHaveBeenCalledTimes(1)
 })
 test('Integration: Parent connections', async () => {
 
