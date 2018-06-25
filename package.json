@@ -114,7 +114,7 @@
     "production"
   ],
   "dependencies": {
-    "data-store": "^3.0.1",
+    "data-store": "git+http://github.com/nytamin/data-store.git",
     "ddp": "git+http://github.com/nytamin/node-ddp-client.git#dev",
     "ddp-ejson": "~0.8.1-3",
     "ddp-random": "~0.8.1-1",
