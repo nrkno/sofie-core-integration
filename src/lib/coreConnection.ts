@@ -124,11 +124,11 @@ export class CoreConnection extends EventEmitter {
 				})
 				this._ddp.on('connected', () => {
 					this.emit('connected')
-					if (this._watchDog) this._watchDog.addCheck(this._watchDogCheck)
+					if (this._watchDog) this._watchDog.addCheck(() => this._watchDogCheck())
 				})
 				this._ddp.on('disconnected', () => {
 					this.emit('disconnected')
-					if (this._watchDog) this._watchDog.removeCheck(this._watchDogCheck)
+					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
 				})
 				this._ddp.createClient()
 				resolve()
@@ -362,10 +362,10 @@ export class CoreConnection extends EventEmitter {
 		}
 		this.emit('connectionChanged', this.connected)
 	}
-	private _watchDogCheck = () => {
+	private _watchDogCheck () {
 		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
 		let message = 'ping_' + Math.random() * 10000
-		this.callMethod('peripheralDevice.pingWithCommand', [message])
+		this.callMethod(PeripheralDeviceAPI.methods.pingWithCommand, [message])
 		.catch(e => this.emit('error',e))
 
 		return new Promise((resolve, reject) => {
