@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.3.2"></a>
+## [0.3.2](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.3.1...0.3.2) (2018-06-26)
+
+
+### Bug Fixes
+
+* refactoring & how events are fired ([2a2966d](https://github.com/nrkno/tv-automation-server-core-integration/commit/2a2966d))
+* updated ddp dependency ([5d09770](https://github.com/nrkno/tv-automation-server-core-integration/commit/5d09770))
+
+
+
 <a name="0.3.1"></a>
 ## [0.3.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.3.0...0.3.1) (2018-06-25)
 
