@@ -100,11 +100,11 @@ test('Integration: Test connection and basic Core functionality', async () => {
 		error: 404
 	})
 
+	expect(onConnectionChanged).toHaveBeenCalledTimes(1)
 	// Close connection:
 	await core.destroy()
 
 	expect(core.connected).toEqual(false)
-
 	expect(onConnectionChanged).toHaveBeenCalledTimes(2)
 	expect(onConnectionChanged.mock.calls[1][0]).toEqual(false)
 	expect(onConnected).toHaveBeenCalledTimes(1)
@@ -153,6 +153,8 @@ test('Integration: Connection timeout', async () => {
 	// ).rejects.toEqual('aaa')
 
 	expect(core.connected).toEqual(false)
+
+	await core.destroy()
 })
 test('Integration: Connection recover from close', async () => {
 
@@ -195,6 +197,8 @@ test('Integration: Connection recover from close', async () => {
 	// should have reconnected by now
 
 	expect(core.connected).toEqual(true)
+
+	await core.destroy()
 })
 test('Integration: autoSubscription', async () => {
 
@@ -263,6 +267,60 @@ test('Integration: autoSubscription', async () => {
 	})
 	await wait(300)
 	expect(observerChanged).toHaveBeenCalledTimes(1)
+
+	await core.destroy()
+})
+test('Integration: Connection recover from a close that lasts some time', async () => {
+
+	// Note: This is an integration test, that require a Core to connect to
+
+	let core = new CoreConnection({
+		deviceId: 'JestTest',
+		deviceToken: 'abcd',
+		deviceType: P.DeviceType.PLAYOUT,
+		deviceName: 'Jest test framework'
+	})
+
+	let onConnectionChanged = jest.fn()
+	let onConnected = jest.fn()
+	let onDisconnected = jest.fn()
+	let onFailed = jest.fn()
+	let onError = jest.fn()
+	core.onConnectionChanged(onConnectionChanged)
+	core.onConnected(onConnected)
+	core.onDisconnected(onDisconnected)
+	core.onFailed(onFailed)
+	core.onError(onError)
+
+	expect(core.connected).toEqual(false)
+	// Initiate connection to Core:
+
+	await core.init({
+		host: '127.0.0.1',
+		port: 3000,
+		autoReconnect: true,
+		autoReconnectTimer: 100
+	})
+	expect(core.connected).toEqual(true)
+
+	// temporary scramble the ddp host:
+	core.ddp.ddpClient.host = '127.0.0.9'
+	// Force-close the socket:
+	core.ddp.ddpClient.socket.close()
+
+	await wait(10)
+	expect(core.connected).toEqual(false)
+
+	await wait(1000) // allow for some reconnections
+
+	// restore ddp host:
+	core.ddp.ddpClient.host = '127.0.0.1'
+	await wait(1000)
+	// should have reconnected by now
+
+	expect(core.connected).toEqual(true)
+
+	await core.destroy()
 })
 test('Integration: Parent connections', async () => {
 
@@ -338,6 +396,8 @@ test('Integration: Parent connections', async () => {
 	})).rejects.toMatchObject({
 		error: 404
 	})
+
+	await coreParent.destroy()
 })
 
 test('Integration: Parent destroy', async () => {
@@ -381,18 +441,30 @@ test('Integration: Parent destroy', async () => {
 	expect(onChildConnected).toHaveBeenCalledTimes(1)
 	expect(onChildDisconnected).toHaveBeenCalledTimes(1)
 
+	// Setup stuff again
+	onChildConnectionChanged.mockClear()
+	onChildConnected.mockClear()
+	onChildDisconnected.mockClear()
+
+	coreChild.onConnectionChanged(onChildConnectionChanged)
+	coreChild.onConnected(onChildConnected)
+	coreChild.onDisconnected(onChildDisconnected)
 	// connect parent again:
+
 	await coreParent.init({
 		host: '127.0.0.1',
 		port: 3000
 	})
+	await coreChild.init(coreParent)
 
 	expect(coreChild.connected).toEqual(true)
 
-	expect(onChildConnectionChanged).toHaveBeenCalledTimes(3)
-	expect(onChildConnectionChanged.mock.calls[2][0]).toEqual(true)
-	expect(onChildConnected).toHaveBeenCalledTimes(2)
-	expect(onChildDisconnected).toHaveBeenCalledTimes(1)
+	expect(onChildConnected).toHaveBeenCalledTimes(1)
+	expect(onChildConnectionChanged).toHaveBeenCalledTimes(1)
+	expect(onChildConnectionChanged.mock.calls[0][0]).toEqual(true)
+	expect(onChildDisconnected).toHaveBeenCalledTimes(0)
+
+	await coreParent.destroy()
 })
 test('Integration: Child destroy', async () => {
 
