@@ -1234,7 +1234,7 @@ ddp-underscore-patched@0.8.1-2:
 
 "ddp@git+http://github.com/nytamin/node-ddp-client.git#dev":
   version "0.12.2"
-  resolved "git+http://github.com/nytamin/node-ddp-client.git#a79e92bf31608d03dad4702797f0d17c5c606ead"
+  resolved "git+http://github.com/nytamin/node-ddp-client.git#3db808d99c6f0aac408447eb81080611e0fd1143"
   dependencies:
     ddp-ejson "0.8.1-3"
     ddp-underscore-patched "0.8.1-2"

@@ -51,6 +51,7 @@ export class CoreConnection extends EventEmitter {
 	private _timeSync: TimeSync
 	private _watchDog?: WatchDog
 	private _pingResponse: string = ''
+	private _connected: boolean = false
 	private _autoSubscriptions: { [subscriptionId: string]: {
 		publicationName: string,
 		params: Array<any>
@@ -109,8 +110,8 @@ export class CoreConnection extends EventEmitter {
 				host: '127.0.0.1',
 				port: 3000
 			}
-			ddpOptions.autoReconnect = true
-			ddpOptions.autoReconnectTimer = 1000
+			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true
+			if (!_.has(ddpOptions, 'autoReconnectTimer')) 	ddpOptions.autoReconnectTimer = 1000
 			return new Promise((resolve) => {
 				this._ddp = new DDPConnector(ddpOptions)
 
@@ -121,7 +122,7 @@ export class CoreConnection extends EventEmitter {
 					this.emit('failed', err)
 				})
 				this._ddp.on('connectionChanged', (connected: boolean) => {
-					this.emit('connectionChanged', connected)
+					this._setConnected(connected)
 
 					this._maybeSendInit()
 					.catch((err) => {
@@ -129,11 +130,11 @@ export class CoreConnection extends EventEmitter {
 					})
 				})
 				this._ddp.on('connected', () => {
-					this.emit('connected')
+					// this.emit('connected')
 					if (this._watchDog) this._watchDog.addCheck(() => this._watchDogCheck())
 				})
 				this._ddp.on('disconnected', () => {
-					this.emit('disconnected')
+					// this.emit('disconnected')
 					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
 				})
 				this._ddp.createClient()
@@ -165,6 +166,7 @@ export class CoreConnection extends EventEmitter {
 		if (this._parent) {
 			this._removeParent()
 		} else {
+			this._removeParent()
 			if (this._ddp) {
 				this._ddp.close()
 			}
@@ -174,7 +176,15 @@ export class CoreConnection extends EventEmitter {
 		this.removeAllListeners('connected')
 		this.removeAllListeners('disconnected')
 		this.removeAllListeners('failed')
-		return Promise.resolve()
+
+		return Promise.all(
+			_.map(this._children, (child: CoreConnection) => {
+				return child.destroy()
+			})
+		).then(() => {
+			this._children = []
+			return Promise.resolve()
+		})
 	}
 	addChild (child: CoreConnection) {
 		this._children.push(child)
@@ -208,7 +218,8 @@ export class CoreConnection extends EventEmitter {
 		else return this._ddp
 	}
 	get connected () {
-		return (this.ddp ? this.ddp.connected : false)
+		return this._connected
+		// return (this.ddp ? this.ddp.connected : false)
 	}
 	get deviceId () {
 		return this._coreOptions.deviceId
@@ -325,7 +336,15 @@ export class CoreConnection extends EventEmitter {
 	setPingResponse (message: string) {
 		this._pingResponse = message
 	}
-
+	private _setConnected (connected: boolean) {
+		let prevConnected = this._connected
+		this._connected = connected
+		if (prevConnected !== connected) {
+			if (connected) this.emit('connected')
+			else this.emit('disconnected')
+			this.emit('connectionChanged', connected)
+		}
+	}
 	private _maybeSendInit (): Promise<any> {
 		// If the connectionId has changed, we should report that to Core:
 		if (this.ddp && this.ddp.connectionId !== this._sentConnectionId) {
@@ -363,24 +382,14 @@ export class CoreConnection extends EventEmitter {
 	private _removeParent () {
 		if (this._parent) this._parent.removeChild(this)
 		this._parent = null
-
-		this.emit('connectionChanged', false)
-		this.emit('disconnected')
+		this._setConnected(false)
 	}
 	private _setParent (parent: CoreConnection) {
 		this._parent = parent
 		parent.addChild(this)
 
-		parent.on('connectionChanged', (connected) => { this.emit('connectionChanged', connected) })
-		parent.on('connected', () => { this.emit('connected') })
-		parent.on('disconnected', () => { this.emit('disconnected') })
-
-		if (this.connected) {
-			this.emit('connected')
-		} else {
-			this.emit('disconnected')
-		}
-		this.emit('connectionChanged', this.connected)
+		parent.on('connectionChanged', (connected) => { this._setConnected(connected) })
+		this._setConnected(parent.connected)
 	}
 	private _watchDogCheck () {
 		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
