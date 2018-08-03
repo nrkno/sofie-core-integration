@@ -274,10 +274,10 @@ export class CoreConnection extends EventEmitter {
 			find (selector?: any): Array<CollectionObj> {
 				if (_.isUndefined(selector)) {
 					return _.values(collection)
-				} else if (_.isObject(selector)) {
-					return _.where(_.values(collection), selector)
 				} else if (_.isFunction(selector)) {
 					return _.filter(_.values(collection), selector)
+				} else if (_.isObject(selector)) {
+					return _.where(_.values(collection), selector)
 				} else {
 					return [collection[selector]]
 				}
