@@ -1,6 +1,6 @@
 
-import {CoreConnection} from '../src/index'
-import {PeripheralDeviceAPI as P} from '../src/lib/corePeripherals'
+import { CoreConnection } from '../src/index'
+import { PeripheralDeviceAPI as P } from '../src/lib/corePeripherals'
 
 let core = new CoreConnection({
 	deviceId: 'ExampleDevice',
@@ -44,10 +44,9 @@ let setupSubscription = () => {
 let setupObserver = () => {
 	console.log('Setup observer')
 	let observer = core.observe('peripheralDevices')
-	
-	observer.added = (id) => {console.log('added', id)}
-	observer.changed = (id) => {console.log('changed', id)}
-	observer.removed = (id) => {console.log('removed', id)}
+	observer.added = (id) =>	{ console.log('added', id) }
+	observer.changed = (id) =>	{ console.log('changed', id) }
+	observer.removed = (id) =>	{ console.log('removed', id) }
 }
 // Initiate connection to Core:
 
@@ -65,11 +64,10 @@ let setup = async () => {
 			statusCode: P.StatusCode.GOOD,
 			messages: ['']
 		})
-	
-		setupObserver()
-	
-		await setupSubscription()
 
+		setupObserver()
+
+		await setupSubscription()
 
 		setTimeout(() => {
 			console.log('updating status')
@@ -78,7 +76,7 @@ let setup = async () => {
 				messages: ['a']
 			})
 		},500)
-		
+
 		setTimeout(() => {
 			console.log('closing socket')
 			core.ddp.ddpClient['socket'].close()
