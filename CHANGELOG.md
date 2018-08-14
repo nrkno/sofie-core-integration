@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.5.0"></a>
+# [0.5.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.4.1...0.5.0) (2018-08-14)
+
+
+### Bug Fixes
+
+* updated dependencies ([a5f95fb](https://github.com/nrkno/tv-automation-server-core-integration/commit/a5f95fb))
+
+
+### Features
+
+* added "ping" function, making a ping to the core. Only pinging when the watchdog isn't doing its stuff. ([75435e0](https://github.com/nrkno/tv-automation-server-core-integration/commit/75435e0))
+* because ddp.connect() is async, createClient must also be asynchronous. ([8e34ae0](https://github.com/nrkno/tv-automation-server-core-integration/commit/8e34ae0))
+
+
+
 <a name="0.4.1"></a>
 ## [0.4.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.4.0...0.4.1) (2018-08-03)
 
