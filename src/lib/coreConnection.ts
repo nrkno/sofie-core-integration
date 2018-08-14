@@ -137,8 +137,9 @@ export class CoreConnection extends EventEmitter {
 					// this.emit('disconnected')
 					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
 				})
-				this._ddp.createClient()
 				resolve()
+			}).then(() => {
+				return this._ddp.createClient()
 			}).then(() => {
 				return this._ddp.connect()
 			}).then(() => {
