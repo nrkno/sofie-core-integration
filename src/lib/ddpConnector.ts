@@ -66,7 +66,7 @@ export class DDPConnector extends EventEmitter {
 		this._options = options
 
 	}
-	createClient () {
+	createClient (): Promise<void> {
 		let o = {
 			host: 					this._options.host,
 			port: 					this._options.port,
@@ -78,6 +78,7 @@ export class DDPConnector extends EventEmitter {
 			maintain_collections: 	true,
 			ddpVersion: 			'1'
 		}
+		let doConnect: boolean = false
 
 		if (!this.ddpClient) {
 
@@ -105,8 +106,7 @@ export class DDPConnector extends EventEmitter {
 			this.ddpClient.autoReconnectTimer	= o.autoReconnectTimer
 			this.ddpClient.ddpVersion			= o.ddpVersion
 
-			this.ddpClient.connect()
-
+			doConnect = true
 		}
 
 		this.ddpClient.on('connected', () => {
@@ -114,31 +114,50 @@ export class DDPConnector extends EventEmitter {
 			this._onclientConnectionChange(true)
 		})
 		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
-	}
-	public connect () {
 
-		return new Promise((resolve, reject) => {
-
-			if (!this.ddpClient) {
-				this.createClient()
-			}
-			if (this.ddpClient && !this._connecting) {
-
-				this._connecting = true
-
-				this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
-					this._connecting = false
-
-					if (error) {
-						reject(error)
-					} else {
-						this._connected = true
-						resolve()
-						this.ddpIsOpen = true
-						this._monitorDDPConnection()
-					}
+		if (doConnect) {
+			return new Promise((resolve, reject) => {
+				this.ddpClient.connect((err) => {
+					// connected
+					if (err) reject(err)
+					else resolve()
 				})
-			}
+			})
+		} else {
+			return Promise.resolve()
+		}
+	}
+	public connect (): Promise<void> {
+
+		return (
+			!this.ddpClient ?
+			this.createClient() :
+			Promise.resolve()
+		).then(() => {
+
+			return new Promise((resolve, reject) => {
+
+				if (this.ddpClient && !this._connecting) {
+
+					this._connecting = true
+
+					this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
+						this._connecting = false
+
+						if (error) {
+							reject(error)
+						} else {
+							this._connected = true
+							resolve()
+							this.ddpIsOpen = true
+							this._monitorDDPConnection()
+						}
+					})
+				}
+			})
+		})
+		.then(() => {
+			return
 		})
 	}
 	public close () {
@@ -152,8 +171,8 @@ export class DDPConnector extends EventEmitter {
 	public get connected (): boolean {
 		return this._connected
 	}
-	public forceReconnect (): void {
-		this.createClient()
+	public forceReconnect (): Promise<void> {
+		return this.createClient()
 	}
 	public get connectionId () {
 		return this._connectionId

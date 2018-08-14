@@ -50,14 +50,14 @@ export class CoreConnection extends EventEmitter {
 	private _coreOptions: CoreOptions
 	private _timeSync: TimeSync
 	private _watchDog?: WatchDog
-	private _pingResponse: string = ''
+	private _watchDogPingResponse: string = ''
 	private _connected: boolean = false
 	private _autoSubscriptions: { [subscriptionId: string]: {
 		publicationName: string,
 		params: Array<any>
 	}} = {}
-
 	private _sentConnectionId: string = ''
+	private _pingTimeout: NodeJS.Timer | null = null
 
 	constructor (coreOptions: CoreOptions) {
 		super()
@@ -137,8 +137,9 @@ export class CoreConnection extends EventEmitter {
 					// this.emit('disconnected')
 					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
 				})
-				this._ddp.createClient()
 				resolve()
+			}).then(() => {
+				return this._ddp.createClient()
 			}).then(() => {
 				return this._ddp.connect()
 			}).then(() => {
@@ -155,6 +156,9 @@ export class CoreConnection extends EventEmitter {
 				})
 
 				return this._timeSync.init()
+				.then(() => {
+					this._triggerPing()
+				})
 				.then(() => {
 					// console.log('Time synced! (diff: ' + this._timeSync.diff + ', quality: ' + this._timeSync.quality + ')')
 					return deviceId
@@ -176,6 +180,11 @@ export class CoreConnection extends EventEmitter {
 		this.removeAllListeners('connected')
 		this.removeAllListeners('disconnected')
 		this.removeAllListeners('failed')
+
+		if (this._pingTimeout) {
+			clearTimeout(this._pingTimeout)
+			this._pingTimeout = null
+		}
 
 		return Promise.all(
 			_.map(this._children, (child: CoreConnection) => {
@@ -334,7 +343,7 @@ export class CoreConnection extends EventEmitter {
 		return this._timeSync.quality
 	}
 	setPingResponse (message: string) {
-		this._pingResponse = message
+		this._watchDogPingResponse = message
 	}
 	private _setConnected (connected: boolean) {
 		let prevConnected = this._connected
@@ -343,6 +352,7 @@ export class CoreConnection extends EventEmitter {
 			if (connected) this.emit('connected')
 			else this.emit('disconnected')
 			this.emit('connectionChanged', connected)
+			this._triggerPing()
 		}
 	}
 	private _maybeSendInit (): Promise<any> {
@@ -400,7 +410,10 @@ export class CoreConnection extends EventEmitter {
 		return new Promise((resolve, reject) => {
 			let i = 0
 			let checkPingReply = () => {
-				if (this._pingResponse === message) {
+				if (this._watchDogPingResponse === message) {
+					// if we've got a good watchdog response, we can delay the pinging:
+					this._triggerDelayPing()
+
 					resolve()
 				} else {
 					i++
@@ -421,5 +434,34 @@ export class CoreConnection extends EventEmitter {
 			this.subscribe(sub.publicationName, ...sub.params)
 			.catch(e => this.emit('error', e))
 		})
+	}
+	private _triggerPing () {
+		if (!this._pingTimeout) {
+			this._pingTimeout = setTimeout(() => {
+				this._pingTimeout = null
+				this._ping()
+			}, 90 * 1000)
+		}
+	}
+	private _triggerDelayPing () {
+		// delay the ping:
+		if (this._pingTimeout) {
+			clearTimeout(this._pingTimeout)
+			this._pingTimeout = null
+		}
+		this._triggerPing()
+	}
+	private _ping () {
+		try {
+			if (this.connected) {
+				this.callMethod(PeripheralDeviceAPI.methods.ping)
+				.catch(e => this.emit('error', e))
+			}
+		} catch (e) {
+			this.emit('error', e)
+		}
+		if (this.connected) {
+			this._triggerPing()
+		}
 	}
 }
