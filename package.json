@@ -1,6 +1,6 @@
 {
   "name": "tv-automation-server-core-integration",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Library for connecting to Core",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
