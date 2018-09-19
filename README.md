@@ -1,7 +1,7 @@
 # Sofie: The Modern TV News Studio Automation System (Server Core Integration)
 [![CircleCI](https://circleci.com/gh/nrkno/tv-automation-server-core-integration.svg?style=svg)](https://circleci.com/gh/nrkno/tv-automation-server-core-integration)
 
-This library is used to connect to the Core (https://github.com/nrkno/tv-automation-server-core) from other Node processes.
+This library is used to connect to the [**Sofie Server Core**](https://github.com/nrkno/tv-automation-server-core) from other Node processes.
 
 # Getting started 
 
