@@ -3,6 +3,9 @@
 
 This library is used to connect to the [**Sofie Server Core**](https://github.com/nrkno/tv-automation-server-core) from other Node processes.
 
+This is a part of the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
+
+
 # Getting started 
 
 ## Typescript
