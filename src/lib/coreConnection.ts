@@ -41,7 +41,11 @@ export interface Collection {
 	find: (selector: any) => Array<CollectionObj>
 	findOne: (selector: any) => CollectionObj
 }
-
+interface QueuedMethodCall {
+	f: () => Promise<any>,
+	resolve: (r: any) => void,
+	reject: (e: Error) => void
+}
 export class CoreConnection extends EventEmitter {
 
 	private _ddp: DDPConnector
@@ -58,6 +62,10 @@ export class CoreConnection extends EventEmitter {
 	}} = {}
 	private _sentConnectionId: string = ''
 	private _pingTimeout: NodeJS.Timer | null = null
+	private queuedMethodCalls: Array<QueuedMethodCall> = []
+	private _triggerDoQueueTimer: NodeJS.Timer | null = null
+	private _timeLastMethodCall: number = 0
+	private _timeLastMethodReply: number = 0
 
 	constructor (coreOptions: CoreOptions) {
 		super()
@@ -258,13 +266,27 @@ export class CoreConnection extends EventEmitter {
 				this._coreOptions.deviceToken
 			].concat(attrs || [])
 
+			this._timeLastMethodCall = Date.now()
 			this.ddp.ddpClient.call(methodName, fullAttrs, (err: Error, id: string) => {
+				this._timeLastMethodReply = Date.now()
 				if (err) {
 					reject(err)
 				} else {
 					resolve(id)
 				}
 			})
+		})
+	}
+	callMethodLowPrio (methodName: PeripheralDeviceAPI.methods | string, attrs?: Array<any>): Promise<any> {
+		return new Promise((resolve, reject) => {
+			this.queuedMethodCalls.push({
+				f: () => {
+					return this.callMethod(methodName, attrs)
+				},
+				resolve: resolve,
+				reject: reject
+			})
+			this._triggerDoQueue()
 		})
 	}
 	unInitialize (): Promise<string> {
@@ -464,4 +486,45 @@ export class CoreConnection extends EventEmitter {
 			this._triggerPing()
 		}
 	}
+	private _triggerDoQueue (time: number = 2) {
+		if (!this._triggerDoQueueTimer) {
+			this._triggerDoQueueTimer = setTimeout(() => {
+				this._triggerDoQueueTimer = null
+
+				this._doQueue()
+
+			}, time)
+		}
+	}
+	private _doQueue () {
+
+		// check if we can send a call?
+		let timeSinceLastMethodCall = Date.now() - this._timeLastMethodCall
+		let timeSinceLastMethodReply = Date.now() - this._timeLastMethodReply
+
+		if (timeSinceLastMethodCall < TIMEOUTCALL) {
+			// Not enough time has passed since last method call
+			this._triggerDoQueue(TIMEOUTCALL - timeSinceLastMethodCall + 1)
+		} else if (timeSinceLastMethodReply < TIMEOUTREPLY) {
+			// Not enough time has passed since last method reply
+			this._triggerDoQueue(TIMEOUTREPLY - timeSinceLastMethodReply + 1)
+		} else {
+			// yep, it's time to send a command!
+
+			let c = this.queuedMethodCalls.shift()
+			if (c) {
+				c.f()
+				.then((result) => {
+					this._triggerDoQueue()
+					c!.resolve(result)
+				})
+				.catch((err) => {
+					this._triggerDoQueue()
+					c!.reject(err)
+				})
+			}
+		}
+	}
 }
+const TIMEOUTCALL = 200 // ms, time to wait after a call
+const TIMEOUTREPLY = 50 // ms, time to wait after a reply
