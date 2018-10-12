@@ -66,6 +66,7 @@ export class CoreConnection extends EventEmitter {
 	private _triggerDoQueueTimer: NodeJS.Timer | null = null
 	private _timeLastMethodCall: number = 0
 	private _timeLastMethodReply: number = 0
+	private _destroyed: boolean = false
 
 	constructor (coreOptions: CoreOptions) {
 		super()
@@ -74,7 +75,7 @@ export class CoreConnection extends EventEmitter {
 
 		if (this._coreOptions.watchDog) {
 			this._watchDog = new WatchDog()
-			this._watchDog.on('message', msg => this.emit('error', msg))
+			this._watchDog.on('message', msg => this._emitError('msg ' + msg))
 			this._watchDog.startWatching()
 		}
 	}
@@ -104,6 +105,7 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
+		this._destroyed = false
 		this.on('connected', () => this._renewAutoSubscriptions())
 
 		if (ddpOptionsORParent instanceof CoreConnection) {
@@ -124,7 +126,7 @@ export class CoreConnection extends EventEmitter {
 				this._ddp = new DDPConnector(ddpOptions)
 
 				this._ddp.on('error', (err) => {
-					this.emit('error', err)
+					this._emitError('ddpError ' + err)
 				})
 				this._ddp.on('failed', (err) => {
 					this.emit('failed', err)
@@ -134,7 +136,7 @@ export class CoreConnection extends EventEmitter {
 
 					this._maybeSendInit()
 					.catch((err) => {
-						this.emit('error', err)
+						this._emitError('_maybesendInit ' + err)
 					})
 				})
 				this._ddp.on('connected', () => {
@@ -153,7 +155,6 @@ export class CoreConnection extends EventEmitter {
 			}).then(() => {
 				return this._sendInit()
 			}).then((deviceId) => {
-				// console.log('syncing systemTime...')
 				this._timeSync = new TimeSync({
 					serverDelayTime: 0
 				}, () => {
@@ -168,13 +169,13 @@ export class CoreConnection extends EventEmitter {
 					this._triggerPing()
 				})
 				.then(() => {
-					// console.log('Time synced! (diff: ' + this._timeSync.diff + ', quality: ' + this._timeSync.quality + ')')
 					return deviceId
 				})
 			})
 		}
 	}
 	destroy (): Promise<void> {
+		this._destroyed = true
 		if (this._parent) {
 			this._removeParent()
 		} else {
@@ -188,6 +189,8 @@ export class CoreConnection extends EventEmitter {
 		this.removeAllListeners('connected')
 		this.removeAllListeners('disconnected')
 		this.removeAllListeners('failed')
+
+		if (this._watchDog) this._watchDog.stopWatching()
 
 		if (this._pingTimeout) {
 			clearTimeout(this._pingTimeout)
@@ -242,24 +245,14 @@ export class CoreConnection extends EventEmitter {
 		return this._coreOptions.deviceId
 	}
 	setStatus (status: P.StatusObject): Promise<P.StatusObject> {
-
-		return new Promise((resolve, reject) => {
-
-			this.ddp.ddpClient.call(P.methods.setStatus, [
-				this._coreOptions.deviceId,
-				this._coreOptions.deviceToken,
-				status
-			], (err: Error, returnedStatus: P.StatusObject) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(returnedStatus)
-				}
-			})
-		})
+		return this.callMethod(P.methods.setStatus, [status])
 	}
 	callMethod (methodName: PeripheralDeviceAPI.methods | string, attrs?: Array<any>): Promise<any> {
 		return new Promise((resolve, reject) => {
+			if (this._destroyed) {
+				reject('callMethod: CoreConnection has been destroyed')
+				return
+			}
 
 			let fullAttrs = [
 				this._coreOptions.deviceId,
@@ -330,7 +323,6 @@ export class CoreConnection extends EventEmitter {
 					}
 				)
 			} catch (e) {
-				// console.log(this.ddp.ddpClient)
 				reject(e)
 			}
 		})
@@ -367,6 +359,13 @@ export class CoreConnection extends EventEmitter {
 	setPingResponse (message: string) {
 		this._watchDogPingResponse = message
 	}
+	private _emitError (e: Error | string) {
+		if (!this._destroyed) {
+			this.emit('error', e)
+		} else {
+			console.log('destroyed error', e)
+		}
+	}
 	private _setConnected (connected: boolean) {
 		let prevConnected = this._connected
 		this._connected = connected
@@ -397,19 +396,7 @@ export class CoreConnection extends EventEmitter {
 		}
 		this._sentConnectionId = options.connectionId
 
-		return new Promise<string>((resolve, reject) => {
-			this.ddp.ddpClient.call(P.methods.initialize, [
-				this._coreOptions.deviceId,
-				this._coreOptions.deviceToken,
-				options
-			], (err: Error, id: string) => {
-				if (err) {
-					reject(err)
-				} else {
-					resolve(id)
-				}
-			})
-		})
+		return this.callMethod(P.methods.initialize, [options])
 	}
 	private _removeParent () {
 		if (this._parent) this._parent.removeChild(this)
@@ -427,7 +414,7 @@ export class CoreConnection extends EventEmitter {
 		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
 		let message = 'ping_' + Math.random() * 10000
 		this.callMethod(PeripheralDeviceAPI.methods.pingWithCommand, [message])
-		.catch(e => this.emit('error',e))
+		.catch(e => this._emitError('watchdogPing' + e))
 
 		return new Promise((resolve, reject) => {
 			let i = 0
@@ -454,7 +441,7 @@ export class CoreConnection extends EventEmitter {
 	private _renewAutoSubscriptions () {
 		_.each(this._autoSubscriptions, (sub) => {
 			this.subscribe(sub.publicationName, ...sub.params)
-			.catch(e => this.emit('error', e))
+			.catch(e => this._emitError('renewSubscr ' + sub.publicationName + ': ' + e))
 		})
 	}
 	private _triggerPing () {
@@ -477,10 +464,10 @@ export class CoreConnection extends EventEmitter {
 		try {
 			if (this.connected) {
 				this.callMethod(PeripheralDeviceAPI.methods.ping)
-				.catch(e => this.emit('error', e))
+				.catch(e => this._emitError('_ping' + e))
 			}
 		} catch (e) {
-			this.emit('error', e)
+			this._emitError('_ping2 ' + e)
 		}
 		if (this.connected) {
 			this._triggerPing()
