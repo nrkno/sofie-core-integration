@@ -9,6 +9,10 @@ import { WatchDog } from './watchDog'
 const DataStore = require('data-store')
 const Random = require('ddp-random')
 
+// low-prio calls:
+const TIMEOUTCALL = 200 // ms, time to wait after a call
+const TIMEOUTREPLY = 50 // ms, time to wait after a reply
+
 export interface InitOptions {
 	type: P.DeviceType,
 	name: string,
@@ -513,5 +517,3 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 }
-const TIMEOUTCALL = 200 // ms, time to wait after a call
-const TIMEOUTREPLY = 50 // ms, time to wait after a reply
