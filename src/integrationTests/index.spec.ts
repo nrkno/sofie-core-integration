@@ -552,3 +552,51 @@ test('Integration: Child destroy', async () => {
 	expect(onParentError).toHaveBeenCalledTimes(0)
 	expect(onChildError).toHaveBeenCalledTimes(0)
 })
+test('Integration: Test callMethodLowPrio', async () => {
+
+	// Note: This is an integration test, that require a Core to connect to
+
+	let core = new CoreConnection({
+		deviceId: 'JestTest',
+		deviceToken: 'abcd',
+		deviceType: P.DeviceType.PLAYOUT,
+		deviceName: 'Jest test framework'
+	})
+
+	let onError = jest.fn()
+	core.onError(onError)
+
+	await core.init({
+		host: coreHost,
+		port: corePort
+	})
+
+	expect(core.connected).toEqual(true)
+
+	// Call a method
+	await expect(core.callMethod('peripheralDevice.testMethod', ['return123'])).resolves.toEqual('return123')
+	// Call a low-prio method
+	await expect(core.callMethodLowPrio('peripheralDevice.testMethod', ['low123'])).resolves.toEqual('low123')
+
+	let ps: Promise<any>[] = []
+
+	// method should be called before low-prio:
+	let i = 0
+	ps.push(core.callMethodLowPrio('peripheralDevice.testMethod', ['return123'])
+		.then(() => {
+			return i++
+		}))
+	ps.push(core.callMethod('peripheralDevice.testMethod', ['low123'])
+		.then(() => {
+			return i++
+		}))
+
+	let r = await Promise.all(ps)
+
+	expect(r[0]).toBeGreaterThan(r[1]) // because callMethod should have run before callMethodLowPrio
+
+	// Clean up
+	await core.destroy()
+
+	expect(onError).toHaveBeenCalledTimes(0)
+})
