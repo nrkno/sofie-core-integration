@@ -157,6 +157,7 @@ export class CoreConnection extends EventEmitter {
 			}).then(() => {
 				return this._ddp.connect()
 			}).then(() => {
+				this._setConnected(this._ddp.connected) // ensure that connection status is synced
 				return this._sendInit()
 			}).then((deviceId) => {
 				this._timeSync = new TimeSync({
