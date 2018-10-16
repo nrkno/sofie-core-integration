@@ -1,4 +1,5 @@
 
+jest.dontMock('ddp')
 import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
 
