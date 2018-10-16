@@ -41,6 +41,77 @@ class Socket extends EventEmitter {
 		this._connectOk = connectOk
 	}
 }
+class Subscription {
+	private _ddp: DDP
+	private _collections: Collections = {}
+
+	private _unsubscribed: boolean = false
+
+	constructor (ddp: DDP) {
+		this._ddp = ddp
+	}
+
+	public getCollection (collectionName: string): Collection {
+		if (this._unsubscribed) return {}
+		return this._collections[collectionName] || {}
+	}
+	public getCollections (): Collections {
+		if (this._unsubscribed) return {}
+		return this._collections
+	}
+
+	public mockCollectionAdd (collectionName: string, doc: any) {
+		if (!this._collections[collectionName]) this._collections[collectionName] = {}
+
+		this._collections[collectionName][doc._id] = doc
+
+		this._ddp.notifyAdd(collectionName, doc)
+	}
+	public mockCollectionChange (collectionName: string, doc: any) {
+		if (!this._collections[collectionName]) this._collections[collectionName] = {}
+
+		this._collections[collectionName][doc._id] = doc
+
+		this._ddp.notifyChange(collectionName, doc)
+	}
+	public mockCollectionRemove (collectionName: string, docId: string) {
+		if (!this._collections[collectionName]) this._collections[collectionName] = {}
+
+		delete this._collections[collectionName][docId]
+		this._ddp.notifyRemove(collectionName, docId)
+	}
+	public unsubscribe () {
+		this._unsubscribed = true
+		// remove all
+		_.each(this._collections, (collection, collectionName) => {
+			_.each(collection, (_doc, docId) => {
+				if (!this._ddp.getDocument(collectionName, docId)) {
+					// if the document is not found, it's not set by any other subscription either
+					this._ddp.notifyRemove(collectionName, docId)
+				}
+			})
+		})
+	}
+}
+class Observer {
+	public added: (id: string, doc: any) => void
+	public changed: (id: string, doc: any) => void
+	public removed: (id: string) => void
+
+	private _collectionName
+	constructor (collectionName) {
+		this._collectionName = collectionName
+	}
+	public mockAdd (doc) {
+		if (this.added) this.added(doc._id, doc)
+	}
+	public mockChange (doc) {
+		if (this.changed) this.changed(doc._id, doc)
+	}
+	public mockRemove (id: string) {
+		if (this.removed) this.removed(id)
+	}
+}
 class DDP extends EventEmitter {
 	public socket: Socket
 	public host: string
@@ -100,7 +171,6 @@ class DDP extends EventEmitter {
 		this.session = 'mockSession_' + Math.random()
 
 		this.socket = new Socket()
-		let callBackCalled = false
 		this.socket.on('connect', () => {
 			if (onConnectCb) {
 				onConnectCb()
@@ -241,92 +311,24 @@ class DDP extends EventEmitter {
 		this._mockPort = port
 	}
 
-	public getDocument (collectionName: string, searchForDocId: string) {
+	public getDocument (searchForCollectionName: string, searchForDocId: string) {
 
-		return _.find(this._mockSubscriptions, (sub) => {
+		let foundDoc = null
+		_.find(this._mockSubscriptions, (sub) => {
 			return _.find(sub.getCollections(), (collection, collectionName) => {
-				return _.find(collection, (doc, docId) => {
-
-					if (docId === searchForDocId) {
-						return true
-					} else {
-						return false
-					}
-				})
+				if (collectionName === searchForCollectionName) {
+					return _.find(collection, (doc, docId) => {
+						if (docId === searchForDocId) {
+							foundDoc = doc
+							return true
+						} else {
+							return false
+						}
+					})
+				} else return false
 			})
 		})
-	}
-
-}
-class Subscription {
-	private _ddp: DDP
-	private _collections: Collections = {}
-
-	private _unsubscribed: boolean = false
-
-	constructor (ddp: DDP) {
-		this._ddp = ddp
-	}
-
-	public getCollection (collectionName: string): Collection {
-		if (this._unsubscribed) return {}
-		return this._collections[collectionName] || {}
-	}
-	public getCollections (): Collections {
-		if (this._unsubscribed) return {}
-		return this._collections
-	}
-
-	public mockCollectionAdd (collectionName: string, doc: any) {
-		if (!this._collections[collectionName]) this._collections[collectionName] = {}
-
-		this._collections[collectionName][doc._id] = doc
-
-		this._ddp.notifyAdd(collectionName, doc)
-	}
-	public mockCollectionChange (collectionName: string, doc: any) {
-		if (!this._collections[collectionName]) this._collections[collectionName] = {}
-
-		this._collections[collectionName][doc._id] = doc
-
-		this._ddp.notifyChange(collectionName, doc)
-	}
-	public mockCollectionRemove (collectionName: string, docId: string) {
-		if (!this._collections[collectionName]) this._collections[collectionName] = {}
-
-		delete this._collections[collectionName][docId]
-		this._ddp.notifyRemove(collectionName, docId)
-	}
-	public unsubscribe () {
-		this._unsubscribed = true
-		// remove all
-		_.each(this._collections, (collection, collectionName) => {
-			_.each(collection, (doc, docId) => {
-				if (!this._ddp.getDocument(collectionName, docId)) {
-					// if the document is not found, it's not set by any other subscription either
-					this._ddp.notifyRemove(collectionName, docId)
-				}
-			})
-		})
-	}
-}
-class Observer {
-	public added: (id: string, doc: any) => void
-	public changed: (id: string, doc: any) => void
-	public removed: (id: string) => void
-
-	private _collectionName
-	constructor (collectionName) {
-		this._collectionName = collectionName
-	}
-	public mockAdd (doc) {
-		if (this.added) this.added(doc._id, doc)
-	}
-	public mockChange (doc) {
-		if (this.changed) this.changed(doc._id, doc)
-	}
-	public mockRemove (id: string) {
-		if (this.removed) this.removed(id)
+		return foundDoc
 	}
 }
 module.exports = DDP

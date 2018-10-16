@@ -7,8 +7,6 @@ process.on('unhandledRejection', (reason) => {
 	console.log('Unhandled Promise rejection!', reason)
 })
 
-
-
 const orgSetTimeout = setTimeout
 
 describe('coreConnection', () => {
@@ -120,7 +118,7 @@ describe('coreConnection', () => {
 
 	test('Just setup CoreConnection', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -141,7 +139,7 @@ describe('coreConnection', () => {
 
 	test('Test connection and basic Core functionality', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -260,7 +258,7 @@ describe('coreConnection', () => {
 	})
 	test('Connection timeout', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -299,7 +297,7 @@ describe('coreConnection', () => {
 	})
 	test('Connection recover from close', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -342,7 +340,7 @@ describe('coreConnection', () => {
 	})
 	test('autoSubscription', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -411,7 +409,7 @@ describe('coreConnection', () => {
 	})
 	test('Connection recover from a close that lasts some time', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -461,7 +459,7 @@ describe('coreConnection', () => {
 		await core.destroy()
 	})
 	test('Parent connections', async () => {
-		let mockParent = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -481,7 +479,7 @@ describe('coreConnection', () => {
 		expect(coreParent.connected).toEqual(true)
 
 		// Set child connection:
-		let mockChild = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -547,7 +545,7 @@ describe('coreConnection', () => {
 	})
 
 	test('Parent destroy', async () => {
-		let mockParent = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -562,7 +560,7 @@ describe('coreConnection', () => {
 			port: corePort
 		})
 		// Set child connection:
-		let mockChild = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -623,7 +621,7 @@ describe('coreConnection', () => {
 	})
 	test('Child destroy', async () => {
 
-		let mockParent = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -637,7 +635,7 @@ describe('coreConnection', () => {
 			port: corePort
 		})
 		// Set child connection:
-		let mockChild = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -674,7 +672,7 @@ describe('coreConnection', () => {
 	})
 	test('Test callMethodLowPrio', async () => {
 
-		let mock = prepareNextMockDDP()
+		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
