@@ -699,18 +699,26 @@ describe('coreConnection', () => {
 
 		// method should be called before low-prio:
 		let i = 0
-		ps.push(core.callMethodLowPrio('peripheralDevice.testMethod', ['return123'])
-			.then(() => {
+		ps.push(core.callMethodLowPrio('peripheralDevice.testMethod', ['low1'])
+			.then((res) => {
+				expect(res).toEqual('low1')
 				return i++
 			}))
-		ps.push(core.callMethod('peripheralDevice.testMethod', ['low123'])
-			.then(() => {
+		ps.push(core.callMethodLowPrio('peripheralDevice.testMethod', ['low2'])
+			.then((res) => {
+				expect(res).toEqual('low2')
+				return i++
+			}))
+		ps.push(core.callMethod('peripheralDevice.testMethod', ['normal1'])
+			.then((res) => {
+				expect(res).toEqual('normal1')
 				return i++
 			}))
 
 		let r = await Promise.all(ps)
 
-		expect(r[0]).toBeGreaterThan(r[1]) // because callMethod should have run before callMethodLowPrio
+		expect(r[0]).toBeGreaterThan(r[2]) // because callMethod should have run before callMethodLowPrio
+		expect(r[1]).toBeGreaterThan(r[2]) // because callMethod should have run before callMethodLowPrio
 
 		// Clean up
 		await core.destroy()
