@@ -23,7 +23,7 @@ core.on('error', console.log)
 // Initiate connection to Core:
 core.init({
 	host: '127.0.0.1',
-	port: 3010
+	port: 3000
 }).then(() => {
 	// Connection has been established
 	console.log('Connected!')
