@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.5.1...0.6.0) (2018-10-17)
+
+
+### Bug Fixes
+
+* added mock of ddp/Core, to run tests as unit tests, rather than integration tests ([92bfbdd](https://github.com/nrkno/tv-automation-server-core-integration/commit/92bfbdd))
+* const definitions ([e225c75](https://github.com/nrkno/tv-automation-server-core-integration/commit/e225c75))
+* refactoring, cleaned up emitters, added watchdog to destroy(), added tests ([af885b1](https://github.com/nrkno/tv-automation-server-core-integration/commit/af885b1))
+* updated data-store dependency, du to 3.0.3 containing a bug related to folder creation ([894d2ac](https://github.com/nrkno/tv-automation-server-core-integration/commit/894d2ac))
+
+
+### Features
+
+* queued method calls implementation ([040dbb7](https://github.com/nrkno/tv-automation-server-core-integration/commit/040dbb7))
+
+
+
 <a name="0.5.1"></a>
 ## [0.5.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.5.0...0.5.1) (2018-09-04)
 
