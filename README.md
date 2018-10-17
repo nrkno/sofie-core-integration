@@ -6,47 +6,44 @@ This library is used to connect to the [**Sofie Server Core**](https://github.co
 This is a part of the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
 
 
-# Getting started 
+# Getting started
 
 ## Typescript
 ```typescript
-import {CoreConnection, DeviceType} from "tv-automation-server-core-integration"
+import { CoreConnection, PeripheralDeviceAPI } from 'tv-automation-server-core-integration'
 
+// Set up our basic credentials:
 let core = new CoreConnection({
-	deviceId: "MyTest",
-	deviceToken: "abcd",
-	deviceType: DeviceType.PLAYOUT,
-	deviceName: "Jest test framework"
+	deviceId: 'device01', 			// Unique id
+	deviceToken: 'mySecretToken',	// secret token, used to authenticate this device
+	deviceType: PeripheralDeviceAPI.DeviceType.PLAYOUT,
+	deviceName: 'My peripheral device'
 })
+core.on('error', console.log)
 // Initiate connection to Core:
 core.init({
-	host: "192.168.177.128",
+	host: '127.0.0.1',
 	port: 3000
 }).then(() => {
-    return core.setStatus({
-		statusCode: 1,
-		messages: ["I'm alive!"]
+	// Connection has been established
+	console.log('Connected!')
+	// Set device status:
+	return core.setStatus({
+		statusCode: PeripheralDeviceAPI.StatusCode.GOOD,
+		messages: ['Everything is awesome!']
 	})
 })
-.then(() => {
-    // Whatever
-})
 .catch((err) => {
-    console.log(err)
+	console.log(err)
 })
 ```
 
-## Dev tips:
-* Install yarn
-	https://yarnpkg.com
-* Install jest
-	yarn global add jest
-* Install dependencies
-	yarn
-* Then you can:
-   * Build:
-	yarn build
-   * run test
-	jest
-   * watch
-	yarn watch
+## Development
+* Installation
+  * Install Yarn from https://yarnpkg.com
+  * Install Jest, `yarn global add jest`
+  * Install npm dependencies, `yarn`
+* Build
+  * Build, `yarn build`
+  * Run tests, `yarn test`
+  * Run tests & watch, `yarn watch`
