@@ -25,6 +25,13 @@ export class WatchDog extends EventEmitter {
 		}
 		this._watching = true
 	}
+	public stopWatching () {
+		if (this._watching) {
+			if (this._dieTimeout) clearTimeout(this._dieTimeout)
+			if (this._checkTimeout) clearTimeout(this._checkTimeout)
+		}
+		this._watching = false
+	}
 	public addCheck (fcn: () => Promise<any>) {
 		this._checkFunctions.push(fcn)
 	}
@@ -33,7 +40,9 @@ export class WatchDog extends EventEmitter {
 		if (i !== -1) this._checkFunctions.splice(i, 1)
 	}
 	private _everythingIsOk () {
-		this._watch()
+		if (this._watching) {
+			this._watch()
+		}
 	}
 	private _watch () {
 		if (this._dieTimeout) clearTimeout(this._dieTimeout)
