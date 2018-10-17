@@ -946,6 +946,9 @@ img { max-width: 100%; }
 			<a href="interfaces/observer.html" class="tsd-kind-icon">Observer</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
+			<a href="interfaces/queuedmethodcall.html" class="tsd-kind-icon">Queued<wbr>Method<wbr>Call</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-is-external tsd-is-not-exported">
 			<a href="interfaces/syncresult.html" class="tsd-kind-icon">Sync<wbr>Result</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-is-external">
@@ -963,6 +966,12 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
 			<a href="globals.html#random" class="tsd-kind-icon">Random</a>
 		</li>
+		<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
+			<a href="globals.html#timeoutcall" class="tsd-kind-icon">TIMEOUTCALL</a>
+		</li>
+		<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
+			<a href="globals.html#timeoutreply" class="tsd-kind-icon">TIMEOUTREPLY</a>
+		</li>
 	</ul>
 </nav>
 <div class="container container-main">
@@ -970,49 +979,49 @@ img { max-width: 100%; }
 		<div class="tsd-panel tsd-typography">
 			<h1 id="sofie-the-modern-tv-news-studio-automation-system-server-core-integration-">Sofie: The Modern TV News Studio Automation System (Server Core Integration)</h1>
 			<p><a href="https://circleci.com/gh/nrkno/tv-automation-server-core-integration"><img src="https://circleci.com/gh/nrkno/tv-automation-server-core-integration.svg?style=svg" alt="CircleCI"></a></p>
-			<p>This library is used to connect to the Core (<a href="https://github.com/nrkno/tv-automation-server-core">https://github.com/nrkno/tv-automation-server-core</a>) from other Node processes.</p>
+			<p>This library is used to connect to the <a href="https://github.com/nrkno/tv-automation-server-core"><strong>Sofie Server Core</strong></a> from other Node processes.</p>
+			<p>This is a part of the <a href="https://github.com/nrkno/Sofie-TV-automation/"><strong>Sofie</strong> TV News Studio Automation System</a>.</p>
 			<h1 id="getting-started">Getting started</h1>
 			<h2 id="typescript">Typescript</h2>
-			<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> {CoreConnection, DeviceType} <span class="hljs-keyword">from</span> <span class="hljs-string">"tv-automation-server-core-integration"</span>
+			<pre><code class="lang-typescript"><span class="hljs-keyword">import</span> { CoreConnection, PeripheralDeviceAPI } <span class="hljs-keyword">from</span> <span class="hljs-string">'tv-automation-server-core-integration'</span>
 
+<span class="hljs-comment">// Set up our basic credentials:</span>
 <span class="hljs-keyword">let</span> core = <span class="hljs-keyword">new</span> CoreConnection({
-    deviceId: <span class="hljs-string">"MyTest"</span>,
-    deviceToken: <span class="hljs-string">"abcd"</span>,
-    deviceType: DeviceType.PLAYOUT,
-    deviceName: <span class="hljs-string">"Jest test framework"</span>
+    deviceId: <span class="hljs-string">'device01'</span>,             <span class="hljs-comment">// Unique id</span>
+    deviceToken: <span class="hljs-string">'mySecretToken'</span>,    <span class="hljs-comment">// secret token, used to authenticate this device</span>
+    deviceType: PeripheralDeviceAPI.DeviceType.PLAYOUT,
+    deviceName: <span class="hljs-string">'My peripheral device'</span>
 })
+core.on(<span class="hljs-string">'error'</span>, <span class="hljs-built_in">console</span>.log)
 <span class="hljs-comment">// Initiate connection to Core:</span>
 core.init({
-    host: <span class="hljs-string">"192.168.177.128"</span>,
+    host: <span class="hljs-string">'127.0.0.1'</span>,
     port: <span class="hljs-number">3000</span>
 }).then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
+    <span class="hljs-comment">// Connection has been established</span>
+    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Connected!'</span>)
+    <span class="hljs-comment">// Set device status:</span>
     <span class="hljs-keyword">return</span> core.setStatus({
-        statusCode: <span class="hljs-number">1</span>,
-        messages: [<span class="hljs-string">"I'm alive!"</span>]
+        statusCode: PeripheralDeviceAPI.StatusCode.GOOD,
+        messages: [<span class="hljs-string">'Everything is awesome!'</span>]
     })
-})
-.then(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> {
-    <span class="hljs-comment">// Whatever</span>
 })
 .catch(<span class="hljs-function">(<span class="hljs-params">err</span>) =&gt;</span> {
     <span class="hljs-built_in">console</span>.log(err)
 })
 </code></pre>
-			<h2 id="dev-tips-">Dev tips:</h2>
+			<h2 id="development">Development</h2>
 			<ul>
-				<li>Install yarn
-				<a href="https://yarnpkg.com">https://yarnpkg.com</a></li>
-				<li>Install jest
-				yarn global add jest</li>
-				<li>Install dependencies
-				yarn</li>
-				<li>Then you can:<ul>
-						<li>Build:
-						yarn build</li>
-						<li>run test
-						jest</li>
-						<li>watch
-						yarn watch</li>
+				<li>Installation<ul>
+						<li>Install Yarn from <a href="https://yarnpkg.com">https://yarnpkg.com</a></li>
+						<li>Install Jest, <code>yarn global add jest</code></li>
+						<li>Install npm dependencies, <code>yarn</code></li>
+					</ul>
+				</li>
+				<li>Build<ul>
+						<li>Build, <code>yarn build</code></li>
+						<li>Run tests, <code>yarn test</code></li>
+						<li>Run tests &amp; watch, <code>yarn watch</code></li>
 					</ul>
 				</li>
 			</ul>
@@ -1048,6 +1057,7 @@ core.init({
 							<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/ddpconnectoroptions.html" class="tsd-kind-icon">DDPConnector<wbr>Options</a></li>
 							<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/initoptions.html" class="tsd-kind-icon">Init<wbr>Options</a></li>
 							<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/observer.html" class="tsd-kind-icon">Observer</a></li>
+							<li class="tsd-kind-interface tsd-is-external tsd-is-not-exported"><a href="interfaces/queuedmethodcall.html" class="tsd-kind-icon">Queued<wbr>Method<wbr>Call</a></li>
 							<li class="tsd-kind-interface tsd-is-external tsd-is-not-exported"><a href="interfaces/syncresult.html" class="tsd-kind-icon">Sync<wbr>Result</a></li>
 							<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/timesyncoptions.html" class="tsd-kind-icon">Time<wbr>Sync<wbr>Options</a></li>
 							<li class="tsd-kind-interface tsd-is-external"><a href="interfaces/timesyncoptionsoptional.html" class="tsd-kind-icon">Time<wbr>Sync<wbr>Options<wbr>Optional</a></li>
@@ -1059,6 +1069,8 @@ core.init({
 							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#ddp" class="tsd-kind-icon">DDP</a></li>
 							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#datastore" class="tsd-kind-icon">Data<wbr>Store</a></li>
 							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#random" class="tsd-kind-icon">Random</a></li>
+							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#timeoutcall" class="tsd-kind-icon">TIMEOUTCALL</a></li>
+							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#timeoutreply" class="tsd-kind-icon">TIMEOUTREPLY</a></li>
 						</ul>
 					</section>
 				</div>
@@ -1072,7 +1084,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">DDP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;ddp&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/4b02409/src/lib/ddpConnector.ts#L1">lib/ddpConnector.ts:1</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e810e21/src/lib/ddpConnector.ts#L1">lib/ddpConnector.ts:1</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1082,7 +1094,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">Data<wbr>Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;data-store&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/4b02409/src/lib/coreConnection.ts#L9">lib/coreConnection.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e810e21/src/lib/coreConnection.ts#L9">lib/coreConnection.ts:9</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1092,7 +1104,27 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">Random<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;ddp-random&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/4b02409/src/lib/coreConnection.ts#L10">lib/coreConnection.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e810e21/src/lib/coreConnection.ts#L10">lib/coreConnection.ts:10</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external tsd-is-not-exported">
+				<a name="timeoutcall" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> TIMEOUTCALL</h3>
+				<div class="tsd-signature tsd-kind-icon">TIMEOUTCALL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">200</span><span class="tsd-signature-symbol"> =&nbsp;200</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e810e21/src/lib/coreConnection.ts#L13">lib/coreConnection.ts:13</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external tsd-is-not-exported">
+				<a name="timeoutreply" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> TIMEOUTREPLY</h3>
+				<div class="tsd-signature tsd-kind-icon">TIMEOUTREPLY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">50</span><span class="tsd-signature-symbol"> =&nbsp;50</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e810e21/src/lib/coreConnection.ts#L14">lib/coreConnection.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
