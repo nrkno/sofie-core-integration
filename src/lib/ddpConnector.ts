@@ -108,12 +108,7 @@ export class DDPConnector extends EventEmitter {
 
 			doConnect = true
 		}
-
-		this.ddpClient.on('connected', () => {
-
-			this._onclientConnectionChange(true)
-		})
-		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+		this._setupDDPEvents()
 
 		if (doConnect) {
 			return new Promise((resolve, reject) => {
@@ -128,7 +123,6 @@ export class DDPConnector extends EventEmitter {
 		}
 	}
 	public connect (): Promise<void> {
-
 		return (
 			!this.ddpClient ?
 			this.createClient() :
@@ -139,8 +133,11 @@ export class DDPConnector extends EventEmitter {
 
 				if (this.ddpClient && !this._connecting) {
 
+					if (this.ddpClient.socket) {
+						this.ddpClient.close()
+					}
+					this._setupDDPEvents()
 					this._connecting = true
-
 					this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
 						this._connecting = false
 
@@ -177,6 +174,10 @@ export class DDPConnector extends EventEmitter {
 	public get connectionId () {
 		return this._connectionId
 	}
+	private _setupDDPEvents () {
+		this.ddpClient.on('connected', () => this._onclientConnectionChange(true))
+		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+	}
 	private _monitorDDPConnection (): void {
 
 		if (this._monitorDDPConnectionInterval) clearInterval(this._monitorDDPConnectionInterval)
@@ -184,9 +185,11 @@ export class DDPConnector extends EventEmitter {
 		this._monitorDDPConnectionInterval = setInterval(() => {
 
 			if (this.ddpClient && !this.connected && this.ddpIsOpen && this._options.autoReconnect !== false) {
-				// reconnect:
-				this.ddpClient.connect()
-
+				// Time to reconnect
+				this.createClient()
+				.catch(e => {
+					this.emit('error', e)
+				})
 			} else {
 				// stop monitoring:
 				if (this._monitorDDPConnectionInterval) clearInterval(this._monitorDDPConnectionInterval)
