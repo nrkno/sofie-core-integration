@@ -258,6 +258,10 @@ export class CoreConnection extends EventEmitter {
 				reject('callMethod: CoreConnection has been destroyed')
 				return
 			}
+			if (!methodName) {
+				reject('callMethod: argument missing: methodName')
+				return
+			}
 
 			let fullAttrs = [
 				this._coreOptions.deviceId,
