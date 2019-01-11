@@ -1,3 +1,7 @@
+/**
+ * Note: This file contains a copy of the typings from meteor/lib/api/peripheralDevice.ts in Core
+ */
+
 export namespace PeripheralDeviceAPI {
 
 export enum StatusCode {
@@ -18,16 +22,37 @@ export interface StatusObject {
 export enum DeviceType {
 	MOSDEVICE = 0,
 	PLAYOUT = 1,
-	OTHER = 2 // i.e. sub-devices
+	OTHER = 2, // i.e. sub-devices
+	MEDIA_MANAGER = 3
 }
 export interface InitOptions {
-	type: DeviceType,
+	type: DeviceType
 	name: string
+	connectionId: string
+	parentDeviceId?: string
+	versions?: {
+		[libraryName: string]: string
+	}
 }
+export type TimelineTriggerTimeResult = Array<{id: string, time: number}>
+
+export interface SegmentLinePlaybackStartedResult {
+	roId: string,
+	slId: string,
+	time: number
+}
+export type SegmentLinePlaybackStoppedResult = SegmentLinePlaybackStartedResult
+export interface SegmentLineItemPlaybackStartedResult {
+	roId: string,
+	sliId: string,
+	time: number
+}
+export type SegmentLineItemPlaybackStoppedResult = SegmentLineItemPlaybackStartedResult
 
 export enum methods {
 	'functionReply' 	= 'peripheralDevice.functionReply',
 
+	'testMethod' 		= 'peripheralDevice.testMethod',
 	'setStatus' 		= 'peripheralDevice.status',
 	'ping' 				= 'peripheralDevice.ping',
 	'initialize' 		= 'peripheralDevice.initialize',
@@ -42,11 +67,14 @@ export enum methods {
 
 	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
 	'segmentLinePlaybackStarted' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
+	'segmentLinePlaybackStopped' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStopped',
 	'segmentLineItemPlaybackStarted'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStarted',
+	'segmentLineItemPlaybackStopped'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStopped',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
 	'mosRoDelete' 		= 'peripheralDevice.mos.roDelete',
+	'mosRoDeleteForce'	= 'peripheralDevice.mos.roDeleteForce',
 	'mosRoMetadata' 	= 'peripheralDevice.mos.roMetadata',
 	'mosRoStatus' 		= 'peripheralDevice.mos.roStatus',
 	'mosRoStoryStatus' 	= 'peripheralDevice.mos.roStoryStatus',
@@ -64,6 +92,8 @@ export enum methods {
 	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
 	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
 
+	'resyncRo'			= 'peripheralDevice.mos.roResync',
+
 	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
 	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject'
 }
@@ -71,5 +101,6 @@ export enum methods {
 export type initialize = (id: string, token: string, options: InitOptions) => Promise<string>
 export type unInitialize = (id: string, token: string, status: StatusObject) => Promise<StatusObject>
 export type setStatus = (id: string, token: string, status: StatusObject) => Promise<StatusObject>
+export type executeFunction = (deviceId: string, cb: (err: any, result: any) => void, functionName: string, ...args: any[]) => void
 
 }
