@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.7.0"></a>
+# [0.7.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.6.3...0.7.0) (2019-01-11)
+
+
+### Bug Fixes
+
+* throw error on missing argument ([1ce1a90](https://github.com/nrkno/tv-automation-server-core-integration/commit/1ce1a90))
+
+
+### Features
+
+* Add Media_Manager DeviceType ([0c40194](https://github.com/nrkno/tv-automation-server-core-integration/commit/0c40194))
+* updated typings from Core ([d668257](https://github.com/nrkno/tv-automation-server-core-integration/commit/d668257))
+
+
+
 <a name="0.6.3"></a>
 ## [0.6.3](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.6.2...0.6.3) (2018-12-11)
 
