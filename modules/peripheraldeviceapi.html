@@ -922,7 +922,25 @@ img { max-width: 100%; }
 			<a href="../interfaces/peripheraldeviceapi.initoptions.html" class="tsd-kind-icon">Init<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+			<a href="../interfaces/peripheraldeviceapi.segmentlineitemplaybackstartedresult.html" class="tsd-kind-icon">Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Started<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
+			<a href="../interfaces/peripheraldeviceapi.segmentlineplaybackstartedresult.html" class="tsd-kind-icon">Segment<wbr>Line<wbr>Playback<wbr>Started<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-parent-kind-module tsd-is-external">
 			<a href="../interfaces/peripheraldeviceapi.statusobject.html" class="tsd-kind-icon">Status<wbr>Object</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="peripheraldeviceapi.html#segmentlineitemplaybackstoppedresult" class="tsd-kind-icon">Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Stopped<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="peripheraldeviceapi.html#segmentlineplaybackstoppedresult" class="tsd-kind-icon">Segment<wbr>Line<wbr>Playback<wbr>Stopped<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="peripheraldeviceapi.html#timelinetriggertimeresult" class="tsd-kind-icon">Timeline<wbr>Trigger<wbr>Time<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="peripheraldeviceapi.html#executefunction" class="tsd-kind-icon">execute<wbr>Function</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="peripheraldeviceapi.html#initialize" class="tsd-kind-icon">initialize</a>
@@ -937,6 +955,13 @@ img { max-width: 100%; }
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
+		<section class="tsd-panel tsd-comment">
+			<div class="tsd-comment tsd-typography">
+				<div class="lead">
+					<p>Note: This file contains a copy of the typings from meteor/lib/api/peripheralDevice.ts in Core</p>
+				</div>
+			</div>
+		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
@@ -953,12 +978,18 @@ img { max-width: 100%; }
 						<h3>Interfaces</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/peripheraldeviceapi.initoptions.html" class="tsd-kind-icon">Init<wbr>Options</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/peripheraldeviceapi.segmentlineitemplaybackstartedresult.html" class="tsd-kind-icon">Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Started<wbr>Result</a></li>
+							<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/peripheraldeviceapi.segmentlineplaybackstartedresult.html" class="tsd-kind-icon">Segment<wbr>Line<wbr>Playback<wbr>Started<wbr>Result</a></li>
 							<li class="tsd-kind-interface tsd-parent-kind-module tsd-is-external"><a href="../interfaces/peripheraldeviceapi.statusobject.html" class="tsd-kind-icon">Status<wbr>Object</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-external">
 						<h3>Type aliases</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#segmentlineitemplaybackstoppedresult" class="tsd-kind-icon">Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Stopped<wbr>Result</a></li>
+							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#segmentlineplaybackstoppedresult" class="tsd-kind-icon">Segment<wbr>Line<wbr>Playback<wbr>Stopped<wbr>Result</a></li>
+							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#timelinetriggertimeresult" class="tsd-kind-icon">Timeline<wbr>Trigger<wbr>Time<wbr>Result</a></li>
+							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#executefunction" class="tsd-kind-icon">execute<wbr>Function</a></li>
 							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#initialize" class="tsd-kind-icon">initialize</a></li>
 							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#setstatus" class="tsd-kind-icon">set<wbr>Status</a></li>
 							<li class="tsd-kind-type-alias tsd-parent-kind-module tsd-is-external"><a href="peripheraldeviceapi.html#uninitialize" class="tsd-kind-icon">un<wbr>Initialize</a></li>
@@ -970,12 +1001,103 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group tsd-is-external">
 			<h2>Type aliases</h2>
 			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+				<a name="segmentlineitemplaybackstoppedresult" class="tsd-anchor"></a>
+				<h3>Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Stopped<wbr>Result</h3>
+				<div class="tsd-signature tsd-kind-icon">Segment<wbr>Line<wbr>Item<wbr>Playback<wbr>Stopped<wbr>Result<span class="tsd-signature-symbol">:</span> <a href="../interfaces/peripheraldeviceapi.segmentlineitemplaybackstartedresult.html" class="tsd-signature-type">SegmentLineItemPlaybackStartedResult</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L50">lib/corePeripherals.ts:50</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+				<a name="segmentlineplaybackstoppedresult" class="tsd-anchor"></a>
+				<h3>Segment<wbr>Line<wbr>Playback<wbr>Stopped<wbr>Result</h3>
+				<div class="tsd-signature tsd-kind-icon">Segment<wbr>Line<wbr>Playback<wbr>Stopped<wbr>Result<span class="tsd-signature-symbol">:</span> <a href="../interfaces/peripheraldeviceapi.segmentlineplaybackstartedresult.html" class="tsd-signature-type">SegmentLinePlaybackStartedResult</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L44">lib/corePeripherals.ts:44</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+				<a name="timelinetriggertimeresult" class="tsd-anchor"></a>
+				<h3>Timeline<wbr>Trigger<wbr>Time<wbr>Result</h3>
+				<div class="tsd-signature tsd-kind-icon">Timeline<wbr>Trigger<wbr>Time<wbr>Result<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">object</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L37">lib/corePeripherals.ts:37</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+				<a name="executefunction" class="tsd-anchor"></a>
+				<h3>execute<wbr>Function</h3>
+				<div class="tsd-signature tsd-kind-icon">execute<wbr>Function<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L104">lib/corePeripherals.ts:104</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-siganture">
+							<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-type-alias tsd-is-not-exported">
+								<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>deviceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cb<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span>, functionName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, <span class="tsd-signature-symbol">...</span>args<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+							</ul>
+							<ul class="tsd-descriptions">
+								<li class="tsd-description">
+									<h4 class="tsd-parameters-title">Parameters</h4>
+									<ul class="tsd-parameters">
+										<li>
+											<h5>deviceId: <span class="tsd-signature-type">string</span></h5>
+										</li>
+										<li>
+											<h5>cb: <span class="tsd-signature-type">function</span></h5>
+											<ul class="tsd-parameters">
+												<li class="tsd-parameter-siganture">
+													<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+														<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span>err<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, result<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+													</ul>
+													<ul class="tsd-descriptions">
+														<li class="tsd-description">
+															<h4 class="tsd-parameters-title">Parameters</h4>
+															<ul class="tsd-parameters">
+																<li>
+																	<h5>err: <span class="tsd-signature-type">any</span></h5>
+																</li>
+																<li>
+																	<h5>result: <span class="tsd-signature-type">any</span></h5>
+																</li>
+															</ul>
+															<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+														</li>
+													</ul>
+												</li>
+											</ul>
+										</li>
+										<li>
+											<h5>functionName: <span class="tsd-signature-type">string</span></h5>
+										</li>
+										<li>
+											<h5><span class="tsd-flag ts-flagRest">Rest</span> <span class="tsd-signature-symbol">...</span>args: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></h5>
+										</li>
+									</ul>
+									<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 				<a name="initialize" class="tsd-anchor"></a>
 				<h3>initialize</h3>
 				<div class="tsd-signature tsd-kind-icon">initialize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e1b4155/src/lib/corePeripherals.ts#L71">lib/corePeripherals.ts:71</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L101">lib/corePeripherals.ts:101</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1012,7 +1134,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">set<wbr>Status<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e1b4155/src/lib/corePeripherals.ts#L73">lib/corePeripherals.ts:73</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L103">lib/corePeripherals.ts:103</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
@@ -1049,7 +1171,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">un<wbr>Initialize<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">function</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/e1b4155/src/lib/corePeripherals.ts#L72">lib/corePeripherals.ts:72</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/a7bd62d/src/lib/corePeripherals.ts#L102">lib/corePeripherals.ts:102</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-type-declaration">
