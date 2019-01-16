@@ -420,8 +420,11 @@ export class CoreConnection extends EventEmitter {
 		this._setConnected(parent.connected)
 	}
 	private _watchDogCheck () {
-		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
-		let message = 'ping_' + Math.random() * 10000
+		/*
+			Randomize a message and send it to Core.
+			Core should then reply with triggering executeFunction with the "pingResponse" method.
+		*/
+		let message = 'watchdogPing_' + Math.round(Math.random() * 100000)
 		this.callMethod(PeripheralDeviceAPI.methods.pingWithCommand, [message])
 		.catch(e => this._emitError('watchdogPing' + e))
 
