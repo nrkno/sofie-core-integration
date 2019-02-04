@@ -130,10 +130,13 @@ export class CoreConnection extends EventEmitter {
 				this._ddp = new DDPConnector(ddpOptions)
 
 				this._ddp.on('error', (err) => {
-					this._emitError('ddpError ' + err)
+					this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
 				})
 				this._ddp.on('failed', (err) => {
 					this.emit('failed', err)
+				})
+				this._ddp.on('info', (message: any) => {
+					this.emit('info', message)
 				})
 				this._ddp.on('connectionChanged', (connected: boolean) => {
 					this._setConnected(connected)
@@ -194,6 +197,7 @@ export class CoreConnection extends EventEmitter {
 		this.removeAllListeners('connected')
 		this.removeAllListeners('disconnected')
 		this.removeAllListeners('failed')
+		this.removeAllListeners('info')
 
 		if (this._watchDog) this._watchDog.stopWatching()
 
@@ -237,6 +241,9 @@ export class CoreConnection extends EventEmitter {
 	}
 	onFailed (cb: (err: Error) => void) {
 		this.on('failed', cb)
+	}
+	onInfo (cb: (message: any) => void) {
+		this.on('info', cb)
 	}
 	get ddp (): DDPConnector {
 		if (this._parent) return this._parent.ddp
@@ -420,8 +427,11 @@ export class CoreConnection extends EventEmitter {
 		this._setConnected(parent.connected)
 	}
 	private _watchDogCheck () {
-		// Randomize a message and send it to Core. Core should then reply with sending a deciveCommand.
-		let message = 'ping_' + Math.random() * 10000
+		/*
+			Randomize a message and send it to Core.
+			Core should then reply with triggering executeFunction with the "pingResponse" method.
+		*/
+		let message = 'watchdogPing_' + Math.round(Math.random() * 100000)
 		this.callMethod(PeripheralDeviceAPI.methods.pingWithCommand, [message])
 		.catch(e => this._emitError('watchdogPing' + e))
 
