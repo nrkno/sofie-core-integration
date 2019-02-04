@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.7.0...0.8.0) (2019-02-04)
+
+
+### Bug Fixes
+
+* readable error message ([8c2c8ca](https://github.com/nrkno/tv-automation-server-core-integration/commit/8c2c8ca))
+
+
+### Features
+
+* ddp support tls-options ([d53e42d](https://github.com/nrkno/tv-automation-server-core-integration/commit/d53e42d))
+
+
+
 <a name="0.7.0"></a>
 # [0.7.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.6.3...0.7.0) (2019-01-11)
 
