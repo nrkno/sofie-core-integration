@@ -10,6 +10,19 @@ export interface DDPConnectorOptions {
 	debug?:	boolean
 	autoReconnect?: boolean // default: true
 	autoReconnectTimer?: number
+	tlsOpts?: {
+		// Described in https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
+
+		/* Necessary only if the server uses a self-signed certificate.*/
+		ca?: Buffer[] // example: [ fs.readFileSync('server-cert.pem') ]
+
+		/* Necessary only if the server requires client certificate authentication.*/
+		key?: Buffer // example: fs.readFileSync('client-key.pem'),
+		cert?: Buffer // example: fs.readFileSync('client-cert.pem'),
+
+		/* Necessary only if the server's cert isn't for "localhost". */
+		checkServerIdentity?: (hostname: string, cert: object) => Error | undefined // () => { }, // Returns <Error> object, populating it with reason, host, and cert on failure. On success, returns <undefined>.
+	}
 }
 export interface Observer {
 	added: (id: string) => void
@@ -72,6 +85,7 @@ export class DDPConnector extends EventEmitter {
 			port: 					this._options.port,
 			path: 					this._options.path || '',
 			ssl: 					this._options.ssl || false,
+			tlsOpts: 				this._options.tlsOpts ? { tls: this._options.tlsOpts } : {},
 			useSockJS: 				true,
 			autoReconnect: 			false, // we'll handle reconnections ourselves
 			autoReconnectTimer: 	1000,
@@ -90,6 +104,7 @@ export class DDPConnector extends EventEmitter {
 			})
 			this.ddpClient.on('message', (message: any) => this._onClientMessage(message))
 			this.ddpClient.on('socket-error', (error: any) => this._onClientError(error))
+			this.ddpClient.on('info', (message: any) => this._onClientInfo(message))
 
 		} else {
 
@@ -231,5 +246,8 @@ export class DDPConnector extends EventEmitter {
 	private _onClientError (error: Error) {
 		this.emit('error', error)
 		this._monitorDDPConnection()
+	}
+	private _onClientInfo (message: any) {
+		this.emit('info', message)
 	}
 }

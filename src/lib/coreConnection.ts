@@ -135,6 +135,9 @@ export class CoreConnection extends EventEmitter {
 				this._ddp.on('failed', (err) => {
 					this.emit('failed', err)
 				})
+				this._ddp.on('info', (message: any) => {
+					this.emit('info', message)
+				})
 				this._ddp.on('connectionChanged', (connected: boolean) => {
 					this._setConnected(connected)
 
@@ -194,6 +197,7 @@ export class CoreConnection extends EventEmitter {
 		this.removeAllListeners('connected')
 		this.removeAllListeners('disconnected')
 		this.removeAllListeners('failed')
+		this.removeAllListeners('info')
 
 		if (this._watchDog) this._watchDog.stopWatching()
 
@@ -237,6 +241,9 @@ export class CoreConnection extends EventEmitter {
 	}
 	onFailed (cb: (err: Error) => void) {
 		this.on('failed', cb)
+	}
+	onInfo (cb: (message: any) => void) {
+		this.on('info', cb)
 	}
 	get ddp (): DDPConnector {
 		if (this._parent) return this._parent.ddp
