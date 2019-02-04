@@ -130,7 +130,7 @@ export class CoreConnection extends EventEmitter {
 				this._ddp = new DDPConnector(ddpOptions)
 
 				this._ddp.on('error', (err) => {
-					this._emitError('ddpError ' + err)
+					this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
 				})
 				this._ddp.on('failed', (err) => {
 					this.emit('failed', err)
