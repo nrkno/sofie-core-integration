@@ -217,6 +217,8 @@ export class CoreConnection extends EventEmitter {
 	}
 	addChild (child: CoreConnection) {
 		this._children.push(child)
+
+		this._updateMaxListeners()
 	}
 	removeChild (childToRemove: CoreConnection) {
 		let removeIndex = -1
@@ -530,5 +532,11 @@ export class CoreConnection extends EventEmitter {
 				})
 			}
 		}
+	}
+	private _updateMaxListeners () {
+		this.setMaxListeners(
+			10 +
+			this._children.length * 10 // allow 10 listeners per child
+		)
 	}
 }
