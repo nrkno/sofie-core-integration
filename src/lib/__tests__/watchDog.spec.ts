@@ -1,15 +1,15 @@
 import { WatchDog } from '../watchDog'
 
 let setTimeoutOrg = setTimeout
-let delay = (time) => {
+let delay = (time: any) => {
 	return new Promise((resolve) => {
 		setTimeoutOrg(resolve, time)
 	})
 }
 
 describe('watchDog', () => {
-	let coreIsHappy
-	let coreReplies
+	let coreIsHappy: any
+	let coreReplies: any
 	let watchDog: WatchDog
 	let checkFcn = jest.fn(() => {
 		// mock that we're sending the message to Core

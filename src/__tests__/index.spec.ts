@@ -20,7 +20,7 @@ describe('coreConnection', () => {
 
 		let device: any = {}
 
-		function checkDevice (deviceId, token) {
+		function checkDevice (deviceId: any, token: any) {
 			if (!deviceId) throw { error: 400, reason: 'id missing!' }
 			if (!token) throw { error: 400, reason: 'token missing!' }
 
@@ -32,7 +32,7 @@ describe('coreConnection', () => {
 		let peripheralDeviceSubscription: any = null
 
 		let methods = {
-			'peripheralDevice.initialize': (deviceId, token, deviceData) => {
+			'peripheralDevice.initialize': (deviceId: any, token: any, deviceData: any) => {
 
 				device._id = deviceId
 				device._token = token
@@ -46,7 +46,7 @@ describe('coreConnection', () => {
 
 				return deviceId
 			},
-			'peripheralDevice.unInitialize': (deviceId, token) => {
+			'peripheralDevice.unInitialize': (deviceId: any, token: any) => {
 				checkDevice(deviceId, token)
 
 				device = {}
@@ -57,14 +57,14 @@ describe('coreConnection', () => {
 
 				return deviceId
 			},
-			'systemTime.getTimeDiff': (deviceId, token) => {
+			'systemTime.getTimeDiff': (deviceId: any, token: any) => {
 				checkDevice(deviceId, token)
 
 				return {
 					currentTime: 1000
 				}
 			},
-			'peripheralDevice.status': (deviceId, token, statusObj) => {
+			'peripheralDevice.status': (deviceId: any, token: any, statusObj: any) => {
 				checkDevice(deviceId, token)
 
 				device.status = statusObj
@@ -74,7 +74,7 @@ describe('coreConnection', () => {
 				}
 				return device.status
 			},
-			'peripheralDevice.testMethod': (deviceId, token, returnValue, throwError) => {
+			'peripheralDevice.testMethod': (deviceId: any, token: any, returnValue: any, throwError: any) => {
 				checkDevice(deviceId, token)
 
 				if (throwError) throw { 'error': 418, 'reason': 'Error thrown' }
@@ -91,7 +91,7 @@ describe('coreConnection', () => {
 
 			ddp.mockSetHost(coreHost, corePort)
 
-			ddp.mockPublication('peripheralDevices', (subscription, device, token) => {
+			ddp.mockPublication('peripheralDevices', (subscription: any, device: any, token: any) => {
 				checkDevice(device._id, token)
 
 				peripheralDeviceSubscription = subscription

@@ -98,14 +98,13 @@ class Observer {
 	public changed: (id: string, doc: any) => void
 	public removed: (id: string) => void
 
-	private _collectionName
-	constructor (collectionName) {
-		this._collectionName = collectionName
+	constructor (_collectionName: any) {
+		//
 	}
-	public mockAdd (doc) {
+	public mockAdd (doc: any) {
 		if (this.added) this.added(doc._id, doc)
 	}
-	public mockChange (doc) {
+	public mockChange (doc: any) {
 		if (this.changed) this.changed(doc._id, doc)
 	}
 	public mockRemove (id: string) {
@@ -134,7 +133,7 @@ class DDP extends EventEmitter {
 	private _mockObservers: {[collectionName: string]: Array<Observer>} = {}
 	private _mockSubscriptions: {[subscriptionId: string]: Subscription} = {}
 
-	constructor (o) {
+	constructor (o: any) {
 		super()
 
 		this.host 					= o.host
@@ -174,14 +173,14 @@ class DDP extends EventEmitter {
 		this.socket.on('connect', () => {
 			if (onConnectCb) {
 				onConnectCb()
-				onConnectCb = null
+				onConnectCb = undefined
 			}
 			this.emit('connected')
 		})
 		this.socket.on('error', (err) => {
 			if (onConnectCb) {
 				onConnectCb(err)
-				onConnectCb = null
+				onConnectCb = undefined
 			}
 			this.emit('socket-error', err)
 		})
@@ -197,7 +196,7 @@ class DDP extends EventEmitter {
 	public close () {
 		this.socket.close()
 	}
-	public call (methodName: string, attrs: any[], cb: (err: Error | Object, result: any) => void) {
+	public call (methodName: string, attrs: any[], cb: (err: Error | Object | null, result: any) => void) {
 
 		if (_.has(this._mockCalls, methodName)) {
 			let c = this._mockCalls[methodName]

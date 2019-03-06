@@ -1,10 +1,12 @@
 
-let store = {}
+let store: {[key: string]: any} = {}
 class Store {
 	private _store: any
-	constructor (name, options) {
+	constructor (name: string, options: any) {
 		options = options
-		if (!store[name]) store[name] = {}
+		if (!store[name]) {
+			store[name] = {}
+		}
 		this._store = store[name]
 	}
 	set (key: string, value: any) {
