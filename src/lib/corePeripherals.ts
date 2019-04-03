@@ -23,7 +23,8 @@ export enum DeviceType {
 	MOSDEVICE = 0,
 	PLAYOUT = 1,
 	OTHER = 2, // i.e. sub-devices
-	MEDIA_MANAGER = 3
+	MEDIA_MANAGER = 3,
+	SPREADSHEET = 4
 }
 export interface InitOptions {
 	type: DeviceType
