@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.9.0"></a>
+# [0.9.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.8.0...0.9.0) (2019-04-11)
+
+
+### Bug Fixes
+
+* export DDPConnectorOptions ([6fc695c](https://github.com/nrkno/tv-automation-server-core-integration/commit/6fc695c))
+* increase setMaxListeners when attaching children ([1291f67](https://github.com/nrkno/tv-automation-server-core-integration/commit/1291f67))
+* ts3 + lint errors ([aa59ee8](https://github.com/nrkno/tv-automation-server-core-integration/commit/aa59ee8))
+* update dependencies ([ad25978](https://github.com/nrkno/tv-automation-server-core-integration/commit/ad25978))
+* update jest config ([154c384](https://github.com/nrkno/tv-automation-server-core-integration/commit/154c384))
+* update to ts3 and audit fix ([08df508](https://github.com/nrkno/tv-automation-server-core-integration/commit/08df508))
+* update yarn.lock, rm package-lock ([a391834](https://github.com/nrkno/tv-automation-server-core-integration/commit/a391834))
+
+
+### Features
+
+* add general data-manipulation methods ([1ee437f](https://github.com/nrkno/tv-automation-server-core-integration/commit/1ee437f))
+* add Queue, to be used for sequential commands ([e132575](https://github.com/nrkno/tv-automation-server-core-integration/commit/e132575))
+* add spreadsheet-device type ([cd58d07](https://github.com/nrkno/tv-automation-server-core-integration/commit/cd58d07))
+
+
+
 <a name="0.8.0"></a>
 # [0.8.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.7.0...0.8.0) (2019-02-04)
 
