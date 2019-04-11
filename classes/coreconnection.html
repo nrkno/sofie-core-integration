@@ -915,6 +915,9 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-external">
 					<a href="coreconnection.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-external">
+					<a href="coreconnection.html#_queues" class="tsd-kind-icon">_queues</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
 					<a href="coreconnection.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a>
 				</li>
@@ -1011,6 +1014,9 @@ img { max-width: 100%; }
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external">
 					<a href="coreconnection.html#prependoncelistener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a>
 				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+					<a href="coreconnection.html#putonqueue" class="tsd-kind-icon">put<wbr>OnQueue</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external">
 					<a href="coreconnection.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a>
 				</li>
@@ -1062,6 +1068,9 @@ img { max-width: 100%; }
 			<a href="ddpconnector.html" class="tsd-kind-icon">DDPConnector</a>
 		</li>
 		<li class=" tsd-kind-class tsd-is-external">
+			<a href="queue.html" class="tsd-kind-icon">Queue</a>
+		</li>
+		<li class=" tsd-kind-class tsd-is-external">
 			<a href="timesync.html" class="tsd-kind-icon">Time<wbr>Sync</a>
 		</li>
 		<li class=" tsd-kind-class tsd-is-external">
@@ -1102,6 +1111,9 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-interface tsd-is-external">
 			<a href="../interfaces/timesyncoptionsoptional.html" class="tsd-kind-icon">Time<wbr>Sync<wbr>Options<wbr>Optional</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-is-external tsd-is-not-exported">
+			<a href="../globals.html#fcn" class="tsd-kind-icon">Fcn</a>
 		</li>
 		<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
 			<a href="../globals.html#ddp" class="tsd-kind-icon">DDP</a>
@@ -1145,9 +1157,10 @@ img { max-width: 100%; }
 							<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-external"><a href="coreconnection.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
-					<section class="tsd-index-section tsd-is-inherited tsd-is-external">
+					<section class="tsd-index-section tsd-is-external">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-external"><a href="coreconnection.html#_queues" class="tsd-kind-icon">_queues</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external"><a href="coreconnection.html#defaultmaxlisteners" class="tsd-kind-icon">default<wbr>Max<wbr>Listeners</a></li>
 						</ul>
 					</section>
@@ -1190,6 +1203,7 @@ img { max-width: 100%; }
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="coreconnection.html#once" class="tsd-kind-icon">once</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="coreconnection.html#prependlistener" class="tsd-kind-icon">prepend<wbr>Listener</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="coreconnection.html#prependoncelistener" class="tsd-kind-icon">prepend<wbr>Once<wbr>Listener</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external"><a href="coreconnection.html#putonqueue" class="tsd-kind-icon">put<wbr>OnQueue</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="coreconnection.html#removealllisteners" class="tsd-kind-icon">remove<wbr>All<wbr>Listeners</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-external"><a href="coreconnection.html#removechild" class="tsd-kind-icon">remove<wbr>Child</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external"><a href="coreconnection.html#removelistener" class="tsd-kind-icon">remove<wbr>Listener</a></li>
@@ -1222,7 +1236,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L73">lib/coreConnection.ts:73</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L75">lib/coreConnection.ts:75</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1236,8 +1250,26 @@ img { max-width: 100%; }
 				</ul>
 			</section>
 		</section>
-		<section class="tsd-panel-group tsd-member-group tsd-is-inherited tsd-is-external">
+		<section class="tsd-panel-group tsd-member-group tsd-is-external">
 			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-external">
+				<a name="_queues" class="tsd-anchor"></a>
+				<h3>_queues</h3>
+				<div class="tsd-signature tsd-kind-icon">_queues<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L75">lib/coreConnection.ts:75</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter-index-signature">
+							<h5><span class="tsd-signature-symbol">[</span>queueName: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="queue.html" class="tsd-signature-type">Queue</a></h5>
+						</li>
+					</ul>
+				</div>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited tsd-is-static tsd-is-external">
 				<a name="defaultmaxlisteners" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagStatic">Static</span> default<wbr>Max<wbr>Listeners</h3>
@@ -1245,7 +1277,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from EventEmitter.defaultMaxListeners</p>
 					<ul>
-						<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:923</li>
+						<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:943</li>
 					</ul>
 				</aside>
 			</section>
@@ -1258,7 +1290,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">connected<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L252">lib/coreConnection.ts:252</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L256">lib/coreConnection.ts:256</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1268,7 +1300,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">ddp<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L248">lib/coreConnection.ts:248</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L252">lib/coreConnection.ts:252</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1278,7 +1310,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">device<wbr>Id<span class="tsd-signature-symbol">:</span> </div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L256">lib/coreConnection.ts:256</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L260">lib/coreConnection.ts:260</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1295,7 +1327,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L218">lib/coreConnection.ts:218</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L220">lib/coreConnection.ts:220</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1320,7 +1352,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.addListener</p>
 							<p>Overrides EventEmitter.addListener</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:925</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:945</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1364,7 +1396,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L349">lib/coreConnection.ts:349</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L353">lib/coreConnection.ts:353</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1395,7 +1427,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L262">lib/coreConnection.ts:262</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L266">lib/coreConnection.ts:266</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1421,7 +1453,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L289">lib/coreConnection.ts:289</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L293">lib/coreConnection.ts:293</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1447,7 +1479,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L185">lib/coreConnection.ts:185</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L187">lib/coreConnection.ts:187</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1466,7 +1498,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.emit</p>
 							<p>Overrides EventEmitter.emit</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:935</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:955</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1494,7 +1526,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.eventNames</p>
 							<p>Overrides EventEmitter.eventNames</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:936</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:956</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">symbol</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1511,7 +1543,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L310">lib/coreConnection.ts:310</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L314">lib/coreConnection.ts:314</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1534,7 +1566,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L366">lib/coreConnection.ts:366</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L370">lib/coreConnection.ts:370</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -1553,7 +1585,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.getMaxListeners</p>
 							<p>Overrides EventEmitter.getMaxListeners</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:933</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:953</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span></h4>
@@ -1570,7 +1602,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L307">lib/coreConnection.ts:307</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L311">lib/coreConnection.ts:311</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -1587,7 +1619,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L369">lib/coreConnection.ts:369</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L373">lib/coreConnection.ts:373</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">boolean</span></h4>
@@ -1604,7 +1636,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L111">lib/coreConnection.ts:111</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L113">lib/coreConnection.ts:113</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1629,7 +1661,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.listenerCount</p>
 							<p>Overrides EventEmitter.listenerCount</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:937</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:957</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1654,7 +1686,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.listeners</p>
 							<p>Overrides EventEmitter.listeners</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:934</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:954</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1677,7 +1709,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L304">lib/coreConnection.ts:304</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L308">lib/coreConnection.ts:308</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1703,7 +1735,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L363">lib/coreConnection.ts:363</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L367">lib/coreConnection.ts:367</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1728,7 +1760,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.on</p>
 							<p>Overrides EventEmitter.on</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:926</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:946</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1772,7 +1804,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L233">lib/coreConnection.ts:233</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L237">lib/coreConnection.ts:237</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1807,7 +1839,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L230">lib/coreConnection.ts:230</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L234">lib/coreConnection.ts:234</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1848,7 +1880,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L236">lib/coreConnection.ts:236</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L240">lib/coreConnection.ts:240</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1883,7 +1915,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L239">lib/coreConnection.ts:239</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L243">lib/coreConnection.ts:243</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1924,7 +1956,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L242">lib/coreConnection.ts:242</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L246">lib/coreConnection.ts:246</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -1965,7 +1997,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L245">lib/coreConnection.ts:245</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L249">lib/coreConnection.ts:249</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2008,7 +2040,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.once</p>
 							<p>Overrides EventEmitter.once</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:927</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:947</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2054,7 +2086,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.prependListener</p>
 							<p>Overrides EventEmitter.prependListener</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:928</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:948</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2100,7 +2132,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.prependOnceListener</p>
 							<p>Overrides EventEmitter.prependOnceListener</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:929</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:949</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2134,6 +2166,50 @@ img { max-width: 100%; }
 					</li>
 				</ul>
 			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+				<a name="putonqueue" class="tsd-anchor"></a>
+				<h3>put<wbr>OnQueue</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-has-type-parameter tsd-is-external">
+					<li class="tsd-signature tsd-kind-icon">put<wbr>OnQueue&lt;T&gt;<span class="tsd-signature-symbol">(</span>queueName<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, fcn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L382">lib/coreConnection.ts:382</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-type-parameters-title">Type parameters</h4>
+						<ul class="tsd-type-parameters">
+							<li>
+								<h4>T</h4>
+							</li>
+						</ul>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>queueName: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>fcn: <span class="tsd-signature-type">function</span></h5>
+								<ul class="tsd-parameters">
+									<li class="tsd-parameter-siganture">
+										<ul class="tsd-signatures tsd-kind-type-literal tsd-is-not-exported">
+											<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></li>
+										</ul>
+										<ul class="tsd-descriptions">
+											<li class="tsd-description">
+												<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+											</li>
+										</ul>
+									</li>
+								</ul>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite tsd-is-inherited tsd-is-external">
 				<a name="removealllisteners" class="tsd-anchor"></a>
 				<h3>remove<wbr>All<wbr>Listeners</h3>
@@ -2146,7 +2222,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.removeAllListeners</p>
 							<p>Overrides EventEmitter.removeAllListeners</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:931</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:951</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2169,7 +2245,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L221">lib/coreConnection.ts:221</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L225">lib/coreConnection.ts:225</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2194,7 +2270,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.removeListener</p>
 							<p>Overrides EventEmitter.removeListener</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:930</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:950</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2240,7 +2316,7 @@ img { max-width: 100%; }
 							<p>Inherited from EventEmitter.setMaxListeners</p>
 							<p>Overrides EventEmitter.setMaxListeners</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:932</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:952</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2263,7 +2339,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L375">lib/coreConnection.ts:375</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L379">lib/coreConnection.ts:379</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2286,7 +2362,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L259">lib/coreConnection.ts:259</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L263">lib/coreConnection.ts:263</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2309,7 +2385,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L331">lib/coreConnection.ts:331</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L335">lib/coreConnection.ts:335</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2335,7 +2411,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L372">lib/coreConnection.ts:372</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L376">lib/coreConnection.ts:376</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">number</span>
@@ -2355,7 +2431,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L301">lib/coreConnection.ts:301</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L305">lib/coreConnection.ts:305</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2372,7 +2448,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L359">lib/coreConnection.ts:359</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L363">lib/coreConnection.ts:363</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2395,7 +2471,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L100">lib/coreConnection.ts:100</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L102">lib/coreConnection.ts:102</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2418,7 +2494,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L105">lib/coreConnection.ts:105</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L107">lib/coreConnection.ts:107</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-returns-title">Returns <a href="../interfaces/corecredentials.html" class="tsd-signature-type">CoreCredentials</a></h4>
@@ -2435,7 +2511,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L89">lib/coreConnection.ts:89</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L91">lib/coreConnection.ts:91</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2458,7 +2534,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L86">lib/coreConnection.ts:86</a></li>
+								<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L88">lib/coreConnection.ts:88</a></li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>
@@ -2482,7 +2558,7 @@ img { max-width: 100%; }
 						<aside class="tsd-sources">
 							<p>Inherited from EventEmitter.listenerCount</p>
 							<ul>
-								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:922</li>
+								<li>Defined in /home/circleci/project/node_modules/@types/node/index.d.ts:942</li>
 							</ul>
 						</aside>
 						<h4 class="tsd-parameters-title">Parameters</h4>

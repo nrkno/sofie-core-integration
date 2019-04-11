@@ -916,6 +916,9 @@ img { max-width: 100%; }
 			<a href="classes/ddpconnector.html" class="tsd-kind-icon">DDPConnector</a>
 		</li>
 		<li class=" tsd-kind-class tsd-is-external">
+			<a href="classes/queue.html" class="tsd-kind-icon">Queue</a>
+		</li>
+		<li class=" tsd-kind-class tsd-is-external">
 			<a href="classes/timesync.html" class="tsd-kind-icon">Time<wbr>Sync</a>
 		</li>
 		<li class=" tsd-kind-class tsd-is-external">
@@ -957,6 +960,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-interface tsd-is-external">
 			<a href="interfaces/timesyncoptionsoptional.html" class="tsd-kind-icon">Time<wbr>Sync<wbr>Options<wbr>Optional</a>
 		</li>
+		<li class=" tsd-kind-type-alias tsd-is-external tsd-is-not-exported">
+			<a href="globals.html#fcn" class="tsd-kind-icon">Fcn</a>
+		</li>
 		<li class=" tsd-kind-variable tsd-is-external tsd-is-not-exported">
 			<a href="globals.html#ddp" class="tsd-kind-icon">DDP</a>
 		</li>
@@ -977,7 +983,7 @@ img { max-width: 100%; }
 <div class="container container-main">
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
-			<h1 id="sofie-the-modern-tv-news-studio-automation-system-server-core-integration-">Sofie: The Modern TV News Studio Automation System (Server Core Integration)</h1>
+			<h1 id="sofie-the-modern-tv-news-studio-automation-system-server-core-integration">Sofie: The Modern TV News Studio Automation System (Server Core Integration)</h1>
 			<p><a href="https://circleci.com/gh/nrkno/tv-automation-server-core-integration"><img src="https://circleci.com/gh/nrkno/tv-automation-server-core-integration.svg?style=svg" alt="CircleCI"></a></p>
 			<p>This library is used to connect to the <a href="https://github.com/nrkno/tv-automation-server-core"><strong>Sofie Server Core</strong></a> from other Node processes.</p>
 			<p>This is a part of the <a href="https://github.com/nrkno/Sofie-TV-automation/"><strong>Sofie</strong> TV News Studio Automation System</a>.</p>
@@ -1040,6 +1046,7 @@ core.init({
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-class tsd-is-external"><a href="classes/coreconnection.html" class="tsd-kind-icon">Core<wbr>Connection</a></li>
 							<li class="tsd-kind-class tsd-is-external"><a href="classes/ddpconnector.html" class="tsd-kind-icon">DDPConnector</a></li>
+							<li class="tsd-kind-class tsd-is-external"><a href="classes/queue.html" class="tsd-kind-icon">Queue</a></li>
 							<li class="tsd-kind-class tsd-is-external"><a href="classes/timesync.html" class="tsd-kind-icon">Time<wbr>Sync</a></li>
 							<li class="tsd-kind-class tsd-is-external"><a href="classes/watchdog.html" class="tsd-kind-icon">Watch<wbr>Dog</a></li>
 						</ul>
@@ -1062,6 +1069,12 @@ core.init({
 						</ul>
 					</section>
 					<section class="tsd-index-section tsd-is-external tsd-is-not-exported">
+						<h3>Type aliases</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-type-alias tsd-is-external tsd-is-not-exported"><a href="globals.html#fcn" class="tsd-kind-icon">Fcn</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section tsd-is-external tsd-is-not-exported">
 						<h3>Variables</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-variable tsd-is-external tsd-is-not-exported"><a href="globals.html#ddp" class="tsd-kind-icon">DDP</a></li>
@@ -1075,6 +1088,45 @@ core.init({
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-external tsd-is-not-exported">
+			<h2>Type aliases</h2>
+			<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-is-external tsd-is-not-exported">
+				<a name="fcn" class="tsd-anchor"></a>
+				<h3>Fcn</h3>
+				<div class="tsd-signature tsd-kind-icon">Fcn<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/queue.ts#L2">lib/queue.ts:2</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-type-declaration">
+					<h4>Type declaration</h4>
+					<ul class="tsd-parameters">
+						<li class="tsd-parameter">
+							<h5>fcn<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">function</span></h5>
+							<ul class="tsd-parameters">
+								<li class="tsd-parameter-siganture">
+									<ul class="tsd-signatures tsd-kind-type-literal tsd-parent-kind-variable tsd-is-not-exported">
+										<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+									</ul>
+									<ul class="tsd-descriptions">
+										<li class="tsd-description">
+											<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li class="tsd-parameter">
+							<h5>reject<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span></h5>
+						</li>
+						<li class="tsd-parameter">
+							<h5>resolve<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Function</span></h5>
+						</li>
+					</ul>
+				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group tsd-is-external tsd-is-not-exported">
 			<h2>Variables</h2>
 			<section class="tsd-panel tsd-member tsd-kind-variable tsd-is-external tsd-is-not-exported">
 				<a name="ddp" class="tsd-anchor"></a>
@@ -1082,7 +1134,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">DDP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;ddp&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/ddpConnector.ts#L1">lib/ddpConnector.ts:1</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/ddpConnector.ts#L1">lib/ddpConnector.ts:1</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1092,7 +1144,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">Data<wbr>Store<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;data-store&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L9">lib/coreConnection.ts:9</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L10">lib/coreConnection.ts:10</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1102,7 +1154,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">Random<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> =&nbsp;require(&#x27;ddp-random&#x27;)</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L10">lib/coreConnection.ts:10</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L11">lib/coreConnection.ts:11</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1112,7 +1164,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">TIMEOUTCALL<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">200</span><span class="tsd-signature-symbol"> =&nbsp;200</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L13">lib/coreConnection.ts:13</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L14">lib/coreConnection.ts:14</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1122,7 +1174,7 @@ core.init({
 				<div class="tsd-signature tsd-kind-icon">TIMEOUTREPLY<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">50</span><span class="tsd-signature-symbol"> =&nbsp;50</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/7dcbc09/src/lib/coreConnection.ts#L14">lib/coreConnection.ts:14</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/763b8b7/src/lib/coreConnection.ts#L15">lib/coreConnection.ts:15</a></li>
 					</ul>
 				</aside>
 			</section>
