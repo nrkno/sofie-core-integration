@@ -5,6 +5,7 @@ import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 import { WatchDog } from './watchDog'
+import { Queue } from './queue'
 
 const DataStore = require('data-store')
 const Random = require('ddp-random')
@@ -71,6 +72,7 @@ export class CoreConnection extends EventEmitter {
 	private _timeLastMethodCall: number = 0
 	private _timeLastMethodReply: number = 0
 	private _destroyed: boolean = false
+	_queues: {[queueName: string]: Queue} = {}
 
 	constructor (coreOptions: CoreOptions) {
 		super()
@@ -376,6 +378,12 @@ export class CoreConnection extends EventEmitter {
 	}
 	setPingResponse (message: string) {
 		this._watchDogPingResponse = message
+	}
+	putOnQueue<T> (queueName: string, fcn: () => Promise<T>): Promise<T> {
+		if (!this._queues[queueName]) {
+			this._queues[queueName] = new Queue()
+		}
+		return this._queues[queueName].putOnQueue(fcn)
 	}
 	private _emitError (e: Error | string) {
 		if (!this._destroyed) {

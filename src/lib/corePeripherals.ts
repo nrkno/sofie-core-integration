@@ -23,7 +23,8 @@ export enum DeviceType {
 	MOSDEVICE = 0,
 	PLAYOUT = 1,
 	OTHER = 2, // i.e. sub-devices
-	MEDIA_MANAGER = 3
+	MEDIA_MANAGER = 3,
+	SPREADSHEET = 4
 }
 export interface InitOptions {
 	type: DeviceType
@@ -92,10 +93,23 @@ export enum methods {
 	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
 	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
 
+	'dataRunningOrderDelete'	= 'peripheralDevice.runningOrder.runningOrderDelete',
+	'dataRunningOrderCreate'	= 'peripheralDevice.runningOrder.runningOrderCreate',
+	'dataRunningOrderUpdate'	= 'peripheralDevice.runningOrder.runningOrderUpdate',
+	'dataSegmentDelete'			= 'peripheralDevice.runningOrder.segmentDelete',
+	'dataSegmentCreate'			= 'peripheralDevice.runningOrder.segmentCreate',
+	'dataSegmentUpdate'			= 'peripheralDevice.runningOrder.segmentUpdate',
+	'dataSegmentLineItemDelete'	= 'peripheralDevice.runningOrder.segmentLineItemDelete',
+	'dataSegmentLineItemCreate'	= 'peripheralDevice.runningOrder.segmentLineItemCreate',
+	'dataSegmentLineItemUpdate'	= 'peripheralDevice.runningOrder.segmentLineItemUpdate',
+
 	'resyncRo'			= 'peripheralDevice.mos.roResync',
 
 	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
-	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject'
+	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject',
+
+	'requestUserAuthToken' 	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
+	'storeAccessToken' 	= 'peripheralDevice.spreadsheet.storeAccessToken'
 }
 
 export type initialize = (id: string, token: string, options: InitOptions) => Promise<string>
