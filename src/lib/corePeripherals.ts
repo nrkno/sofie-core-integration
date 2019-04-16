@@ -38,14 +38,14 @@ export interface InitOptions {
 export type TimelineTriggerTimeResult = Array<{id: string, time: number}>
 
 export interface SegmentLinePlaybackStartedResult {
-	roId: string,
-	slId: string,
+	rundownId: string,
+	partId: string,
 	time: number
 }
 export type SegmentLinePlaybackStoppedResult = SegmentLinePlaybackStartedResult
 export interface SegmentLineItemPlaybackStartedResult {
-	roId: string,
-	sliId: string,
+	rundownId: string,
+	pieceId: string,
 	time: number
 }
 export type SegmentLineItemPlaybackStoppedResult = SegmentLineItemPlaybackStartedResult
@@ -58,7 +58,7 @@ export enum methods {
 	'ping' 				= 'peripheralDevice.ping',
 	'initialize' 		= 'peripheralDevice.initialize',
 	'unInitialize' 		= 'peripheralDevice.unInitialize',
-	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
+	'getPeripheralDevice' = 'peripheralDevice.getPeripheralDevice',
 	'pingWithCommand' 	= 'peripheralDevice.pingWithCommand',
 	'killProcess' 		= 'peripheralDevice.killProcess',
 
@@ -67,10 +67,10 @@ export enum methods {
 	'getTime'				= 'systemTime.getTime',
 
 	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
-	'segmentLinePlaybackStarted' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
-	'segmentLinePlaybackStopped' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStopped',
-	'segmentLineItemPlaybackStarted'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStarted',
-	'segmentLineItemPlaybackStopped'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStopped',
+	'segmentLinePlaybackStarted' 	= 'peripheralDevice.rundown.partPlaybackStarted',
+	'segmentLinePlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
+	'segmentLineItemPlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
+	'segmentLineItemPlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
@@ -93,20 +93,25 @@ export enum methods {
 	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
 	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
 
-	'dataRunningOrderDelete'	= 'peripheralDevice.runningOrder.runningOrderDelete',
-	'dataRunningOrderCreate'	= 'peripheralDevice.runningOrder.runningOrderCreate',
-	'dataRunningOrderUpdate'	= 'peripheralDevice.runningOrder.runningOrderUpdate',
-	'dataSegmentDelete'			= 'peripheralDevice.runningOrder.segmentDelete',
-	'dataSegmentCreate'			= 'peripheralDevice.runningOrder.segmentCreate',
-	'dataSegmentUpdate'			= 'peripheralDevice.runningOrder.segmentUpdate',
-	'dataSegmentLineItemDelete'	= 'peripheralDevice.runningOrder.segmentLineItemDelete',
-	'dataSegmentLineItemCreate'	= 'peripheralDevice.runningOrder.segmentLineItemCreate',
-	'dataSegmentLineItemUpdate'	= 'peripheralDevice.runningOrder.segmentLineItemUpdate',
+	'dataRundownDelete' = 'peripheralDevice.rundown.rundownDelete',
+	'dataRundownCreate' = 'peripheralDevice.rundown.rundownCreate',
+	'dataRundownUpdate' = 'peripheralDevice.rundown.rundownUpdate',
+	'dataSegmentDelete' = 'peripheralDevice.rundown.segmentDelete',
+	'dataSegmentCreate' = 'peripheralDevice.rundown.segmentCreate',
+	'dataSegmentUpdate' = 'peripheralDevice.rundown.segmentUpdate',
+	'dataPieceDelete' = 'peripheralDevice.rundown.pieceDelete',
+	'dataPieceCreate' = 'peripheralDevice.rundown.pieceCreate',
+	'dataPieceUpdate' = 'peripheralDevice.rundown.pieceUpdate',
 
-	'resyncRo'			= 'peripheralDevice.mos.roResync',
+	'resyncRundown'			= 'peripheralDevice.mos.roResync',
 
 	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
 	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject',
+
+	'getMediaWorkFlowRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowRevisions',
+	'updateMediaWorkFlow' = 'peripheralDevice.mediaManager.updateMediaWorkFlow',
+	'getMediaWorkFlowStepRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowStepRevisions',
+	'updateMediaWorkFlowStep' = 'peripheralDevice.mediaManager.updateMediaWorkFlowStep',
 
 	'requestUserAuthToken' 	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
 	'storeAccessToken' 	= 'peripheralDevice.spreadsheet.storeAccessToken'
