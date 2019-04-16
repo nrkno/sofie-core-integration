@@ -34,18 +34,18 @@ export declare namespace PeripheralDeviceAPI {
         id: string;
         time: number;
     }>;
-    interface SegmentLinePlaybackStartedResult {
+    interface PartPlaybackStartedResult {
         rundownId: string;
         partId: string;
         time: number;
     }
-    type SegmentLinePlaybackStoppedResult = SegmentLinePlaybackStartedResult;
-    interface SegmentLineItemPlaybackStartedResult {
+    type PartPlaybackStoppedResult = PartPlaybackStartedResult;
+    interface PiecePlaybackStartedResult {
         rundownId: string;
         pieceId: string;
         time: number;
     }
-    type SegmentLineItemPlaybackStoppedResult = SegmentLineItemPlaybackStartedResult;
+    type PiecePlaybackStoppedResult = PiecePlaybackStartedResult;
     enum methods {
         'functionReply' = "peripheralDevice.functionReply",
         'testMethod' = "peripheralDevice.testMethod",
@@ -60,10 +60,10 @@ export declare namespace PeripheralDeviceAPI {
         'getTimeDiff' = "systemTime.getTimeDiff",
         'getTime' = "systemTime.getTime",
         'timelineTriggerTime' = "peripheralDevice.timeline.setTimelineTriggerTime",
-        'segmentLinePlaybackStarted' = "peripheralDevice.rundown.partPlaybackStarted",
-        'segmentLinePlaybackStopped' = "peripheralDevice.rundown.partPlaybackStopped",
-        'segmentLineItemPlaybackStarted' = "peripheralDevice.rundown.piecePlaybackStarted",
-        'segmentLineItemPlaybackStopped' = "peripheralDevice.rundown.piecePlaybackStopped",
+        'partPlaybackStarted' = "peripheralDevice.rundown.partPlaybackStarted",
+        'partPlaybackStopped' = "peripheralDevice.rundown.partPlaybackStopped",
+        'piecePlaybackStarted' = "peripheralDevice.rundown.piecePlaybackStarted",
+        'piecePlaybackStopped' = "peripheralDevice.rundown.piecePlaybackStopped",
         'mosRoCreate' = "peripheralDevice.mos.roCreate",
         'mosRoReplace' = "peripheralDevice.mos.roReplace",
         'mosRoDelete' = "peripheralDevice.mos.roDelete",

@@ -37,18 +37,18 @@ export interface InitOptions {
 }
 export type TimelineTriggerTimeResult = Array<{id: string, time: number}>
 
-export interface SegmentLinePlaybackStartedResult {
+export interface PartPlaybackStartedResult {
 	rundownId: string,
 	partId: string,
 	time: number
 }
-export type SegmentLinePlaybackStoppedResult = SegmentLinePlaybackStartedResult
-export interface SegmentLineItemPlaybackStartedResult {
+export type PartPlaybackStoppedResult = PartPlaybackStartedResult
+export interface PiecePlaybackStartedResult {
 	rundownId: string,
 	pieceId: string,
 	time: number
 }
-export type SegmentLineItemPlaybackStoppedResult = SegmentLineItemPlaybackStartedResult
+export type PiecePlaybackStoppedResult = PiecePlaybackStartedResult
 
 export enum methods {
 	'functionReply' 	= 'peripheralDevice.functionReply',
@@ -67,10 +67,10 @@ export enum methods {
 	'getTime'				= 'systemTime.getTime',
 
 	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
-	'segmentLinePlaybackStarted' 	= 'peripheralDevice.rundown.partPlaybackStarted',
-	'segmentLinePlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
-	'segmentLineItemPlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
-	'segmentLineItemPlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
+	'partPlaybackStarted' 	= 'peripheralDevice.rundown.partPlaybackStarted',
+	'partPlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
+	'piecePlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
+	'piecePlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
