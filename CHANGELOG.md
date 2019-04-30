@@ -2,6 +2,30 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.9.0...1.0.0) (2019-04-30)
+
+
+### Bug Fixes
+
+* remove built files ([bc24f52](https://github.com/nrkno/tv-automation-server-core-integration/commit/bc24f52))
+* rename properties ([e7a64f9](https://github.com/nrkno/tv-automation-server-core-integration/commit/e7a64f9))
+* update some interface names ([2f4f2e9](https://github.com/nrkno/tv-automation-server-core-integration/commit/2f4f2e9))
+* upgrade dependencies ([014a0b5](https://github.com/nrkno/tv-automation-server-core-integration/commit/014a0b5))
+
+
+### Features
+
+* noop, just to get the the next version right ([89b3cb7](https://github.com/nrkno/tv-automation-server-core-integration/commit/89b3cb7))
+* update typings with copy from Core ([b2bbb74](https://github.com/nrkno/tv-automation-server-core-integration/commit/b2bbb74))
+
+
+### BREAKING CHANGES
+
+* interface to Core has changed (the big renaming)
+
+
+
 <a name="0.9.0"></a>
 # [0.9.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.8.0...0.9.0) (2019-04-11)
 
