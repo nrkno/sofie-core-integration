@@ -37,18 +37,18 @@ export interface InitOptions {
 }
 export type TimelineTriggerTimeResult = Array<{id: string, time: number}>
 
-export interface SegmentLinePlaybackStartedResult {
-	roId: string,
-	slId: string,
+export interface PartPlaybackStartedResult {
+	rundownId: string,
+	partId: string,
 	time: number
 }
-export type SegmentLinePlaybackStoppedResult = SegmentLinePlaybackStartedResult
-export interface SegmentLineItemPlaybackStartedResult {
-	roId: string,
-	sliId: string,
+export type PartPlaybackStoppedResult = PartPlaybackStartedResult
+export interface PiecePlaybackStartedResult {
+	rundownId: string,
+	pieceId: string,
 	time: number
 }
-export type SegmentLineItemPlaybackStoppedResult = SegmentLineItemPlaybackStartedResult
+export type PiecePlaybackStoppedResult = PiecePlaybackStartedResult
 
 export enum methods {
 	'functionReply' 	= 'peripheralDevice.functionReply',
@@ -67,10 +67,10 @@ export enum methods {
 	'getTime'				= 'systemTime.getTime',
 
 	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
-	'segmentLinePlaybackStarted' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStarted',
-	'segmentLinePlaybackStopped' 	= 'peripheralDevice.runningOrder.segmentLinePlaybackStopped',
-	'segmentLineItemPlaybackStarted'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStarted',
-	'segmentLineItemPlaybackStopped'= 'peripheralDevice.runningOrder.segmentLineItemPlaybackStopped',
+	'partPlaybackStarted' 	= 'peripheralDevice.rundown.partPlaybackStarted',
+	'partPlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
+	'piecePlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
+	'piecePlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
@@ -88,28 +88,34 @@ export enum methods {
 	'mosRoItemInsert' 	= 'peripheralDevice.mos.roItemInsert',
 	'mosRoItemReplace' 	= 'peripheralDevice.mos.roItemReplace',
 	'mosRoItemMove' 	= 'peripheralDevice.mos.roItemMove',
-	'mosRoItemDelete' 	= 'peripheralDevice.mos.RoItemDelete',
-	'mosRoItemSwap' 	= 'peripheralDevice.mos.RoItemSwap',
-	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
-	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
+	'mosRoItemDelete' 	= 'peripheralDevice.mos.roItemDelete',
+	'mosRoItemSwap' 	= 'peripheralDevice.mos.roItemSwap',
+	'mosRoReadyToAir' 	= 'peripheralDevice.mos.roReadyToAir',
+	'mosRoFullStory' 	= 'peripheralDevice.mos.roFullStory',
 
-	'dataRunningOrderDelete'	= 'peripheralDevice.runningOrder.runningOrderDelete',
-	'dataRunningOrderCreate'	= 'peripheralDevice.runningOrder.runningOrderCreate',
-	'dataRunningOrderUpdate'	= 'peripheralDevice.runningOrder.runningOrderUpdate',
-	'dataSegmentDelete'			= 'peripheralDevice.runningOrder.segmentDelete',
-	'dataSegmentCreate'			= 'peripheralDevice.runningOrder.segmentCreate',
-	'dataSegmentUpdate'			= 'peripheralDevice.runningOrder.segmentUpdate',
-	'dataSegmentLineItemDelete'	= 'peripheralDevice.runningOrder.segmentLineItemDelete',
-	'dataSegmentLineItemCreate'	= 'peripheralDevice.runningOrder.segmentLineItemCreate',
-	'dataSegmentLineItemUpdate'	= 'peripheralDevice.runningOrder.segmentLineItemUpdate',
+	'dataRundownDelete'	= 'peripheralDevice.rundown.rundownDelete',
+	'dataRundownCreate'	= 'peripheralDevice.rundown.rundownCreate',
+	'dataRundownUpdate'	= 'peripheralDevice.rundown.rundownUpdate',
+	'dataSegmentDelete'	= 'peripheralDevice.rundown.segmentDelete',
+	'dataSegmentCreate'	= 'peripheralDevice.rundown.segmentCreate',
+	'dataSegmentUpdate'	= 'peripheralDevice.rundown.segmentUpdate',
+	'dataPieceDelete'	= 'peripheralDevice.rundown.pieceDelete',
+	'dataPieceCreate'	= 'peripheralDevice.rundown.pieceCreate',
+	'dataPieceUpdate'	= 'peripheralDevice.rundown.pieceUpdate',
 
-	'resyncRo'			= 'peripheralDevice.mos.roResync',
+	'resyncRundown'			= 'peripheralDevice.mos.roResync',
 
 	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
 	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject',
 
+	'getMediaWorkFlowRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowRevisions',
+	'updateMediaWorkFlow' = 'peripheralDevice.mediaManager.updateMediaWorkFlow',
+	'getMediaWorkFlowStepRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowStepRevisions',
+	'updateMediaWorkFlowStep' = 'peripheralDevice.mediaManager.updateMediaWorkFlowStep',
+
 	'requestUserAuthToken' 	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
 	'storeAccessToken' 	= 'peripheralDevice.spreadsheet.storeAccessToken'
+
 }
 
 export type initialize = (id: string, token: string, options: InitOptions) => Promise<string>
