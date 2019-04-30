@@ -58,7 +58,7 @@ export enum methods {
 	'ping' 				= 'peripheralDevice.ping',
 	'initialize' 		= 'peripheralDevice.initialize',
 	'unInitialize' 		= 'peripheralDevice.unInitialize',
-	'getPeripheralDevice' = 'peripheralDevice.getPeripheralDevice',
+	'getPeripheralDevice'= 'peripheralDevice.getPeripheralDevice',
 	'pingWithCommand' 	= 'peripheralDevice.pingWithCommand',
 	'killProcess' 		= 'peripheralDevice.killProcess',
 
@@ -88,20 +88,20 @@ export enum methods {
 	'mosRoItemInsert' 	= 'peripheralDevice.mos.roItemInsert',
 	'mosRoItemReplace' 	= 'peripheralDevice.mos.roItemReplace',
 	'mosRoItemMove' 	= 'peripheralDevice.mos.roItemMove',
-	'mosRoItemDelete' 	= 'peripheralDevice.mos.RoItemDelete',
-	'mosRoItemSwap' 	= 'peripheralDevice.mos.RoItemSwap',
-	'mosRoReadyToAir' 	= 'peripheralDevice.mos.RoReadyToAir',
-	'mosRoFullStory' 	= 'peripheralDevice.mos.RoFullStory',
+	'mosRoItemDelete' 	= 'peripheralDevice.mos.roItemDelete',
+	'mosRoItemSwap' 	= 'peripheralDevice.mos.roItemSwap',
+	'mosRoReadyToAir' 	= 'peripheralDevice.mos.roReadyToAir',
+	'mosRoFullStory' 	= 'peripheralDevice.mos.roFullStory',
 
-	'dataRundownDelete' = 'peripheralDevice.rundown.rundownDelete',
-	'dataRundownCreate' = 'peripheralDevice.rundown.rundownCreate',
-	'dataRundownUpdate' = 'peripheralDevice.rundown.rundownUpdate',
-	'dataSegmentDelete' = 'peripheralDevice.rundown.segmentDelete',
-	'dataSegmentCreate' = 'peripheralDevice.rundown.segmentCreate',
-	'dataSegmentUpdate' = 'peripheralDevice.rundown.segmentUpdate',
-	'dataPieceDelete' = 'peripheralDevice.rundown.pieceDelete',
-	'dataPieceCreate' = 'peripheralDevice.rundown.pieceCreate',
-	'dataPieceUpdate' = 'peripheralDevice.rundown.pieceUpdate',
+	'dataRundownDelete'	= 'peripheralDevice.rundown.rundownDelete',
+	'dataRundownCreate'	= 'peripheralDevice.rundown.rundownCreate',
+	'dataRundownUpdate'	= 'peripheralDevice.rundown.rundownUpdate',
+	'dataSegmentDelete'	= 'peripheralDevice.rundown.segmentDelete',
+	'dataSegmentCreate'	= 'peripheralDevice.rundown.segmentCreate',
+	'dataSegmentUpdate'	= 'peripheralDevice.rundown.segmentUpdate',
+	'dataPieceDelete'	= 'peripheralDevice.rundown.pieceDelete',
+	'dataPieceCreate'	= 'peripheralDevice.rundown.pieceCreate',
+	'dataPieceUpdate'	= 'peripheralDevice.rundown.pieceUpdate',
 
 	'resyncRundown'			= 'peripheralDevice.mos.roResync',
 
@@ -115,6 +115,7 @@ export enum methods {
 
 	'requestUserAuthToken' 	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
 	'storeAccessToken' 	= 'peripheralDevice.spreadsheet.storeAccessToken'
+
 }
 
 export type initialize = (id: string, token: string, options: InitOptions) => Promise<string>
