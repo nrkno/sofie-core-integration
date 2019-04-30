@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.0.0...1.0.1) (2019-04-30)
+
+
+### Bug Fixes
+
+* update typings from core ([8e2a837](https://github.com/nrkno/tv-automation-server-core-integration/commit/8e2a837))
+* update typings from core ([#23](https://github.com/nrkno/tv-automation-server-core-integration/issues/23)) ([944fa7a](https://github.com/nrkno/tv-automation-server-core-integration/commit/944fa7a))
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/0.9.0...1.0.0) (2019-04-30)
 
