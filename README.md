@@ -5,7 +5,6 @@ This library is used to connect to the [**Sofie Server Core**](https://github.co
 
 This is a part of the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
 
-
 # Getting started
 
 ## Typescript
