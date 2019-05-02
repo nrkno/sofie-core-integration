@@ -123,7 +123,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -144,7 +146,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -262,7 +266,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -301,7 +307,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -344,7 +352,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -413,7 +423,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
@@ -463,7 +475,9 @@ describe('coreConnection', () => {
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 		let onError = jest.fn()
@@ -483,7 +497,9 @@ describe('coreConnection', () => {
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework child'
 		})
 
@@ -549,7 +565,9 @@ describe('coreConnection', () => {
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 		let onParentError = jest.fn()
@@ -564,7 +582,9 @@ describe('coreConnection', () => {
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: 'mos_connection',
 			deviceName: 'Jest test framework child'
 		})
 		let onChildConnectionChanged = jest.fn()
@@ -625,7 +645,9 @@ describe('coreConnection', () => {
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 		let onParentError = jest.fn()
@@ -639,7 +661,9 @@ describe('coreConnection', () => {
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: 'mos_connection',
 			deviceName: 'Jest test framework child'
 		})
 		let onChildConnectionChanged = jest.fn()
@@ -676,7 +700,9 @@ describe('coreConnection', () => {
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
+			deviceCategory: P.DeviceCategory.PLAYOUT,
 			deviceType: P.DeviceType.PLAYOUT,
+			deviceSubType: P.SUBTYPE_PROCESS,
 			deviceName: 'Jest test framework'
 		})
 
