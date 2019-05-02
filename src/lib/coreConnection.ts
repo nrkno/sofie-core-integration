@@ -14,23 +14,16 @@ const Random = require('ddp-random')
 const TIMEOUTCALL = 200 // ms, time to wait after a call
 const TIMEOUTREPLY = 50 // ms, time to wait after a reply
 
-export interface InitOptions {
-	type: P.DeviceType,
-	name: string,
-	connectionId: string,
-	parentDeviceId?: string,
-	versions?: {
-		[libraryName: string]: string
-	}
-}
-
 export interface CoreCredentials {
 	deviceId: string,
 	deviceToken: string
 }
 
 export interface CoreOptions extends CoreCredentials {
+	deviceCategory: P.DeviceCategory
 	deviceType: P.DeviceType
+	deviceSubType: P.DeviceSubType
+
 	deviceName: string,
 	versions?: {
 		[libraryName: string]: string
@@ -413,15 +406,17 @@ export class CoreConnection extends EventEmitter {
 	private _sendInit (): Promise<string> {
 		if (!this.ddp) throw Error('Not connected to Core')
 
-		let options: InitOptions = {
+		let options: P.InitOptions = {
+			category: this._coreOptions.deviceCategory,
 			type: this._coreOptions.deviceType,
+			subType: this._coreOptions.deviceSubType,
+
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId,
 			parentDeviceId: (this._parent && this._parent.deviceId) || undefined,
 			versions: this._coreOptions.versions
 		}
 		this._sentConnectionId = options.connectionId
-
 		return this.callMethod(P.methods.initialize, [options])
 	}
 	private _removeParent () {

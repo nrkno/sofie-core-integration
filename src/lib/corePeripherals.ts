@@ -18,16 +18,34 @@ export interface StatusObject {
 	statusCode: StatusCode,
 	messages?: Array<string>
 }
-
-export enum DeviceType {
-	MOSDEVICE = 0,
-	PLAYOUT = 1,
-	OTHER = 2, // i.e. sub-devices
-	MEDIA_MANAGER = 3,
-	SPREADSHEET = 4
+// Note The actual type of a device is determined by the Category, Type and SubType
+export enum DeviceCategory {
+	INGEST = 'ingest',
+	PLAYOUT = 'playout',
+	MEDIA_MANAGER = 'media_manager'
 }
+export enum DeviceType {
+	// Ingest devices:
+	MOS 			= 'mos',
+	SPREADSHEET 	= 'spreadsheet',
+	// Playout devices:
+	PLAYOUT 		= 'playout',
+	// Media-manager devices:
+	MEDIA_MANAGER 	= 'media_manager'
+}
+export type DeviceSubType = SUBTYPE_PROCESS | TSR_DeviceType | MOS_DeviceType | Spreadsheet_DeviceType
+
+export type SUBTYPE_PROCESS = '_process'
+export const SUBTYPE_PROCESS: SUBTYPE_PROCESS = '_process'
+export type MOS_DeviceType = 'mos_connection'
+export type Spreadsheet_DeviceType = 'spreadsheet_connection'
+export type TSR_DeviceType = number
+
 export interface InitOptions {
+	category: DeviceCategory
 	type: DeviceType
+	subType: DeviceSubType
+
 	name: string
 	connectionId: string
 	parentDeviceId?: string
