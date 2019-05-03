@@ -936,11 +936,17 @@ img { max-width: 100%; }
 		<li class="current tsd-kind-interface tsd-is-external">
 			<a href="coreoptions.html" class="tsd-kind-icon">Core<wbr>Options</a>
 			<ul>
+				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a href="coreoptions.html#devicecategory" class="tsd-kind-icon">device<wbr>Category</a>
+				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a href="coreoptions.html#deviceid" class="tsd-kind-icon">device<wbr>Id</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a href="coreoptions.html#devicename" class="tsd-kind-icon">device<wbr>Name</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a href="coreoptions.html#devicesubtype" class="tsd-kind-icon">device<wbr>Sub<wbr>Type</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 					<a href="coreoptions.html#devicetoken" class="tsd-kind-icon">device<wbr>Token</a>
@@ -961,9 +967,6 @@ img { max-width: 100%; }
 		</li>
 		<li class=" tsd-kind-interface tsd-is-external">
 			<a href="ddpconnectoroptions.html" class="tsd-kind-icon">DDPConnector<wbr>Options</a>
-		</li>
-		<li class=" tsd-kind-interface tsd-is-external">
-			<a href="initoptions.html" class="tsd-kind-icon">Init<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-interface tsd-is-external">
 			<a href="observer.html" class="tsd-kind-icon">Observer</a>
@@ -1022,8 +1025,10 @@ img { max-width: 100%; }
 					<section class="tsd-index-section tsd-is-external">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="coreoptions.html#devicecategory" class="tsd-kind-icon">device<wbr>Category</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="coreoptions.html#deviceid" class="tsd-kind-icon">device<wbr>Id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="coreoptions.html#devicename" class="tsd-kind-icon">device<wbr>Name</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="coreoptions.html#devicesubtype" class="tsd-kind-icon">device<wbr>Sub<wbr>Type</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external"><a href="coreoptions.html#devicetoken" class="tsd-kind-icon">device<wbr>Token</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="coreoptions.html#devicetype" class="tsd-kind-icon">device<wbr>Type</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="coreoptions.html#versions" class="tsd-kind-icon">versions</a></li>
@@ -1035,6 +1040,16 @@ img { max-width: 100%; }
 		</section>
 		<section class="tsd-panel-group tsd-member-group tsd-is-external">
 			<h2>Properties</h2>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<a name="devicecategory" class="tsd-anchor"></a>
+				<h3>device<wbr>Category</h3>
+				<div class="tsd-signature tsd-kind-icon">device<wbr>Category<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">P.DeviceCategory</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L23">lib/coreConnection.ts:23</a></li>
+					</ul>
+				</aside>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-inherited tsd-is-external">
 				<a name="deviceid" class="tsd-anchor"></a>
 				<h3>device<wbr>Id</h3>
@@ -1042,7 +1057,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="corecredentials.html">CoreCredentials</a>.<a href="corecredentials.html#deviceid">deviceId</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L28">lib/coreConnection.ts:28</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L18">lib/coreConnection.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1052,7 +1067,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">device<wbr>Name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L34">lib/coreConnection.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L27">lib/coreConnection.ts:27</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<a name="devicesubtype" class="tsd-anchor"></a>
+				<h3>device<wbr>Sub<wbr>Type</h3>
+				<div class="tsd-signature tsd-kind-icon">device<wbr>Sub<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">P.DeviceSubType</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L25">lib/coreConnection.ts:25</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1063,7 +1088,7 @@ img { max-width: 100%; }
 				<aside class="tsd-sources">
 					<p>Inherited from <a href="corecredentials.html">CoreCredentials</a>.<a href="corecredentials.html#devicetoken">deviceToken</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L29">lib/coreConnection.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L19">lib/coreConnection.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1073,7 +1098,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">device<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">P.DeviceType</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L33">lib/coreConnection.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L24">lib/coreConnection.ts:24</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1083,7 +1108,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">versions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L35">lib/coreConnection.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L28">lib/coreConnection.ts:28</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1093,7 +1118,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">watch<wbr>Dog<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">false</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">true</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/coreConnection.ts#L38">lib/coreConnection.ts:38</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/coreConnection.ts#L31">lib/coreConnection.ts:31</a></li>
 					</ul>
 				</aside>
 			</section>

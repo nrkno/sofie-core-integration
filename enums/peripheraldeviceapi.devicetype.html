@@ -909,6 +909,9 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
+		<li class=" tsd-kind-enum tsd-parent-kind-module tsd-is-external">
+			<a href="peripheraldeviceapi.devicecategory.html" class="tsd-kind-icon">Device<wbr>Category</a>
+		</li>
 		<li class="current tsd-kind-enum tsd-parent-kind-module tsd-is-external">
 			<a href="peripheraldeviceapi.devicetype.html" class="tsd-kind-icon">Device<wbr>Type</a>
 			<ul>
@@ -916,10 +919,7 @@ img { max-width: 100%; }
 					<a href="peripheraldeviceapi.devicetype.html#media_manager" class="tsd-kind-icon">MEDIA_<wbr>MANAGER</a>
 				</li>
 				<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-					<a href="peripheraldeviceapi.devicetype.html#mosdevice" class="tsd-kind-icon">MOSDEVICE</a>
-				</li>
-				<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-					<a href="peripheraldeviceapi.devicetype.html#other" class="tsd-kind-icon">OTHER</a>
+					<a href="peripheraldeviceapi.devicetype.html#mos" class="tsd-kind-icon">MOS</a>
 				</li>
 				<li class=" tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 					<a href="peripheraldeviceapi.devicetype.html#playout" class="tsd-kind-icon">PLAYOUT</a>
@@ -948,10 +948,25 @@ img { max-width: 100%; }
 			<a href="../interfaces/peripheraldeviceapi.statusobject.html" class="tsd-kind-icon">Status<wbr>Object</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#devicesubtype" class="tsd-kind-icon">Device<wbr>Sub<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#mos_devicetype" class="tsd-kind-icon">MOS_<wbr><wbr>Device<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#partplaybackstoppedresult" class="tsd-kind-icon">Part<wbr>Playback<wbr>Stopped<wbr>Result</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#pieceplaybackstoppedresult" class="tsd-kind-icon">Piece<wbr>Playback<wbr>Stopped<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#subtype_process" class="tsd-kind-icon">SUBTYPE_<wbr>PROCESS</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#spreadsheet_devicetype" class="tsd-kind-icon">Spreadsheet_<wbr><wbr>Device<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#tsr_devicetype" class="tsd-kind-icon">TSR_<wbr><wbr>Device<wbr>Type</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#timelinetriggertimeresult" class="tsd-kind-icon">Timeline<wbr>Trigger<wbr>Time<wbr>Result</a>
@@ -980,8 +995,7 @@ img { max-width: 100%; }
 						<h3>Enumeration members</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#media_manager" class="tsd-kind-icon">MEDIA_<wbr>MANAGER</a></li>
-							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#mosdevice" class="tsd-kind-icon">MOSDEVICE</a></li>
-							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#other" class="tsd-kind-icon">OTHER</a></li>
+							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#mos" class="tsd-kind-icon">MOS</a></li>
 							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#playout" class="tsd-kind-icon">PLAYOUT</a></li>
 							<li class="tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external"><a href="peripheraldeviceapi.devicetype.html#spreadsheet" class="tsd-kind-icon">SPREADSHEET</a></li>
 						</ul>
@@ -994,50 +1008,40 @@ img { max-width: 100%; }
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 				<a name="media_manager" class="tsd-anchor"></a>
 				<h3>MEDIA_<wbr>MANAGER</h3>
-				<div class="tsd-signature tsd-kind-icon">MEDIA_<wbr>MANAGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;3</span></div>
+				<div class="tsd-signature tsd-kind-icon">MEDIA_<wbr>MANAGER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;media_manager&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L26">lib/corePeripherals.ts:26</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L34">lib/corePeripherals.ts:34</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-				<a name="mosdevice" class="tsd-anchor"></a>
-				<h3>MOSDEVICE</h3>
-				<div class="tsd-signature tsd-kind-icon">MOSDEVICE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;0</span></div>
+				<a name="mos" class="tsd-anchor"></a>
+				<h3>MOS</h3>
+				<div class="tsd-signature tsd-kind-icon">MOS<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;mos&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L23">lib/corePeripherals.ts:23</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
-				<a name="other" class="tsd-anchor"></a>
-				<h3>OTHER</h3>
-				<div class="tsd-signature tsd-kind-icon">OTHER<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;2</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L25">lib/corePeripherals.ts:25</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L29">lib/corePeripherals.ts:29</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 				<a name="playout" class="tsd-anchor"></a>
 				<h3>PLAYOUT</h3>
-				<div class="tsd-signature tsd-kind-icon">PLAYOUT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;1</span></div>
+				<div class="tsd-signature tsd-kind-icon">PLAYOUT<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;playout&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L24">lib/corePeripherals.ts:24</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L32">lib/corePeripherals.ts:32</a></li>
 					</ul>
 				</aside>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-enum-member tsd-parent-kind-enum tsd-is-external">
 				<a name="spreadsheet" class="tsd-anchor"></a>
 				<h3>SPREADSHEET</h3>
-				<div class="tsd-signature tsd-kind-icon">SPREADSHEET<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;4</span></div>
+				<div class="tsd-signature tsd-kind-icon">SPREADSHEET<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol"> =&nbsp;&quot;spreadsheet&quot;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L27">lib/corePeripherals.ts:27</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L30">lib/corePeripherals.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>

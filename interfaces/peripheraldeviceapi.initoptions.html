@@ -910,6 +910,9 @@ img { max-width: 100%; }
 <nav class="tsd-navigation secondary">
 	<ul>
 		<li class=" tsd-kind-enum tsd-parent-kind-module tsd-is-external">
+			<a href="../enums/peripheraldeviceapi.devicecategory.html" class="tsd-kind-icon">Device<wbr>Category</a>
+		</li>
+		<li class=" tsd-kind-enum tsd-parent-kind-module tsd-is-external">
 			<a href="../enums/peripheraldeviceapi.devicetype.html" class="tsd-kind-icon">Device<wbr>Type</a>
 		</li>
 		<li class=" tsd-kind-enum tsd-parent-kind-module tsd-is-external">
@@ -922,6 +925,9 @@ img { max-width: 100%; }
 			<a href="peripheraldeviceapi.initoptions.html" class="tsd-kind-icon">Init<wbr>Options</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a href="peripheraldeviceapi.initoptions.html#category" class="tsd-kind-icon">category</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a href="peripheraldeviceapi.initoptions.html#connectionid" class="tsd-kind-icon">connection<wbr>Id</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
@@ -929,6 +935,9 @@ img { max-width: 100%; }
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a href="peripheraldeviceapi.initoptions.html#parentdeviceid" class="tsd-kind-icon">parent<wbr>Device<wbr>Id</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+					<a href="peripheraldeviceapi.initoptions.html#subtype" class="tsd-kind-icon">sub<wbr>Type</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 					<a href="peripheraldeviceapi.initoptions.html#type" class="tsd-kind-icon">type</a>
@@ -948,10 +957,25 @@ img { max-width: 100%; }
 			<a href="peripheraldeviceapi.statusobject.html" class="tsd-kind-icon">Status<wbr>Object</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#devicesubtype" class="tsd-kind-icon">Device<wbr>Sub<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#mos_devicetype" class="tsd-kind-icon">MOS_<wbr><wbr>Device<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#partplaybackstoppedresult" class="tsd-kind-icon">Part<wbr>Playback<wbr>Stopped<wbr>Result</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#pieceplaybackstoppedresult" class="tsd-kind-icon">Piece<wbr>Playback<wbr>Stopped<wbr>Result</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#subtype_process" class="tsd-kind-icon">SUBTYPE_<wbr>PROCESS</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#spreadsheet_devicetype" class="tsd-kind-icon">Spreadsheet_<wbr><wbr>Device<wbr>Type</a>
+		</li>
+		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
+			<a href="../modules/peripheraldeviceapi.html#tsr_devicetype" class="tsd-kind-icon">TSR_<wbr><wbr>Device<wbr>Type</a>
 		</li>
 		<li class=" tsd-kind-type-alias tsd-parent-kind-module tsd-is-external">
 			<a href="../modules/peripheraldeviceapi.html#timelinetriggertimeresult" class="tsd-kind-icon">Timeline<wbr>Trigger<wbr>Time<wbr>Result</a>
@@ -987,9 +1011,11 @@ img { max-width: 100%; }
 					<section class="tsd-index-section tsd-is-external">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#category" class="tsd-kind-icon">category</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#connectionid" class="tsd-kind-icon">connection<wbr>Id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#name" class="tsd-kind-icon">name</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#parentdeviceid" class="tsd-kind-icon">parent<wbr>Device<wbr>Id</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#subtype" class="tsd-kind-icon">sub<wbr>Type</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#type" class="tsd-kind-icon">type</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface tsd-is-external"><a href="peripheraldeviceapi.initoptions.html#versions" class="tsd-kind-icon">versions</a></li>
 						</ul>
@@ -1000,12 +1026,22 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group tsd-is-external">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<a name="category" class="tsd-anchor"></a>
+				<h3>category</h3>
+				<div class="tsd-signature tsd-kind-icon">category<span class="tsd-signature-symbol">:</span> <a href="../enums/peripheraldeviceapi.devicecategory.html" class="tsd-signature-type">DeviceCategory</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L45">lib/corePeripherals.ts:45</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
 				<a name="connectionid" class="tsd-anchor"></a>
 				<h3>connection<wbr>Id</h3>
 				<div class="tsd-signature tsd-kind-icon">connection<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L32">lib/corePeripherals.ts:32</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L50">lib/corePeripherals.ts:50</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1015,7 +1051,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L31">lib/corePeripherals.ts:31</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L49">lib/corePeripherals.ts:49</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1025,7 +1061,17 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">parent<wbr>Device<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L33">lib/corePeripherals.ts:33</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L51">lib/corePeripherals.ts:51</a></li>
+					</ul>
+				</aside>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface tsd-is-external">
+				<a name="subtype" class="tsd-anchor"></a>
+				<h3>sub<wbr>Type</h3>
+				<div class="tsd-signature tsd-kind-icon">sub<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="../modules/peripheraldeviceapi.html#devicesubtype" class="tsd-signature-type">DeviceSubType</a></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L47">lib/corePeripherals.ts:47</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1035,7 +1081,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">type<span class="tsd-signature-symbol">:</span> <a href="../enums/peripheraldeviceapi.devicetype.html" class="tsd-signature-type">DeviceType</a></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L30">lib/corePeripherals.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L46">lib/corePeripherals.ts:46</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -1045,7 +1091,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">versions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">object</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/944fa7a/src/lib/corePeripherals.ts#L34">lib/corePeripherals.ts:34</a></li>
+						<li>Defined in <a href="https://github.com/nrkno/tv-automation-server-core-integration/blob/1e8d436/src/lib/corePeripherals.ts#L52">lib/corePeripherals.ts:52</a></li>
 					</ul>
 				</aside>
 			</section>
