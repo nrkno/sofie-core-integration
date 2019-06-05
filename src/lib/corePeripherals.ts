@@ -90,6 +90,7 @@ export enum methods {
 	'partPlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
 	'piecePlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
 	'piecePlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
+	'reportCommandError'	= 'peripheralDevice.playout.reportCommandError',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
