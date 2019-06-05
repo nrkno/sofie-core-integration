@@ -35,6 +35,7 @@ export enum DeviceType {
 }
 export type DeviceSubType = SUBTYPE_PROCESS | TSR_DeviceType | MOS_DeviceType | Spreadsheet_DeviceType
 
+/** SUBTYPE_PROCESS means that the device is NOT a sub-device, but a (parent) process. */
 export type SUBTYPE_PROCESS = '_process'
 export const SUBTYPE_PROCESS: SUBTYPE_PROCESS = '_process'
 export type MOS_DeviceType = 'mos_connection'
@@ -84,11 +85,12 @@ export enum methods {
 	'getTimeDiff'			= 'systemTime.getTimeDiff',
 	'getTime'				= 'systemTime.getTime',
 
-	'timelineTriggerTime'			= 'peripheralDevice.timeline.setTimelineTriggerTime',
+	'timelineTriggerTime'	= 'peripheralDevice.timeline.setTimelineTriggerTime',
 	'partPlaybackStarted' 	= 'peripheralDevice.rundown.partPlaybackStarted',
 	'partPlaybackStopped' 	= 'peripheralDevice.rundown.partPlaybackStopped',
-	'piecePlaybackStarted'= 'peripheralDevice.rundown.piecePlaybackStarted',
-	'piecePlaybackStopped'= 'peripheralDevice.rundown.piecePlaybackStopped',
+	'piecePlaybackStarted'	= 'peripheralDevice.rundown.piecePlaybackStarted',
+	'piecePlaybackStopped'	= 'peripheralDevice.rundown.piecePlaybackStopped',
+	'reportCommandError'	= 'peripheralDevice.playout.reportCommandError',
 
 	'mosRoCreate' 		= 'peripheralDevice.mos.roCreate',
 	'mosRoReplace' 		= 'peripheralDevice.mos.roReplace',
@@ -121,18 +123,18 @@ export enum methods {
 	'dataPartCreate'	= 'peripheralDevice.rundown.partCreate',
 	'dataPartUpdate'	= 'peripheralDevice.rundown.partUpdate',
 
-	'resyncRundown'			= 'peripheralDevice.mos.roResync',
+	'resyncRundown'				= 'peripheralDevice.mos.roResync',
 
 	'getMediaObjectRevisions' 	= 'peripheralDevice.mediaScanner.getMediaObjectRevisions',
 	'updateMediaObject' 		= 'peripheralDevice.mediaScanner.updateMediaObject',
 
-	'getMediaWorkFlowRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowRevisions',
-	'updateMediaWorkFlow' = 'peripheralDevice.mediaManager.updateMediaWorkFlow',
+	'getMediaWorkFlowRevisions' 	= 'peripheralDevice.mediaManager.getMediaWorkFlowRevisions',
+	'updateMediaWorkFlow' 			= 'peripheralDevice.mediaManager.updateMediaWorkFlow',
 	'getMediaWorkFlowStepRevisions' = 'peripheralDevice.mediaManager.getMediaWorkFlowStepRevisions',
-	'updateMediaWorkFlowStep' = 'peripheralDevice.mediaManager.updateMediaWorkFlowStep',
+	'updateMediaWorkFlowStep'		= 'peripheralDevice.mediaManager.updateMediaWorkFlowStep',
 
-	'requestUserAuthToken' 	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
-	'storeAccessToken' 	= 'peripheralDevice.spreadsheet.storeAccessToken'
+	'requestUserAuthToken'	= 'peripheralDevice.spreadsheet.requestUserAuthToken',
+	'storeAccessToken'		= 'peripheralDevice.spreadsheet.storeAccessToken'
 
 }
 
