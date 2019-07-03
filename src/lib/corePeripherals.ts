@@ -6,19 +6,25 @@ export namespace PeripheralDeviceAPI {
 
 export enum StatusCode {
 
-	UNKNOWN = 0, 		// Status unknown
-	GOOD = 1, 			// All good and green
-	WARNING_MINOR = 2,	// Everything is not OK, operation is not affected
-	WARNING_MAJOR = 3, 	// Everything is not OK, operation might be affected
-	BAD = 4, 			// Operation affected, possible to recover
-	FATAL = 5			// Operation affected, not possible to recover without manual interference
+	/** Unknown status, could be due to parent device connected etc.. */
+	UNKNOWN = 0,
+	/** All good and green */
+	GOOD = 1,
+	/** Everything is not OK, but normal operation should not be affected. An optional/backup service might be offline, etc. */
+	WARNING_MINOR = 2,
+	/** Everything is not OK, operation might be affected. Like when having switched to a backup, or have taken action to fix an error. */
+	WARNING_MAJOR = 3,
+	/** Not good. Operation is affected. Will be able to recover on it's own when the situation changes. */
+	BAD = 4,
+	/** Not good. Operation is affected. Will NOT be able to to recover from this, manual intervention will be required. */
+	FATAL = 5
 }
 
 export interface StatusObject {
 	statusCode: StatusCode,
 	messages?: Array<string>
 }
-// Note The actual type of a device is determined by the Category, Type and SubType
+// Note: The definite type of a device is determined by the Category, Type and SubType
 export enum DeviceCategory {
 	INGEST = 'ingest',
 	PLAYOUT = 'playout',
