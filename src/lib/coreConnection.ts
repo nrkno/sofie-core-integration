@@ -305,11 +305,11 @@ export class CoreConnection extends EventEmitter {
 		return this.callMethod(P.methods.getPeripheralDevice)
 	}
 	getCollection (collectionName: string): Collection {
-		const that = this
-		
+		const collections = this.ddp.ddpClient.collections
+
 		let c: Collection = {
 			find (selector?: any): Array<CollectionObj> {
-				const collection = that.ddp.ddpClient.collections[collectionName] || {}
+				const collection = collections[collectionName] || {}
 				if (_.isUndefined(selector)) {
 					return _.values(collection)
 				} else if (_.isFunction(selector)) {
