@@ -39,6 +39,7 @@ export enum DeviceType {
 	// Ingest devices:
 	MOS 			= 'mos',
 	SPREADSHEET 	= 'spreadsheet',
+	INEWS			= 'inews',
 	// Playout devices:
 	PLAYOUT 		= 'playout',
 	// Media-manager devices:
