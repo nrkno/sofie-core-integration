@@ -1,4 +1,4 @@
-import { DeviceConfigManifest } from './configManifest';
+import { DeviceConfigManifest } from './configManifest'
 
 /**
  * Note: This file contains a copy of the typings from meteor/lib/api/peripheralDevice.ts in Core

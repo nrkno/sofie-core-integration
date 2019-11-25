@@ -28,7 +28,7 @@ export enum ConfigManifestEntryType {
 	INT = 'int',
 	CREDENTIALS = 'credentials', // TODO - parent only
 	TABLE = 'table', // TODO - write this for HTTPSEND
-	OBJECT =  'object',
+	OBJECT = 'object',
 	ENUM = 'enum' // @todo: implement
 }
 
@@ -67,7 +67,6 @@ export interface TableConfigManifestEntry extends ConfigManifestEntryBase {
 
 export function literal<T> (o: T) { return o }
 
-
 export const TEST_SPREADSHEET_DEVICE: DeviceConfigManifest = {
 	deviceConfig: [
 		{
@@ -83,7 +82,7 @@ export const TEST_SPREADSHEET_DEVICE: DeviceConfigManifest = {
 	],
 	deviceOAuthFlow: {
 		credentialsHelp: 'Go to the url below and click on the "Enable the Drive API button". Then click on "Download Client configuration", save the credentials.json file and upload it here.',
-		credentialsURL: 'https://developers.google.com/drive/api/v3/quickstart/nodejs',
+		credentialsURL: 'https://developers.google.com/drive/api/v3/quickstart/nodejs'
 
 	}
 }
@@ -138,7 +137,6 @@ export const TEST_MOS_DEVICE: DeviceConfigManifest = {
 		}
 	]
 }
-
 
 export enum StorageType {
 	LOCAL_FOLDER = 'local_folder',
@@ -381,10 +379,10 @@ export const TEST_MEDIA_MANAGER_DEVICE: DeviceConfigManifest = {
 }
 
 export enum TimelineContentTypeHttp {
-    GET = "get",
-    POST = "post",
-    PUT = "put",
-    DELETE = "delete"
+	GET = 'get',
+	POST = 'post',
+	PUT = 'put',
+	DELETE = 'delete'
 }
 export enum TSRDeviceType {
 	ABSTRACT = 'abstract',
@@ -402,19 +400,19 @@ export enum TSRDeviceType {
 	QUANTEL = 'quantel'
 }
 export const TSRDeviceTypeValue = {
-    [TSRDeviceType.ABSTRACT]: 0,
-    [TSRDeviceType.CASPARCG]: 1,
-    [TSRDeviceType.ATEM]: 2,
-    [TSRDeviceType.LAWO]: 3,
-    [TSRDeviceType.HTTPSEND]: 4,
-    [TSRDeviceType.PANASONIC_PTZ]: 5,
-    [TSRDeviceType.TCPSEND]: 6,
-    [TSRDeviceType.HYPERDECK]: 7,
-    [TSRDeviceType.PHAROS]: 8,
-    [TSRDeviceType.OSC]: 9,
-    [TSRDeviceType.HTTPWATCHER]: 10,
-    [TSRDeviceType.SISYFOS]: 11,
-    [TSRDeviceType.QUANTEL]: 12
+	[TSRDeviceType.ABSTRACT]: 0,
+	[TSRDeviceType.CASPARCG]: 1,
+	[TSRDeviceType.ATEM]: 2,
+	[TSRDeviceType.LAWO]: 3,
+	[TSRDeviceType.HTTPSEND]: 4,
+	[TSRDeviceType.PANASONIC_PTZ]: 5,
+	[TSRDeviceType.TCPSEND]: 6,
+	[TSRDeviceType.HYPERDECK]: 7,
+	[TSRDeviceType.PHAROS]: 8,
+	[TSRDeviceType.OSC]: 9,
+	[TSRDeviceType.HTTPWATCHER]: 10,
+	[TSRDeviceType.SISYFOS]: 11,
+	[TSRDeviceType.QUANTEL]: 12
 }
 
 const PLAYOUT_SUBDEVICE_CONFIG: SubDeviceConfigManifest['config'] = {}
@@ -428,7 +426,7 @@ const PLAYOUT_SUBDEVICE_COMMON: SubDeviceConfigManifestEntry[] = [
 		id: 'threadUsage',
 		name: 'Thread Usage',
 		type: ConfigManifestEntryType.FLOAT
-	},
+	}
 ]
 const PLAYOUT_SUBDEVICE_HOST_PORT = [
 	{
