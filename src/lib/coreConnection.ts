@@ -22,8 +22,8 @@ export interface CoreCredentials {
 
 export interface CoreOptions extends CoreCredentials {
 	deviceCategory: P.DeviceCategory
-	deviceType: string, // P.DeviceType @todo: deprecated
-	deviceSubType: P.DeviceSubType
+	deviceType?: P.DeviceType | string //  deprecated
+	deviceSubType?: P.DeviceSubType // deprecated
 
 	deviceName: string,
 	versions?: {
