@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.2.1...1.3.0) (2020-01-07)
+
+
+### Features
+
+* device config manifests ([15e7c7f](https://github.com/nrkno/tv-automation-server-core-integration/commit/15e7c7fce4a6e318f03404247e2cbe9e70d86625))
+* update ci to run for node 8,10,12 ([24cebc3](https://github.com/nrkno/tv-automation-server-core-integration/commit/24cebc3a396afa860e98b5c86464fc87ab2ef2af))
+
 ### [1.2.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.2.0...1.2.1) (2019-08-26)
 
 
