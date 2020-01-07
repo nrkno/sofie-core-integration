@@ -6,6 +6,7 @@ import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals
 import { TimeSync } from './timeSync'
 import { WatchDog } from './watchDog'
 import { Queue } from './queue'
+import { DeviceConfigManifest } from './configManifest'
 
 const DataStore = require('data-store')
 const Random = require('ddp-random')
@@ -21,8 +22,8 @@ export interface CoreCredentials {
 
 export interface CoreOptions extends CoreCredentials {
 	deviceCategory: P.DeviceCategory
-	deviceType: P.DeviceType
-	deviceSubType: P.DeviceSubType
+	deviceType?: P.DeviceType | string //  deprecated
+	deviceSubType?: P.DeviceSubType // deprecated
 
 	deviceName: string,
 	versions?: {
@@ -30,6 +31,7 @@ export interface CoreOptions extends CoreCredentials {
 	},
 	watchDog?: boolean
 
+	configManifest?: DeviceConfigManifest
 }
 export interface CollectionObj {
 	_id: string
@@ -415,7 +417,9 @@ export class CoreConnection extends EventEmitter {
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId,
 			parentDeviceId: (this._parent && this._parent.deviceId) || undefined,
-			versions: this._coreOptions.versions
+			versions: this._coreOptions.versions,
+
+			configManifest: this._coreOptions.configManifest
 		}
 		this._sentConnectionId = options.connectionId
 		return this.callMethod(P.methods.initialize, [options])
