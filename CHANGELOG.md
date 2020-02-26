@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.3.0...1.4.0) (2020-02-26)
+
+
+### Features
+
+* add placeholder option to config manifest entry ([00a6c31](https://github.com/nrkno/tv-automation-server-core-integration/commit/00a6c312513c4802e60a2156038577e1a9e2db8a))
+
 ## [1.3.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.2.1...1.3.0) (2020-01-07)
 
 
