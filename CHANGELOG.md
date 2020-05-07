@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.4.0...1.5.0) (2020-05-07)
+
+
+### Features
+
+* Add INEWS device ([32ec234](https://github.com/nrkno/tv-automation-server-core-integration/commit/32ec234350d3971a02ddf9d6a50f8ad785ee8c7b))
+
+
+### Bug Fixes
+
+* remove test code from configManifest ([6449e16](https://github.com/nrkno/tv-automation-server-core-integration/commit/6449e16338b09780946aa9c563ba1b509a66295c))
+
 ## [1.4.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.3.0...1.4.0) (2020-02-26)
 
 
