@@ -124,5 +124,9 @@
   "standard-version": {
     "message": "chore(release): %s [skip ci]",
     "tagPrefix": ""
+  },
+  "resolutions": {
+    "yargs-parser": "^18.1.2",
+    "minimist": "^1.2.3"
   }
 }
