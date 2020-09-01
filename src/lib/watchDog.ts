@@ -14,6 +14,7 @@ export class WatchDog extends EventEmitter {
 	private _dieTimeout: NodeJS.Timer | null = null
 	private _watching: boolean = false
 	private _checkFunctions: Array<() => Promise<any>> = []
+	private _runningChecks = false
 
 	constructor (_timeout?: number) {
 		super()
@@ -39,6 +40,12 @@ export class WatchDog extends EventEmitter {
 		let i = this._checkFunctions.indexOf(fcn)
 		if (i !== -1) this._checkFunctions.splice(i, 1)
 	}
+	public receivedData () {
+		if (this._watching && !this._runningChecks) {
+			this._watch()
+		}
+	}
+
 	private _everythingIsOk () {
 		if (this._watching) {
 			this._watch()
@@ -49,6 +56,7 @@ export class WatchDog extends EventEmitter {
 		if (this._checkTimeout) clearTimeout(this._checkTimeout)
 
 		this._checkTimeout = setTimeout(() => {
+			this._runningChecks = true
 			Promise.all(
 				_.map(this._checkFunctions, (fcn: () => Promise<any>) => {
 					return fcn()
@@ -58,6 +66,7 @@ export class WatchDog extends EventEmitter {
 				// console.log('all promises have resolved')
 				// all promises have resolved
 				this._everythingIsOk()
+				this._runningChecks = false
 			})
 			.catch(() => {
 				// do nothing, the die-timeout will trigger soon
