@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.5.1...2.0.0) (2020-09-02)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop support for node 8
+
+### Features
+
+* drop support for node 8 ([f5b88e1](https://github.com/nrkno/tv-automation-server-core-integration/commit/f5b88e1d99bcd7d0b8cde07595575fa7ca2b64f2))
+* Multiline strings ([1daca67](https://github.com/nrkno/tv-automation-server-core-integration/commit/1daca67c6f0a0b57d5a5739a438e321a6484bce6))
+
+
+### Bug Fixes
+
+* reduced amount of watchdogs calls ([c9d621a](https://github.com/nrkno/tv-automation-server-core-integration/commit/c9d621ae7aa36a5afc7caef85d310d411d06a595))
+
 ### [1.5.1](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.5.0...1.5.1) (2020-05-28)
 
 ## [1.5.0](https://github.com/nrkno/tv-automation-server-core-integration/compare/1.4.0...1.5.0) (2020-05-07)
