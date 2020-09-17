@@ -115,8 +115,8 @@
   ],
   "dependencies": {
     "data-store": "3.1.0",
-    "ddp": "git+http://github.com/nytamin/node-ddp-client.git#v0.12.2-next2",
-    "ddp-random": "~0.8.1-1",
+    "ejson": "^2.2.0",
+    "faye-websocket": "^0.11.3",
     "tslib": "^1.13.0",
     "underscore": "^1.10.2"
   },
