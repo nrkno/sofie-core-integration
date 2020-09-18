@@ -10,6 +10,7 @@
 import * as WebSocket from 'faye-websocket'
 import * as EJSON from 'ejson'
 import { EventEmitter } from 'events'
+import { join as pathJoin } from 'path'
 
 export interface TLSOpts {
 	// Described in https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
@@ -41,10 +42,154 @@ export interface DDPConnectorOptions {
 }
 
 export interface Observer {
-	added: (id: string) => void
+	readonly name: string
+	readonly _id: string
+	added: (id: string, fields?: { [attr: string]: any } ) => void
 	changed: (id: string, oldFields: any, clearedFields: any, newFields: any) => void
 	removed: (id: string, oldValue: any) => void
 	stop: () => void
+}
+
+type ClientServer = 'connect' | 'ping' | 'pong' | 'method' | 'sub' | 'unsub'
+type ServerClient = 'failed' | 'connected' | 'result' | 'updated' | 'nosub' | 'added' | 'removed' | 'changed' | 'ready' | 'ping' | 'pong' | 'error'
+type MessageType = ClientServer | ServerClient
+
+export interface Message {
+	/** Kind of meteor message */
+	msg: MessageType
+}
+
+export interface DDPError {
+	error: string | number
+	reason?: string
+	message?: string
+	errorType: 'Meteor.Error'
+} 
+
+export interface Connect extends Message {
+	msg: 'connect'
+	/** If trying to reconnect to an existing DDP session */
+	session?: string
+	/** The proposed protocol version */
+	version: string
+	/** Protocol versions supported by the client, in order of preference */
+	support: Array<string>
+}
+
+export interface Connected extends Message {
+	msg: 'connected'
+	/** An identifier for the DDP session */
+	session: string
+}
+
+export interface Failed extends Message {
+	msg: 'failed'
+	/** A suggested protocol version to connect with */
+	version: string
+}
+
+export interface Ping extends Message {
+	msg: 'ping'
+	/** Identifier used to correlate with response */
+	id?: string
+}
+
+export interface Pong extends Message {
+	msg: 'pong'
+	/** Same as received in the `ping` message */
+	id?: string
+}
+
+export interface Sub extends Message {
+	msg: 'sub'
+	/** An arbitrary client-determined identifier for this subscription */
+	id: string
+	/** Name of the subscription */
+	name: string
+	/** Parameters to the subscription. Most be serializable to EJSON. */
+	params?: Array<any>
+}
+
+export interface UnSub extends Message {
+	msg: 'unsub'
+	/** The `id` passed to `sub` */
+	id: string
+}
+
+export interface NoSub extends Message {
+	msg: 'nosub'
+	/** The `id` passed to `sub` */
+	id: string
+	/** An error raised by the subscription as it concludes, or sub-not-found */
+	error?: DDPError 
+}
+
+export interface Added extends Message {
+	msg: 'added'
+	/** Collection name */
+	collection: string
+	/** Document identifier */
+	id: string
+	/** Document values - serializable with EJSON */
+	fields?: { [ attr: string]: any }
+}
+
+export interface Changed extends Message {
+	msg: 'changed'
+	/** Collection name */
+	collection: string
+	/** Document identifier */
+	id: string
+	/** Document values - serializable with EJSON */
+	fields?: { [ attr: string]: any }
+	/** Field names to delete */
+	cleared?: Array<string>
+}
+
+export interface Removed extends Message {
+	msg: 'removed'
+	/** Collection name */
+	collection: string
+	/** Document identifier */
+	id: string
+}
+
+export interface Ready extends Message {
+	msg: 'ready'
+	/** Identifiers passed to `sub` which have sent their initial batch of data */
+	subs: Array<string>
+}
+
+export interface Method extends Message {
+	msg: 'method'
+	method: string
+	params: Array<any>
+	id: string
+	randomSeed?: string
+}
+
+export interface Result extends Message {
+	msg: 'result'
+	id: string
+	error?: DDPError
+	result: Array<any>
+}
+
+export interface Updated extends Message {
+	msg: 'updated'
+	methods: Array<string>
+}
+
+/**
+ * Erroneous messages sent from the client to the server can result in receiving a top-level 
+ * `error` message in response.
+ */
+export interface ErrorMessage extends Message {
+	msg: 'error'
+	/** Description of the error */
+	reason: string
+	/** If the original message parsed properly, it is included here */
+	offendingMessage?: Message 
 }
 
 export class DDPClient extends EventEmitter {
@@ -66,9 +211,11 @@ export class DDPClient extends EventEmitter {
 	public readonly path?: string
 	public readonly ssl: boolean
 	public readonly useSockJS: boolean
-	public readonly autoReconnect: boolean
+	private autoReconnectInt: boolean
+	public get autoReconnect() { return this.autoReconnectInt }
 	public readonly autoReconnectTimer: number
-	public readonly ddpVersion: '1' | 'pre2' | 'pre1'
+	private ddpVersionInt: '1' | 'pre2' | 'pre1'
+	public get ddpVersion () { return this.ddpVersionInt }	
 	public readonly url: string | undefined
 	public readonly maintainCollections: boolean
 
@@ -81,11 +228,14 @@ export class DDPClient extends EventEmitter {
 	private tlsOpts: TLSOpts
 	private isConnecting: boolean = false
 	private isReconnecting: boolean = false
+	private isClosing: boolean = false
+	private connectionFailed: boolean = false
 	private nextId: number = 0
-	private callbacks: { [name: string]: Function } = {}
+	private callbacks: { [id: string]: (error?: DDPError, result?: Array<any>) => void } = {}
 	private updatedCallbacks: { [name: string]: Function } = {}
-	private pendingMethods = {}
-	private observers: { [name: string]: Function } = {} 
+	private pendingMethods: { [id: string] : boolean } = {}
+	private observers: { [name: string]: { [_id: string]: Observer } } = {} 
+	private reconnectTimeout: NodeJS.Timeout | null = null
 
 	constructor(opts?: DDPConnectorOptions) { 
 		super()
@@ -98,11 +248,11 @@ export class DDPClient extends EventEmitter {
 		this.ssl  = opts.ssl  || this.port === 443
 		this.tlsOpts = opts.tlsOpts || {}
 		this.useSockJS = opts.useSockJs || false
-		this.autoReconnect = opts.autoReconnect || true
+		this.autoReconnectInt = opts.autoReconnect || true
 		this.autoReconnectTimer = opts.autoReconnectTimer || 500
 		this.maintainCollections = opts.maintainCollections || true
 		this.url = opts.url 
-		this.ddpVersion = opts.ddpVersion || '1'
+		this.ddpVersionInt = opts.ddpVersion || '1'
 
 		// very very simple collections (name -> [{id -> document}])
 		if (this.maintainCollections) {
@@ -124,16 +274,16 @@ export class DDPClient extends EventEmitter {
 		this.socket.on('error', (error: Error) => {
 			// error received before connection was established
 			if (this.isConnecting) {
-				this.emit('failed', error.message);
+				this.emit('failed', error.message)
 			}
 
-			this.emit('socket-error', error);
+			this.emit('socket-error', error)
 		})
 
 		this.socket.on('close', (event) => {
 			this.emit('socket-close', event.code, event.reason);
-			this.endPendingMethodCalls();
-			this.recoverNetworkError();
+			this.endPendingMethodCalls()
+			this.recoverNetworkError()
 		});
 
 		this.socket.on('message', (event) => {
@@ -142,28 +292,26 @@ export class DDPClient extends EventEmitter {
 		})
 	}
 
-	private _clearReconnectTimeout (): void {
-		var self = this;
-		if (self.reconnectTimeout) {
-			clearTimeout(self.reconnectTimeout);
-			self.reconnectTimeout = null;
+	private clearReconnectTimeout (): void {
+		if (this.reconnectTimeout) {
+			clearTimeout(this.reconnectTimeout)
+			this.reconnectTimeout = null
 		}
 	};
 
-	private _recoverNetworkError(): void {
-		var self = this;
-		if (self.autoReconnect && ! self._connectionFailed && ! self._isClosing) {
-			self._clearReconnectTimeout();
-			self.reconnectTimeout = setTimeout(function() { self.connect(); }, self.autoReconnectTimer);
-			self._isReconnecting = true;
+	private recoverNetworkError(): void {
+		if (this.autoReconnect && !this.connectionFailed && !this.isClosing) {
+			this.clearReconnectTimeout();
+			this.reconnectTimeout = setTimeout(() => { this.connect() }, this.autoReconnectTimer);
+			this.isReconnecting = true;
 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////////
 	// RAW, low level functions
-	private _send (data: DDPData): void {
-		if (data.msg !== 'connect' && this._isConnecting) {
-			this._endPendingMethodCalls()
+	private send <M extends Message> (data: M): void {
+		if (data.msg !== 'connect' && this.isConnecting) {
+			this.endPendingMethodCalls()
 		} else {
 			this.socket.send(
 				EJSON.stringify(data)
@@ -171,171 +319,187 @@ export class DDPClient extends EventEmitter {
 		}
 	};
 
+	private failed (data: Failed): void {
+		if (DDPClient.supportedDdpVersions.indexOf(data.version) !== -1) {
+			this.ddpVersionInt = <'1' | 'pre2' | 'pre1'> data.version
+			this.connect()
+		} else {
+			this.autoReconnectInt = false
+			this.emit('failed', 'Cannot negotiate DDP version')
+		}
+	}
+
+	private connected (data: Connected): void {
+		this.session = data.session
+		this.emit('connected')
+	}
+
+	private result (data: Result): void {
+		const cb = this.callbacks[data.id] || undefined
+
+		if (cb) {
+			cb(data.error, data.result)
+			data.id && (delete this.callbacks[data.id])
+		}
+	}
+
+	private updated (data: Updated): void {
+		if (data.methods) {
+			data.methods.forEach(method => {
+				const cb = this.updatedCallbacks[method]
+				if (cb) {
+					cb()
+					delete this.updatedCallbacks[method]
+				}
+			})
+		}
+	}
+
+	private nosub (data: NoSub): void {
+		const cb = data.id && this.callbacks[data.id] || undefined
+
+		if (cb) {
+			cb(data.error)
+			data.id && (delete this.callbacks[data.id])
+		}
+	}
+
+	private added (data: Added): void {
+		if (this.maintainCollections) {
+			const name = data.collection
+			const id = data.id || 'unknown'
+
+			if (!this.collections[name]) { 
+				this.collections[name] = {} 
+			}
+			if (!this.collections[name][id]) { 
+				this.collections[name][id] = { _id: id } 
+			}
+
+			if (data.fields) {
+				Object.entries(data.fields).forEach(([key, value]) => {
+					this.collections[name][id][key] = value
+				})
+			}
+
+			if (this.observers[name] && this.observers[name][id]) {
+				this.observers[name][id].added(id, data.fields)
+			}
+		}
+	}
+
+	private removed (data: Removed): void {
+		if (this.maintainCollections) {
+			const name = data.collection 
+			const id = data.id || 'unknown';
+
+			if (!this.collections[name][id]) {
+				return;
+			}
+
+			var oldValue = this.collections[name][id];
+
+			delete this.collections[name][id];
+
+			if (this.observers[name] && this.observers[name][id]) {
+				this.observers[name][id].removed(id, oldValue)
+			}
+		}
+	}
+
+	private changed (data: Changed): void {
+		if (this.maintainCollections) {
+			const name = data.collection
+			const id = data.id || 'unknown'
+
+			if (!this.collections[name]) { 
+				return 
+			}
+			if (!this.collections[name][id]) { 
+				return
+			}
+
+			let oldFields: { [attr: string]: any } = {}
+			const clearedFields = data.cleared || []
+			let newFields: { [attr: string]: any } = {};
+
+			if (data.fields) {
+				Object.entries(data.fields).forEach(([key, value]) => {
+					oldFields[key] = this.collections[name][id][key];
+					newFields[key] = value;
+					this.collections[name][id][key] = value
+				})
+			}
+
+			if (data.cleared) {
+				data.cleared.forEach(value => {
+					delete this.collections[name][id][value];
+				})
+			}
+
+			if (this.observers[name] && this.observers[name][id]) {
+				this.observers[name][id].changed(id, oldFields, clearedFields, newFields)
+			}
+		}
+	}
+
+	private ready (data: Ready): void {
+		data.subs.forEach(id => {
+			const cb = this.callbacks[id];
+			if (cb) {
+				cb()
+				delete this.callbacks[id];
+			}
+		})
+	}
+
+	private ping (data: Ping): void {
+		this.send(
+			data.id && { msg : "pong", id : data.id } as Pong || { msg : "pong" } as Pong
+		);
+	}
+
+	private messageWork: { [name in ServerClient]: (data: Message) => void } = {
+		failed: this.failed,
+		connected: this.connected,
+		result: this.result,
+		updated: this.updated,
+		nosub: this.nosub,
+		added: this.added,
+		removed: this.removed,
+		changed: this.changed,
+		ready: this.ready,
+		ping: this.ping,
+		pong: () => {},
+		error: () => {}
+	}
+
 	// handle a message from the server
-	private _message (data: DDPData): void {
-		var self = this;
+	private message (rawData: string): void {
+		const data: Message = EJSON.parse(rawData)
 
-		data = EJSON.parse(data);
-
-		// TODO: 'addedBefore' -- not yet implemented in Meteor
-		// TODO: 'movedBefore' -- not yet implemented in Meteor
-
-		if (!data.msg) {
-			return;
-
-		} else if (data.msg === "failed") {
-			if (self.supportedDdpVersions.indexOf(data.version) !== -1) {
-				this.ddpVersion = data.version;
-				self.connect();
-			} else {
-				self.autoReconnect = false;
-				self.emit("failed", "Cannot negotiate DDP version");
-			}
-
-		} else if (data.msg === "connected") {
-			self.session = data.session;
-			self.emit("connected");
-
-		// method result
-		} else if (data.msg === "result") {
-			var cb = self._callbacks[data.id];
-
-			if (cb) {
-				cb(data.error, data.result);
-				delete self._callbacks[data.id];
-			}
-
-		// method updated
-		} else if (data.msg === "updated") {
-
-			_.each(data.methods, function (method) {
-				var cb = self._updatedCallbacks[method];
-				if (cb) {
-					cb();
-					delete self._updatedCallbacks[method];
-				}
-			});
-
-		// missing subscription
-		} else if (data.msg === "nosub") {
-			var cb = self._callbacks[data.id];
-
-			if (cb) {
-				cb(data.error);
-				delete self._callbacks[data.id];
-			}
-
-		// add document to collection
-		} else if (data.msg === "added") {
-			if (self.maintainCollections && data.collection) {
-				var name = data.collection, id = data.id;
-
-				if (! self.collections[name])     { self.collections[name] = {}; }
-				if (! self.collections[name][id]) { self.collections[name][id] = {}; }
-
-				self.collections[name][id]._id = id;
-
-				if (data.fields) {
-					_.each(data.fields, function(value, key) {
-						self.collections[name][id][key] = value;
-					});
-				}
-
-				if (self._observers[name]) {
-					_.each(self._observers[name], function(observer) {
-						observer.added(id, data.fields);
-					});
-				}
-			}
-
-		// remove document from collection
-		} else if (data.msg === "removed") {
-			if (self.maintainCollections && data.collection) {
-				var name = data.collection, id = data.id;
-
-				if (! self.collections[name][id]) {
-					return;
-				}
-
-				var oldValue = self.collections[name][id];
-
-				delete self.collections[name][id];
-
-				if (self._observers[name]) {
-					_.each(self._observers[name], function(observer) {
-						observer.removed(id, oldValue);
-					});
-				}
-			}
-
-		// change document in collection
-		} else if (data.msg === "changed") {
-			if (self.maintainCollections && data.collection) {
-				var name = data.collection, id = data.id;
-
-				if (! self.collections[name])     { return; }
-				if (! self.collections[name][id]) { return; }
-
-				var oldFields     = {},
-						clearedFields = data.cleared || [],
-						newFields = {};
-
-				if (data.fields) {
-					_.each(data.fields, function(value, key) {
-							oldFields[key] = self.collections[name][id][key];
-							newFields[key] = value;
-							self.collections[name][id][key] = value;
-					});
-				}
-
-				if (data.cleared) {
-					_.each(data.cleared, function(value) {
-							delete self.collections[name][id][value];
-					});
-				}
-
-				if (self._observers[name]) {
-					_.each(self._observers[name], function(observer) {
-						observer.changed(id, oldFields, clearedFields, newFields);
-					});
-				}
-			}
-
-		// subscriptions ready
-		} else if (data.msg === "ready") {
-			_.each(data.subs, function(id) {
-				var cb = self._callbacks[id];
-				if (cb) {
-					cb();
-					delete self._callbacks[id];
-				}
-			});
-
-		// minimal heartbeat response for ddp pre2
-		} else if (data.msg === "ping") {
-			self._send(
-				_.has(data, "id") ? { msg : "pong", id : data.id } : { msg : "pong" }
-			);
+		if (this.messageWork[<ServerClient> data.msg]) {
+			this.messageWork[<ServerClient> data.msg](data)
 		}
 	}
 
-
-	private _getNextId (): void {
-		return (this._nextId += 1).toString();
+	private getNextId (): string {
+		return (this.nextId += 1).toString();
 	}
 
-
-	private _addObserver (observer: Observer): void {
-		if (! this._observers[observer.name]) {
-			this._observers[observer.name] = {};
+	private addObserver (observer: Observer): void {
+		if (!this.observers[observer.name]) {
+			this.observers[observer.name] = {}
 		}
-		this._observers[observer.name][observer._id] = observer;
+		this.observers[observer.name][observer._id] = observer
 	}
 
-	private _removeObserver (observer: Observer): void {
-		if (! this._observers[observer.name]) { return; }
+	private removeObserver (observer: Observer): void {
+		if (!this.observers[observer.name]) { 
+			return
+		}
 
-		delete this._observers[observer.name][observer._id];
+		delete this.observers[observer.name][observer._id]
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -347,61 +511,57 @@ export class DDPClient extends EventEmitter {
 	*               If autoReconnect is true (default), the callback will be
 	*               called each time the connection is opened.
 	*/
-	connect (callback?: (error: Error, wasReconnect: boolean) => void): void {
-		var self = this;
-		self._isConnecting = true;
-		self._connectionFailed = false;
-		self._isClosing = false;
+	connect (connected?: (error?: Error, wasReconnect?: boolean) => void): void {
+		this.isConnecting = true;
+		this.connectionFailed = false;
+		this.isClosing = false;
 
 		if (connected) {
-			self.addListener("connected", function() {
-				self._clearReconnectTimeout();
+			this.addListener('connected', () => {
+				this.clearReconnectTimeout()
 
-				connected(undefined, self._isReconnecting);
-				self._isConnecting = false;
-				self._isReconnecting = false;
-			});
-			self.addListener("failed", function(error) {
-				self._isConnecting = false;
-				self._connectionFailed = true;
-				connected(error, self._isReconnecting);
-			});
+				connected(undefined, this.isReconnecting)
+				this.isConnecting = false
+				this.isReconnecting = false
+			})
+			this.addListener('failed', error => {
+				this.isConnecting = false
+				this.connectionFailed = true
+				connected(error, this.isReconnecting)
+			})
 		}
 
-		if (self.useSockJs) {
-			self._makeSockJSConnection();
+		if (this.useSockJS) {
+			this.makeSockJSConnection()
 		} else {
-			var url = self._buildWsUrl();
-			self._makeWebSocketConnection(url);
+			const url = this.buildWsUrl()
+			this.makeWebSocketConnection(url)
 		}
-	};
+	}
 
-	private _endPendingMethodCalls (): void {
-		var self = this;
-		var ids = _.keys(self._pendingMethods);
-		self._pendingMethods = {};
+	private endPendingMethodCalls (): void {
+		const ids = Object.keys(this.pendingMethods)
+		this.pendingMethods = {}
 
-		ids.forEach(function (id) {
-			if (self._callbacks[id]) {
-				self._callbacks[id](DDPClient.ERRORS.DISCONNECTED);
-				delete self._callbacks[id];
+		ids.forEach(id => {
+			if (this.callbacks[id]) {
+				this.callbacks[id](DDPClient.ERRORS.DISCONNECTED)
+				delete this.callbacks[id]
 			}
 
-			if (self._updatedCallbacks[id]) {
-				self._updatedCallbacks[id]();
-				delete self._updatedCallbacks[id];
+			if (this.updatedCallbacks[id]) {
+				this.updatedCallbacks[id]()
+				delete this.updatedCallbacks[id]
 			}
 		});
 	};
 
-	private _makeSockJSConnection (): void {
-		var self = this;
-
+	private makeSockJSConnection (): void {
 		// do the info hit
-		var protocol = self.ssl ? "https://" : "http://";
-		var randomValue = "" + Math.ceil(Math.random() * 9999999);
-		var path = pathJoin("/", self.path || "", "sockjs/info");
-		var url = protocol + self.host + ":" + self.port + path;
+		const protocol = this.ssl ? "https://" : "http://"
+		const randomValue = `${Math.ceil(Math.random() * 9999999)}`
+		const path = pathJoin("/", this.path || "", "sockjs/info");
+		const url = protocol + this.host + ":" + this.port + path;
 
 		var requestOpts = { 'url': url, 'agentOptions': self.tlsOpts };
 
@@ -438,32 +598,28 @@ export class DDPClient extends EventEmitter {
 		});
 	}
 
-	private _buildWsUrl (path: string): string {
-		var self = this;
-		var url;
-		path = path || self.path || "websocket";
-		var protocol = self.ssl ? "wss://" : "ws://";
-		if (self.url && !self.useSockJs) {
-			url = self.url;
+	private buildWsUrl (path?: string): string {
+		let url : string
+		path = path || this.path || "websocket";
+		const protocol = this.ssl ? "wss://" : "ws://";
+		if (this.url && !this.useSockJS) {
+			url = this.url;
 		} else {
-			url = protocol + self.host + ":" + self.port;
-			url += (path.indexOf("/") === 0)? path : "/" + path;
+			url = `${protocol}${this.host}:${this.port}${(path.indexOf('/') === 0)? path : "/" + path}`
 		}
 		return url;
 	};
 
-	private _makeWebSocketConnection (url: string): void {
-		var self = this;
-		self.socket = new WebSocket.Client(url, null, self.tlsOpts);
-		self._prepareHandlers();
+	private makeWebSocketConnection (url: string): void {
+		this.socket = new WebSocket.Client(url, null, { tls: this.tlsOpts })
+		this.prepareHandlers();
 	}
 
 	close (): void {
-		var self = this;
-		self._isClosing = true;
-		self.socket.close();
-		self.removeAllListeners("connected");
-		self.removeAllListeners("failed");
+		this.isClosing = true;
+		this.socket.close();
+		this.removeAllListeners('connected')
+		this.removeAllListeners('failed')
 	};
 
 	call (
@@ -472,35 +628,33 @@ export class DDPClient extends EventEmitter {
 		callback: (err: Error, result: any) => void, 
 		updatedCallback?: (err: Error, result: any) => void
 	): void {
-		var self = this;
-		var id = self._getNextId();
+		const id = this.getNextId()
 
-		self._callbacks[id] = function () {
-			delete self._pendingMethods[id];
+		this.callbacks[id] = () => {
+			delete this.pendingMethods[id]
 
 			if (callback) {
 				callback.apply(this, arguments);
 			}
-		};
+		}
 
-		self._updatedCallbacks[id] = function () {
-			delete self._pendingMethods[id];
+		this.updatedCallbacks[id] =() => {
+			delete this.pendingMethods[id]
 
 			if (updatedCallback) {
-				updatedCallback.apply(this, arguments);
+				updatedCallback.apply(this, arguments)
 			}
-		};
+		}
 
-		self._pendingMethods[id] = true;
+		this.pendingMethods[id] = true
 
-		self._send({
-			msg    : "method",
+		this.send({
+			msg    : 'method',
 			id     : id,
-			method : name,
-			params : params
+			method : methodName,
+			params : data
 		});
 	};
-
 
 	callWithRandomSeed (
 		methodName: string, 
@@ -509,50 +663,47 @@ export class DDPClient extends EventEmitter {
 		callback: (err: Error, result: any) => void, 
 		updatedCallback?: (err: Error, result: any) => void
 	): void {
-		var id = self._getNextId();
+		const id = this.getNextId()
 
 		if (callback) {
-			self._callbacks[id] = callback;
+			this.callbacks[id] = callback
 		}
 
 		if (updatedCallback) {
-			self._updatedCallbacks[id] = updatedCallback;
+			this.updatedCallbacks[id] = updatedCallback;
 		}
 
-		self._send({
-			msg        : "method",
+		this.send({
+			msg        : 'method',
 			id         : id,
-			method     : name,
+			method     : methodName,
 			randomSeed : randomSeed,
-			params     : params
+			params     : data
 		});
 	}
 
 	// open a subscription on the server, callback should handle on ready and nosub
 	subscribe (subscriptionName: string, data: Array<any>, callback: () => void): string {
-		var self = this;
-		var id = self._getNextId();
+		const id = this.getNextId()
 
 		if (callback) {
-			self._callbacks[id] = callback;
+			this.callbacks[id] = callback;
 		}
 
-		self._send({
-			msg    : "sub",
+		this.send({
+			msg    : 'sub',
 			id     : id,
-			name   : name,
-			params : params
+			name   : subscriptionName,
+			params : data
 		});
 
 		return id;
 	};
 
 	unsubscribe (subscriptionId: string): void {
-		var self = this;
-
-		self._send({
-			msg : "unsub",
-			id  : id
+		this.send({
+			msg : 'unsub',
+			id  : subscriptionId
 		});
 	};
 
@@ -564,32 +715,20 @@ export class DDPClient extends EventEmitter {
 	 */
 	observe (
 		collectionName: string,
-		added: () => {},
-		changed: () => {},
-		removed: () => {}
+		added?: () => {},
+		changed?: () => {},
+		removed?: () => {}
 	): Observer {
-		var self = this;
-		var observer = {};
-		var id = self._getNextId();
+		const observer: Observer = {
+			_id: this.getNextId(),
+			name: collectionName,
+			added: added || (() => {}),
+			changed: changed || (() => {}),
+			removed: removed || (() => {}),
+			stop: () => { this.removeObserver(observer) }
+		}
 
-		// name, _id are immutable
-		Object.defineProperty(observer, "name", {
-			get: function() { return name; },
-			enumerable: true
-		});
-
-		Object.defineProperty(observer, "_id", { get: function() { return id; }});
-
-		observer.added   = added   || function(){};
-		observer.changed = changed || function(){};
-		observer.removed = removed || function(){};
-
-		observer.stop = function() {
-			self._removeObserver(observer);
-		};
-
-		self._addObserver(observer);
-
-		return observer;
-	};
+		this.addObserver(observer)
+		return observer
+	}
 }

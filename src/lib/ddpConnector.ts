@@ -2,34 +2,6 @@ let DDP = require('ddp')
 
 import { EventEmitter } from 'events'
 
-export interface DDPConnectorOptions {
-	host: string
-	port: number
-	path?: string
-	ssl?: boolean
-	debug?:	boolean
-	autoReconnect?: boolean // default: true
-	autoReconnectTimer?: number
-	tlsOpts?: {
-		// Described in https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
-
-		/* Necessary only if the server uses a self-signed certificate.*/
-		ca?: Buffer[] // example: [ fs.readFileSync('server-cert.pem') ]
-
-		/* Necessary only if the server requires client certificate authentication.*/
-		key?: Buffer // example: fs.readFileSync('client-key.pem'),
-		cert?: Buffer // example: fs.readFileSync('client-cert.pem'),
-
-		/* Necessary only if the server's cert isn't for "localhost". */
-		checkServerIdentity?: (hostname: string, cert: object) => Error | undefined // () => { }, // Returns <Error> object, populating it with reason, host, and cert on failure. On success, returns <undefined>.
-	}
-}
-export interface Observer {
-	added: (id: string) => void
-	changed: (id: string, oldFields: any, clearedFields: any, newFields: any) => void
-	removed: (id: string, oldValue: any) => void
-	stop: () => void
-}
 export interface DDPClient {
 	on: (event: string, data?: any) => void,
 	close: () => void,
