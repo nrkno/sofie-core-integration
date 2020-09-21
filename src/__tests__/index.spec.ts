@@ -2,6 +2,7 @@ import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
 import * as MockDDP from '../__mocks__/ddp'
 import * as _ from 'underscore'
+import { DDPConnectorOptions } from '../lib/ddpClient'
 
 process.on('unhandledRejection', (reason) => {
 	console.log('Unhandled Promise rejection!', reason)
@@ -334,7 +335,7 @@ describe('coreConnection', () => {
 		expect(core.connected).toEqual(true)
 
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -398,7 +399,7 @@ describe('coreConnection', () => {
 		expect(observerChanged).toHaveBeenCalledTimes(1)
 
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -443,18 +444,20 @@ describe('coreConnection', () => {
 		expect(core.connected).toEqual(false)
 		// Initiate connection to Core:
 
-		await core.init({
+		let options: DDPConnectorOptions = {
 			host: coreHost,
 			port: corePort,
 			autoReconnect: true,
 			autoReconnectTimer: 100
-		})
+		}
+		await core.init(options)
 		expect(core.connected).toEqual(true)
 
 		// temporary scramble the ddp host:
-		core.ddp.ddpClient.host = '127.0.0.9'
+		options.host = '127.0.0.9'
+		core.ddp.ddpClient && core.ddp.ddpClient.resetOptions(options)
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -462,7 +465,8 @@ describe('coreConnection', () => {
 		await wait(1000) // allow for some reconnections
 
 		// restore ddp host:
-		core.ddp.ddpClient.host = '127.0.0.1'
+		options.host = '127.0.0.1'
+		core.ddp.ddpClient && core.ddp.ddpClient.resetOptions(options)
 		await wait(1000)
 		// should have reconnected by now
 

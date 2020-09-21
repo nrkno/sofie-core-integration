@@ -1,15 +1,17 @@
 import { EventEmitter } from 'events'
 import * as _ from 'underscore'
 
-import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
+import { DDPConnector } from './ddpConnector'
+import { DDPConnectorOptions, Observer } from './ddpClient'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 import { WatchDog } from './watchDog'
 import { Queue } from './queue'
 import { DeviceConfigManifest } from './configManifest'
+import { Random } from './random'
 
 const DataStore = require('data-store')
-const Random = require('ddp-random')
+// const Random = require('ddp-random')
 
 // low-prio calls:
 const TIMEOUTCALL = 200 // ms, time to wait after a call
@@ -278,6 +280,10 @@ export class CoreConnection extends EventEmitter {
 			].concat(attrs || [])
 
 			this._timeLastMethodCall = Date.now()
+			if (!this.ddp.ddpClient) {
+				reject('callMehod: DDP client has not been initialized')
+				return
+			}
 			this.ddp.ddpClient.call(methodName, fullAttrs, (err: Error, id: string) => {
 				this._timeLastMethodReply = Date.now()
 				if (err) {
@@ -310,6 +316,9 @@ export class CoreConnection extends EventEmitter {
 		return this.callMethod(P.methods.getPeripheralDevice)
 	}
 	getCollection (collectionName: string): Collection {
+		if (!this.ddp.ddpClient) {
+			throw new Error('getCollection: DDP client not initialized')
+		}
 		const collections = this.ddp.ddpClient.collections
 
 		let c: Collection = {
@@ -333,6 +342,10 @@ export class CoreConnection extends EventEmitter {
 	}
 	subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
 		return new Promise((resolve, reject) => {
+			if (!this.ddp.ddpClient) {
+				reject('subscribe: DDP client is not initialized')
+				return
+			}
 			try {
 				let subscriptionId = this.ddp.ddpClient.subscribe(
 					publicationName,	// name of Meteor Publish function to subscribe to
@@ -360,10 +373,13 @@ export class CoreConnection extends EventEmitter {
 		})
 	}
 	unsubscribe (subscriptionId: string): void {
-		this.ddp.ddpClient.unsubscribe(subscriptionId)
+		this.ddp.ddpClient && this.ddp.ddpClient.unsubscribe(subscriptionId)
 		delete this._autoSubscriptions[subscriptionId]
 	}
 	observe (collectionName: string): Observer {
+		if (!this.ddp.ddpClient) {
+			throw new Error('observe: DDP client not initialised')
+		}
 		return this.ddp.ddpClient.observe(collectionName)
 	}
 	getCurrentTime (): number {
@@ -410,7 +426,7 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	private _sendInit (): Promise<string> {
-		if (!this.ddp) throw Error('Not connected to Core')
+		if (!this.ddp || !this.ddp.connectionId) throw Error('Not connected to Core')
 
 		let options: P.InitOptions = {
 			category: this._coreOptions.deviceCategory,

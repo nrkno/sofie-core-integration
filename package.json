@@ -83,6 +83,7 @@
     "/LICENSE"
   ],
   "devDependencies": {
+    "@types/got": "^9.6.11",
     "@types/jest": "^25.2.3",
     "@types/node": "^12.11.7",
     "@types/underscore": "^1.9.2",
@@ -117,6 +118,7 @@
     "data-store": "3.1.0",
     "ejson": "^2.2.0",
     "faye-websocket": "^0.11.3",
+    "got": "^11.7.0",
     "tslib": "^1.13.0",
     "underscore": "^1.10.2"
   },

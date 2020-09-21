@@ -1,16 +1,17 @@
 /**
  * DDP client. Based on:
- * 
+ *
  * * https://github.com/nytamin/node-ddp-client
  * * https://github.com/oortcloud/node-ddp-client
- * 
- * Brought into this project for maintenance reasons and converted to Typescript.
+ *
+ * Brought into this project for maintenance reasons, including conversion to Typescript.
  */
 
 import * as WebSocket from 'faye-websocket'
 import * as EJSON from 'ejson'
 import { EventEmitter } from 'events'
 import { join as pathJoin } from 'path'
+import got from 'got'
 
 export interface TLSOpts {
 	// Described in https://nodejs.org/api/tls.html#tls_tls_connect_options_callback
@@ -26,6 +27,9 @@ export interface TLSOpts {
 	checkServerIdentity?: (hostname: string, cert: object) => Error | undefined // () => { }, // Returns <Error> object, populating it with reason, host, and cert on failure. On success, returns <undefined>.
 }
 
+/**
+ * Options set when creating a new DDP client connection.
+ */
 export interface DDPConnectorOptions {
 	host: string
 	port: number
@@ -41,18 +45,35 @@ export interface DDPConnectorOptions {
 	ddpVersion?: '1' | 'pre2' | 'pre1'
 }
 
+/**
+ * Observer watching for changes to a collection.
+ */
 export interface Observer {
+	/** Name of the collection being observed */
 	readonly name: string
+	/** Identifier of this observer */
 	readonly _id: string
-	added: (id: string, fields?: { [attr: string]: unknown } ) => void
+	/**
+	 * Callback when a document is added to a collection.
+	 * @callback
+	 * @param id Identifier of the document added
+	 * @param fields The added document
+	 */
+	added: (id: string, fields?: { [attr: string]: unknown }) => void
+	/** Callback when a document is changed in a collection. */
 	changed: (id: string, oldFields: { [attr: string]: unknown }, clearedFields: Array<string>, newFields: { [attr: string]: unknown }) => void
+	/** Callback when a document is removed from a collection. */
 	removed: (id: string, oldValue: { [attr: string]: unknown }) => void
+	/** Request to stop observing the collection */
 	stop: () => void
 }
 
-type ClientServer = 'connect' | 'ping' | 'pong' | 'method' | 'sub' | 'unsub'
-type ServerClient = 'failed' | 'connected' | 'result' | 'updated' | 'nosub' | 'added' | 'removed' | 'changed' | 'ready' | 'ping' | 'pong' | 'error'
-type MessageType = ClientServer | ServerClient
+/** DDP message type for client requests to servers */
+export type ClientServer = 'connect' | 'ping' | 'pong' | 'method' | 'sub' | 'unsub'
+/** DDP message type for server requests to clients */
+export type ServerClient = 'failed' | 'connected' | 'result' | 'updated' | 'nosub' | 'added' | 'removed' | 'changed' | 'ready' | 'ping' | 'pong' | 'error'
+/** All types of DDP messages */
+export type MessageType = ClientServer | ServerClient
 
 /**
  * Represents any DDP message sent from as a request or response from a server to a client.
@@ -63,7 +84,7 @@ export interface Message {
 }
 
 /**
- * DDP-specified error. 
+ * DDP-specified error.
  * Note. Different fields to a Javascript error.
  */
 export interface DDPError {
@@ -71,7 +92,7 @@ export interface DDPError {
 	reason?: string
 	message?: string
 	errorType: 'Meteor.Error'
-} 
+}
 
 /**
  * Request message to initiate a connection from a client to a server.
@@ -96,7 +117,7 @@ export interface Connected extends Message {
 }
 
 /**
- * Response message when a client's connection request was unsuccessful. 
+ * Response message when a client's connection request was unsuccessful.
  */
 export interface Failed extends Message {
 	msg: 'failed'
@@ -155,7 +176,7 @@ export interface NoSub extends Message {
 	/** The `id` passed to `sub` */
 	id: string
 	/** An error raised by the subscription as it concludes, or sub-not-found */
-	error?: DDPError 
+	error?: DDPError
 }
 
 /**
@@ -198,7 +219,7 @@ export interface Removed extends Message {
 }
 
 /**
- * Message sent to client after an initial salvo of updates have sent a 
+ * Message sent to client after an initial salvo of updates have sent a
  * complete set of initial data.
  */
 export interface Ready extends Message {
@@ -246,7 +267,7 @@ export interface Updated extends Message {
 }
 
 /**
- * Erroneous messages sent from the client to the server can result in receiving a top-level 
+ * Erroneous messages sent from the client to the server can result in receiving a top-level
  * `error` message in response.
  */
 export interface ErrorMessage extends Message {
@@ -254,7 +275,7 @@ export interface ErrorMessage extends Message {
 	/** Description of the error */
 	reason: string
 	/** If the original message parsed properly, it is included here */
-	offendingMessage?: Message 
+	offendingMessage?: Message
 }
 
 /**
@@ -274,21 +295,33 @@ export class DDPClient extends EventEmitter {
 	public socket: WebSocket.Client
 	public session: string
 
-	public readonly host: string
-	public readonly port: number
-	public readonly path?: string
-	public readonly ssl: boolean
-	public readonly useSockJS: boolean
+	private hostInt: string
+	public get host (): string { return this.hostInt }
+	private portInt: number
+	public get port (): number { return this.portInt }
+	private pathInt?: string
+	public get path (): string | undefined { return this.pathInt }
+	private sslInt: boolean
+	public get ssl (): boolean { return this.sslInt }
+	private useSockJSInt: boolean
+	public get useSockJS (): boolean { return this.useSockJSInt }
 	private autoReconnectInt: boolean
-	public get autoReconnect() { return this.autoReconnectInt }
-	public readonly autoReconnectTimer: number
+	public get autoReconnect () { return this.autoReconnectInt }
+	private autoReconnectTimerInt: number
+	public get autoReconnectTimer (): number { return this.autoReconnectTimerInt }
 	private ddpVersionInt: '1' | 'pre2' | 'pre1'
-	public get ddpVersion () { return this.ddpVersionInt }	
-	public readonly url: string | undefined
-	public readonly maintainCollections: boolean
+	public get ddpVersion () { return this.ddpVersionInt }
+	private urlInt?: string
+	public get url (): string | undefined { return this.urlInt }
+	private maintainCollectionsInt: boolean
+	public get maintainCollections (): boolean { return this.maintainCollectionsInt }
 
-	public static readonly ERRORS = {
-		DISCONNECTED: new Error("DDPClient: Disconnected from DDP server")
+	public static readonly ERRORS: { [ name: string]: DDPError } = {
+		DISCONNECTED: {
+			error: 'DISCONNECTED',
+			message: 'DDPClient: Disconnected from DDP server',
+			errorType: 'Meteor.Error'
+		}
 	}
 	public static readonly supportedDdpVersions = [ '1', 'pre2', 'pre1']
 	public static EJSON = EJSON
@@ -301,31 +334,36 @@ export class DDPClient extends EventEmitter {
 	private nextId: number = 0
 	private callbacks: { [id: string]: (error?: DDPError, result?: unknown) => void } = {}
 	private updatedCallbacks: { [name: string]: Function } = {}
-	private pendingMethods: { [id: string] : boolean } = {}
-	private observers: { [name: string]: { [_id: string]: Observer } } = {} 
+	private pendingMethods: { [id: string]: boolean } = {}
+	private observers: { [name: string]: { [_id: string]: Observer } } = {}
 	private reconnectTimeout: NodeJS.Timeout | null = null
 
-	constructor(opts?: DDPConnectorOptions) { 
+	constructor (opts?: DDPConnectorOptions) {
 		super()
 
-		opts || (opts = { host: '127.0.0.1', port: 3000 })
+		opts || (opts = { host: '127.0.0.1', port: 3000, tlsOpts: {} })
 
-		this.host = opts.host || "127.0.0.1"
-		this.port = opts.port || 3000
-		this.path = opts.path
-		this.ssl  = opts.ssl  || this.port === 443
-		this.tlsOpts = opts.tlsOpts || {}
-		this.useSockJS = opts.useSockJs || false
-		this.autoReconnectInt = opts.autoReconnect || true
-		this.autoReconnectTimer = opts.autoReconnectTimer || 500
-		this.maintainCollections = opts.maintainCollections || true
-		this.url = opts.url 
+		this.resetOptions(opts)
 		this.ddpVersionInt = opts.ddpVersion || '1'
 
 		// very very simple collections (name -> [{id -> document}])
 		if (this.maintainCollections) {
-				this.collections = {};
+			this.collections = {}
 		}
+	}
+
+	resetOptions (opts: DDPConnectorOptions) {
+		this.hostInt = opts.host || '127.0.0.1'
+		this.portInt = opts.port || 3000
+		this.pathInt = opts.path
+		this.sslInt = opts.ssl || this.port === 443
+		this.tlsOpts = opts.tlsOpts || {}
+		this.useSockJSInt = opts.useSockJs || false
+		this.autoReconnectInt = opts.autoReconnect || true
+		this.autoReconnectTimerInt = opts.autoReconnectTimer || 500
+		this.maintainCollectionsInt = opts.maintainCollections || true
+		this.urlInt = opts.url
+		this.ddpVersionInt = opts.ddpVersion || '1'
 	}
 
 	private prepareHandlers (): void {
@@ -349,10 +387,10 @@ export class DDPClient extends EventEmitter {
 		})
 
 		this.socket.on('close', (event) => {
-			this.emit('socket-close', event.code, event.reason);
+			this.emit('socket-close', event.code, event.reason)
 			this.endPendingMethodCalls()
 			this.recoverNetworkError()
-		});
+		})
 
 		this.socket.on('message', (event) => {
 			this.message(event.data)
@@ -365,13 +403,13 @@ export class DDPClient extends EventEmitter {
 			clearTimeout(this.reconnectTimeout)
 			this.reconnectTimeout = null
 		}
-	};
+	}
 
-	private recoverNetworkError(): void {
+	private recoverNetworkError (): void {
 		if (this.autoReconnect && !this.connectionFailed && !this.isClosing) {
-			this.clearReconnectTimeout();
-			this.reconnectTimeout = setTimeout(() => { this.connect() }, this.autoReconnectTimer);
-			this.isReconnecting = true;
+			this.clearReconnectTimeout()
+			this.reconnectTimeout = setTimeout(() => { this.connect() }, this.autoReconnectTimer)
+			this.isReconnecting = true
 		}
 	}
 
@@ -383,13 +421,13 @@ export class DDPClient extends EventEmitter {
 		} else {
 			this.socket.send(
 				EJSON.stringify(data)
-			);
+			)
 		}
-	};
+	}
 
 	private failed (data: Failed): void {
 		if (DDPClient.supportedDdpVersions.indexOf(data.version) !== -1) {
-			this.ddpVersionInt = <'1' | 'pre2' | 'pre1'> data.version
+			this.ddpVersionInt = (data.version as '1' | 'pre2' | 'pre1')
 			this.connect()
 		} else {
 			this.autoReconnectInt = false
@@ -437,11 +475,11 @@ export class DDPClient extends EventEmitter {
 			const name = data.collection
 			const id = data.id || 'unknown'
 
-			if (!this.collections[name]) { 
-				this.collections[name] = {} 
+			if (!this.collections[name]) {
+				this.collections[name] = {}
 			}
-			if (!this.collections[name][id]) { 
-				this.collections[name][id] = { _id: id } 
+			if (!this.collections[name][id]) {
+				this.collections[name][id] = { _id: id }
 			}
 
 			if (data.fields) {
@@ -458,16 +496,16 @@ export class DDPClient extends EventEmitter {
 
 	private removed (data: Removed): void {
 		if (this.maintainCollections) {
-			const name = data.collection 
-			const id = data.id || 'unknown';
+			const name = data.collection
+			const id = data.id || 'unknown'
 
 			if (!this.collections[name][id]) {
-				return;
+				return
 			}
 
-			var oldValue = this.collections[name][id];
+			let oldValue = this.collections[name][id]
 
-			delete this.collections[name][id];
+			delete this.collections[name][id]
 
 			if (this.observers[name] && this.observers[name][id]) {
 				this.observers[name][id].removed(id, oldValue)
@@ -480,28 +518,28 @@ export class DDPClient extends EventEmitter {
 			const name = data.collection
 			const id = data.id || 'unknown'
 
-			if (!this.collections[name]) { 
-				return 
+			if (!this.collections[name]) {
+				return
 			}
-			if (!this.collections[name][id]) { 
+			if (!this.collections[name][id]) {
 				return
 			}
 
 			let oldFields: { [attr: string]: unknown } = {}
 			const clearedFields = data.cleared || []
-			let newFields: { [attr: string]: unknown } = {};
+			let newFields: { [attr: string]: unknown } = {}
 
 			if (data.fields) {
 				Object.entries(data.fields).forEach(([key, value]) => {
-					oldFields[key] = this.collections[name][id][key];
-					newFields[key] = value;
+					oldFields[key] = this.collections[name][id][key]
+					newFields[key] = value
 					this.collections[name][id][key] = value
 				})
 			}
 
 			if (data.cleared) {
 				data.cleared.forEach(value => {
-					delete this.collections[name][id][value];
+					delete this.collections[name][id][value]
 				})
 			}
 
@@ -513,18 +551,18 @@ export class DDPClient extends EventEmitter {
 
 	private ready (data: Ready): void {
 		data.subs.forEach(id => {
-			const cb = this.callbacks[id];
+			const cb = this.callbacks[id]
 			if (cb) {
 				cb()
-				delete this.callbacks[id];
+				delete this.callbacks[id]
 			}
 		})
 	}
 
 	private ping (data: Ping): void {
 		this.send(
-			data.id && { msg : "pong", id : data.id } as Pong || { msg : "pong" } as Pong
-		);
+			data.id && { msg : 'pong', id : data.id } as Pong || { msg : 'pong' } as Pong
+		)
 	}
 
 	private messageWork: { [name in ServerClient]: (data: Message) => void } = {
@@ -538,21 +576,21 @@ export class DDPClient extends EventEmitter {
 		changed: this.changed,
 		ready: this.ready,
 		ping: this.ping,
-		pong: () => {},
-		error: () => {}
+		pong: () => { /* Do nothing */ },
+		error: () => { /* Do nothing */} // TODO - really do nothing!?!
 	}
 
 	// handle a message from the server
 	private message (rawData: string): void {
 		const data: Message = EJSON.parse(rawData)
 
-		if (this.messageWork[<ServerClient> data.msg]) {
-			this.messageWork[<ServerClient> data.msg](data)
+		if (this.messageWork[data.msg as ServerClient]) {
+			this.messageWork[data.msg as ServerClient](data)
 		}
 	}
 
 	private getNextId (): string {
-		return (this.nextId += 1).toString();
+		return (this.nextId += 1).toString()
 	}
 
 	private addObserver (observer: Observer): void {
@@ -563,12 +601,12 @@ export class DDPClient extends EventEmitter {
 	}
 
 	private removeObserver (observer: Observer): void {
-		if (!this.observers[observer.name]) { 
+		if (!this.observers[observer.name]) {
 			return
 		}
 
 		delete this.observers[observer.name][observer._id]
-	};
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// USER functions -- use these to control the client
@@ -580,9 +618,9 @@ export class DDPClient extends EventEmitter {
 	*               called each time the connection is opened.
 	*/
 	connect (connected?: (error?: Error, wasReconnect?: boolean) => void): void {
-		this.isConnecting = true;
-		this.connectionFailed = false;
-		this.isClosing = false;
+		this.isConnecting = true
+		this.connectionFailed = false
+		this.isClosing = false
 
 		if (connected) {
 			this.addListener('connected', () => {
@@ -600,7 +638,9 @@ export class DDPClient extends EventEmitter {
 		}
 
 		if (this.useSockJS) {
-			this.makeSockJSConnection()
+			this.makeSockJSConnection().catch(e => {
+				this.emit('failed', e)
+			})
 		} else {
 			const url = this.buildWsUrl()
 			this.makeWebSocketConnection(url)
@@ -621,79 +661,72 @@ export class DDPClient extends EventEmitter {
 				this.updatedCallbacks[id]()
 				delete this.updatedCallbacks[id]
 			}
-		});
-	};
+		})
+	}
 
-	private makeSockJSConnection (): void {
-		// do the info hit
-		const protocol = this.ssl ? "https://" : "http://"
-		const randomValue = `${Math.ceil(Math.random() * 9999999)}`
-		const path = pathJoin("/", this.path || "", "sockjs/info");
-		const url = protocol + this.host + ":" + this.port + path;
+	private async makeSockJSConnection (): Promise<void> {
+		const protocol = this.ssl ? 'https://' : 'http://'
+		const path = pathJoin('/', this.path || '', 'sockjs/info')
+		const url = protocol + this.host + ':' + this.port + path
 
-		var requestOpts = { 'url': url, 'agentOptions': self.tlsOpts };
-
-		request.get(requestOpts, function(err, res, body) {
-			if (err) {
-				self._recoverNetworkError();
-			} else if (body) {
-				var info;
-				try {
-					info = JSON.parse(body);
-				} catch (e) {
-					console.error(e);
-				}
-				if (!info || !info.base_url) {
-					// no base_url, then use pure WS handling
-					var url = self._buildWsUrl();
-					self._makeWebSocketConnection(url);
-				} else if (info.base_url.indexOf("http") === 0) {
-					// base url for a different host
-					var url = info.base_url + "/websocket";
-					url = url.replace(/^http/, "ws");
-					self._makeWebSocketConnection(url);
-				} else {
-					// base url for the same host
-					var path = info.base_url + "/websocket";
-					var url = self._buildWsUrl(path);
-					self._makeWebSocketConnection(url);
-				}
+		try {
+			let response = await got(url, {
+				https: {
+					certificateAuthority: this.tlsOpts.ca,
+					key: this.tlsOpts.key,
+					certificate: this.tlsOpts.cert,
+					checkServerIdentity: this.tlsOpts.checkServerIdentity
+				},
+				responseType: 'json'
+			})
+			// Info object defined here(?): https://github.com/sockjs/sockjs-node/blob/master/lib/info.js
+			const info = response.body as { base_url: string }
+			if (!info || !info.base_url) {
+				const url = this.buildWsUrl()
+				this.makeWebSocketConnection(url)
+			} else if (info.base_url.indexOf('http') === 0) {
+				const url = info.base_url + '/websocket'
+				url.replace(/^http/, 'ws')
+				this.makeWebSocketConnection(url)
 			} else {
-				// no body. weird. use pure WS handling
-				var url = self._buildWsUrl();
-				self._makeWebSocketConnection(url);
+				const path = info.base_url + '/websocket'
+				const url = this.buildWsUrl(path)
+				this.makeWebSocketConnection(url)
 			}
-		});
+		} catch (err) {
+			this.recoverNetworkError()
+
+		}
 	}
 
 	private buildWsUrl (path?: string): string {
-		let url : string
-		path = path || this.path || "websocket";
-		const protocol = this.ssl ? "wss://" : "ws://";
+		let url: string
+		path = path || this.path || 'websocket'
+		const protocol = this.ssl ? 'wss://' : 'ws://'
 		if (this.url && !this.useSockJS) {
-			url = this.url;
+			url = this.url
 		} else {
-			url = `${protocol}${this.host}:${this.port}${(path.indexOf('/') === 0)? path : "/" + path}`
+			url = `${protocol}${this.host}:${this.port}${(path.indexOf('/') === 0) ? path : '/' + path}`
 		}
-		return url;
-	};
+		return url
+	}
 
 	private makeWebSocketConnection (url: string): void {
 		this.socket = new WebSocket.Client(url, null, { tls: this.tlsOpts })
-		this.prepareHandlers();
+		this.prepareHandlers()
 	}
 
 	close (): void {
-		this.isClosing = true;
-		this.socket.close();
+		this.isClosing = true
+		this.socket.close()
 		this.removeAllListeners('connected')
 		this.removeAllListeners('failed')
-	};
+	}
 
 	call (
-		methodName: string, 
-		data: Array<unknown>, 
-		callback: (err: Error, result: unknown) => void, 
+		methodName: string,
+		data: Array<unknown>,
+		callback: (err: Error, result: unknown) => void,
 		updatedCallback?: (err: Error, result: unknown) => void
 	): void {
 		const id = this.getNextId()
@@ -702,11 +735,11 @@ export class DDPClient extends EventEmitter {
 			delete this.pendingMethods[id]
 
 			if (callback) {
-				callback.apply(this, arguments);
+				callback.apply(this, arguments)
 			}
 		}
 
-		this.updatedCallbacks[id] =() => {
+		this.updatedCallbacks[id] = () => {
 			delete this.pendingMethods[id]
 
 			if (updatedCallback) {
@@ -721,14 +754,14 @@ export class DDPClient extends EventEmitter {
 			id     : id,
 			method : methodName,
 			params : data
-		});
-	};
+		})
+	}
 
 	callWithRandomSeed (
-		methodName: string, 
-		data: Array<unknown>, 
+		methodName: string,
+		data: Array<unknown>,
 		randomSeed: string,
-		callback: (err?: Error, result?: unknown) => void, 
+		callback: (err?: DDPError, result?: unknown) => void,
 		updatedCallback?: (err?: Error, result?: unknown) => void
 	): void {
 		const id = this.getNextId()
@@ -738,7 +771,7 @@ export class DDPClient extends EventEmitter {
 		}
 
 		if (updatedCallback) {
-			this.updatedCallbacks[id] = updatedCallback;
+			this.updatedCallbacks[id] = updatedCallback
 		}
 
 		this.send({
@@ -747,7 +780,7 @@ export class DDPClient extends EventEmitter {
 			method     : methodName,
 			randomSeed : randomSeed,
 			params     : data
-		});
+		})
 	}
 
 	// open a subscription on the server, callback should handle on ready and nosub
@@ -755,7 +788,7 @@ export class DDPClient extends EventEmitter {
 		const id = this.getNextId()
 
 		if (callback) {
-			this.callbacks[id] = callback;
+			this.callbacks[id] = callback
 		}
 
 		this.send({
@@ -763,17 +796,17 @@ export class DDPClient extends EventEmitter {
 			id     : id,
 			name   : subscriptionName,
 			params : data
-		});
+		})
 
-		return id;
-	};
+		return id
+	}
 
 	unsubscribe (subscriptionId: string): void {
 		this.send({
 			msg : 'unsub',
 			id  : subscriptionId
-		});
-	};
+		})
+	}
 
 	/**
 	 * Adds an observer to a collection and returns the observer.
@@ -790,9 +823,9 @@ export class DDPClient extends EventEmitter {
 		const observer: Observer = {
 			_id: this.getNextId(),
 			name: collectionName,
-			added: added || (() => {}),
-			changed: changed || (() => {}),
-			removed: removed || (() => {}),
+			added: added || (() => { /* Do nothing */ }),
+			changed: changed || (() => { /* Do nothing */ }),
+			removed: removed || (() => { /* Do nothing */ }),
 			stop: () => { this.removeObserver(observer) }
 		}
 

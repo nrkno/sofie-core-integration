@@ -1,46 +1,13 @@
-let DDP = require('ddp')
-
 import { EventEmitter } from 'events'
-
-export interface DDPClient {
-	on: (event: string, data?: any) => void,
-	close: () => void,
-	connect: (callback?: (error: Error, wasReconnect: boolean) => void) => void,
-
-	call: (methodName: string, data: Array<any>, callback: (err: Error, result: any) => void) => void
-	subscribe: (subscriptionName: string, data: Array<any>, callback: () => void) => string
-	unsubscribe: (subscriptionId: string) => void
-	observe: (collectionName: string) => Observer
-
-	collections: {
-		[collectionName: string]: {
-			[id: string]: {
-				_id: string,
-				[attr: string]: any
-			}
-		}
-	}
-
-	socket: any,
-	session: string,
-
-	host: string,
-	port: number,
-	path: string,
-	ssl: boolean,
-	useSockJS: boolean
-	autoReconnect: boolean
-	autoReconnectTimer:	number
-	ddpVersion:	any
-}
+import { DDPClient, DDPConnectorOptions } from './ddpClient'
 
 export class DDPConnector extends EventEmitter {
-	public ddpClient: DDPClient
+	public ddpClient: DDPClient | undefined
 
 	private _options: DDPConnectorOptions
 	private _connected: boolean = false
 	private _connecting: boolean = false
-	private _connectionId: string
+	private _connectionId: string | undefined = undefined
 
 	private ddpIsOpen: boolean = false
 	private _monitorDDPConnectionInterval: any = null
@@ -52,23 +19,23 @@ export class DDPConnector extends EventEmitter {
 
 	}
 	createClient (): Promise<void> {
-		let o = {
+		let o: DDPConnectorOptions = {
 			host: 					this._options.host,
 			port: 					this._options.port,
 			path: 					this._options.path || '',
 			ssl: 					this._options.ssl || false,
-			tlsOpts: 				this._options.tlsOpts ? { tls: this._options.tlsOpts } : {},
-			useSockJS: 				true,
+			tlsOpts: 				this._options.tlsOpts || {},
+			useSockJs: 				true,
 			autoReconnect: 			false, // we'll handle reconnections ourselves
 			autoReconnectTimer: 	1000,
-			maintain_collections: 	true,
+			maintainCollections: 	true,
 			ddpVersion: 			'1'
 		}
 		let doConnect: boolean = false
 
 		if (!this.ddpClient) {
 
-			this.ddpClient = new DDP(o)
+			this.ddpClient = new DDPClient(o)
 			this.ddpClient.on('socket-close', () => {
 
 				this._onclientConnectionChange(false)
@@ -84,22 +51,14 @@ export class DDPConnector extends EventEmitter {
 				this.ddpClient.close()
 			}
 
-			this.ddpClient.host = o.host
-			this.ddpClient.port = o.port
-			this.ddpClient.path = o.path
-			this.ddpClient.ssl 	= o.ssl
-			this.ddpClient.useSockJS 			= o.useSockJS
-			this.ddpClient.autoReconnect 		= o.autoReconnect
-			this.ddpClient.autoReconnectTimer	= o.autoReconnectTimer
-			this.ddpClient.ddpVersion			= o.ddpVersion
-
+			this.ddpClient.resetOptions(o)
 			doConnect = true
 		}
 		this._setupDDPEvents()
 
 		if (doConnect) {
 			return new Promise((resolve, reject) => {
-				this.ddpClient.connect((err) => {
+				this.ddpClient && this.ddpClient.connect((err) => {
 					// connected
 					if (err) reject(err)
 					else resolve()
@@ -125,7 +84,7 @@ export class DDPConnector extends EventEmitter {
 					}
 					this._setupDDPEvents()
 					this._connecting = true
-					this.ddpClient.connect((error: Object/*, isReconnecting: boolean*/) => {
+					this.ddpClient.connect((error?: Error/*, isReconnecting: boolean*/) => {
 						this._connecting = false
 
 						if (error) {
@@ -162,8 +121,8 @@ export class DDPConnector extends EventEmitter {
 		return this._connectionId
 	}
 	private _setupDDPEvents () {
-		this.ddpClient.on('connected', () => this._onclientConnectionChange(true))
-		this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+		this.ddpClient && this.ddpClient.on('connected', () => this._onclientConnectionChange(true))
+		this.ddpClient && this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
 	}
 	private _monitorDDPConnection (): void {
 
@@ -189,7 +148,7 @@ export class DDPConnector extends EventEmitter {
 			this._connected = connected
 
 			if (connected) {
-				this._connectionId = this.ddpClient.session
+				this._connectionId = this.ddpClient && this.ddpClient.session
 			}
 
 			// log.debug("DDP: _onclientConnectionChange "+connected);
