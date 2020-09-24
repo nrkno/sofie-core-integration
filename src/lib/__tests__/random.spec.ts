@@ -24,3 +24,9 @@ it('does the right thing for zero length', () => {
 it('throws with a negative length', () => {
     expect(() => { Random.id(-1) }).toThrow()
 })
+
+it('does not do the same thing twice', () => {
+    const r = Random.id()
+    const s = Random.id()
+    expect(r).not.toEqual(s)
+})

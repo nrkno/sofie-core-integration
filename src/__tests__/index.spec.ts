@@ -1,6 +1,6 @@
 import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
-import * as MockDDP from '../__mocks__/ddp'
+import { DDPClient as MockDDP } from '../lib/__mocks__/ddpClient'
 import * as _ from 'underscore'
 import { DDPConnectorOptions } from '../lib/ddpClient'
 
@@ -12,7 +12,7 @@ const orgSetTimeout = setTimeout
 
 describe('coreConnection', () => {
 
-	jest.mock('ddp')
+	jest.mock('../lib/ddpClient')
 
 	const coreHost = '127.0.0.1'
 	const corePort = 3000
@@ -140,9 +140,10 @@ describe('coreConnection', () => {
 		expect(core.connected).toEqual(false)
 	})
 
-	test('Test connection and basic Core functionality', async () => {
+	test.only('Test connection and basic Core functionality', async () => {
 
 		prepareNextMockDDP()
+		console.log('HEEEEELLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOO')
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -170,6 +171,8 @@ describe('coreConnection', () => {
 			host: coreHost,
 			port: corePort
 		})
+
+		console.log('HEYFORD station')	
 
 		expect(core.connected).toEqual(true)
 		expect(id).toEqual(core.deviceId)

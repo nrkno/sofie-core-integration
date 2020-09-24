@@ -566,16 +566,16 @@ export class DDPClient extends EventEmitter {
 	}
 
 	private messageWork: { [name in ServerClient]: (data: Message) => void } = {
-		failed: this.failed,
-		connected: this.connected,
-		result: this.result,
-		updated: this.updated,
-		nosub: this.nosub,
-		added: this.added,
-		removed: this.removed,
-		changed: this.changed,
-		ready: this.ready,
-		ping: this.ping,
+		failed: this.failed.bind(this),
+		connected: this.connected.bind(this),
+		result: this.result.bind(this),
+		updated: this.updated.bind(this),
+		nosub: this.nosub.bind(this),
+		added: this.added.bind(this),
+		removed: this.removed.bind(this),
+		changed: this.changed.bind(this),
+		ready: this.ready.bind(this),
+		ping: this.ping.bind(this),
 		pong: () => { /* Do nothing */ },
 		error: () => { /* Do nothing */} // TODO - really do nothing!?!
 	}

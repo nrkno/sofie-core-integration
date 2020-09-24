@@ -11,7 +11,6 @@ import { DeviceConfigManifest } from './configManifest'
 import { Random } from './random'
 
 const DataStore = require('data-store')
-// const Random = require('ddp-random')
 
 // low-prio calls:
 const TIMEOUTCALL = 200 // ms, time to wait after a call
@@ -128,6 +127,8 @@ export class CoreConnection extends EventEmitter {
 			return new Promise((resolve) => {
 				this._ddp = new DDPConnector(ddpOptions)
 
+				console.log('New ddp constructed', this._ddp)
+
 				this._ddp.on('error', (err) => {
 					this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
 				})
@@ -160,6 +161,7 @@ export class CoreConnection extends EventEmitter {
 			}).then(() => {
 				return this._ddp.createClient()
 			}).then(() => {
+				console.log('DDP connector with client created', this._ddp)
 				return this._ddp.connect()
 			}).then(() => {
 				this._setConnected(this._ddp.connected) // ensure that connection status is synced
