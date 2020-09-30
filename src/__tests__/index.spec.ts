@@ -3,6 +3,7 @@ import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeriph
 import { DDPClient as MockDDP } from '../lib/__mocks__/ddpClient'
 import * as _ from 'underscore'
 import { DDPConnectorOptions } from '../lib/ddpClient'
+jest.mock('../lib/ddpClient')
 
 process.on('unhandledRejection', (reason) => {
 	console.log('Unhandled Promise rejection!', reason)
@@ -12,14 +13,14 @@ const orgSetTimeout = setTimeout
 
 describe('coreConnection', () => {
 
-	jest.mock('../lib/ddpClient')
-
 	const coreHost = '127.0.0.1'
 	const corePort = 3000
 
 	function prepareNextMockDDP () {
 
 		let device: any = {}
+		// MockDDP.initialize()
+		// jest.mock('../lib/ddpClient')
 
 		function checkDevice (deviceId: any, token: any) {
 			if (!deviceId) throw { error: 400, reason: 'id missing!' }
@@ -84,8 +85,10 @@ describe('coreConnection', () => {
 			'myunknownMethod123': null
 		}
 
+		console.log('HHHHHHEEEEEELLLLLLLOOOOOOO!')
 		// @ts-ignore
 		MockDDP.mockConstructNext((ddp: MockDDP) => {
+			console.log('node constructing ....')
 			_.each(methods, (method, key) => {
 				ddp.mockCall(key, method)
 			})
@@ -143,7 +146,6 @@ describe('coreConnection', () => {
 	test.only('Test connection and basic Core functionality', async () => {
 
 		prepareNextMockDDP()
-		console.log('HEEEEELLLLLLLLLLLLLLLLLLLLLLLLLOOOOOOOOOOOO')
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -172,7 +174,7 @@ describe('coreConnection', () => {
 			port: corePort
 		})
 
-		console.log('HEYFORD station')	
+		console.log('Please stop at this station!')	
 
 		expect(core.connected).toEqual(true)
 		expect(id).toEqual(core.deviceId)

@@ -164,6 +164,7 @@ export class CoreConnection extends EventEmitter {
 				console.log('DDP connector with client created', this._ddp)
 				return this._ddp.connect()
 			}).then(() => {
+				console.log('Connect request completed')
 				this._setConnected(this._ddp.connected) // ensure that connection status is synced
 				return this._sendInit()
 			}).then((deviceId) => {
