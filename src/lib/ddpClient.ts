@@ -441,6 +441,7 @@ export class DDPClient extends EventEmitter {
 	}
 
 	private result (data: Result): void {
+		// console.log('Received result', data, this.callbacks, this.callbacks[data.id])
 		const cb = this.callbacks[data.id] || undefined
 
 		if (cb) {
@@ -582,6 +583,7 @@ export class DDPClient extends EventEmitter {
 
 	// handle a message from the server
 	private message (rawData: string): void {
+		// console.log('Received message', rawData)
 		const data: Message = EJSON.parse(rawData)
 
 		if (this.messageWork[data.msg as ServerClient]) {
@@ -731,16 +733,17 @@ export class DDPClient extends EventEmitter {
 	): void {
 		const id = this.getNextId()
 
-		this.callbacks[id] = () => {
+		this.callbacks[id] = (error?: DDPError, result?: unknown) => {
 			delete this.pendingMethods[id]
 
 			if (callback) {
-				callback.apply(this, arguments)
+				callback.apply(this, [error, result])
 			}
 		}
 
-		this.updatedCallbacks[id] = () => {
-			delete this.pendingMethods[id]
+		const self = this
+		this.updatedCallbacks[id] = function () {
+			delete self.pendingMethods[id]
 
 			if (updatedCallback) {
 				updatedCallback.apply(this, arguments)

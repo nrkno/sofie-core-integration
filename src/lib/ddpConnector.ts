@@ -44,7 +44,6 @@ export class DDPConnector extends EventEmitter {
 			this.ddpClient.on('message', (message: any) => this._onClientMessage(message))
 			this.ddpClient.on('socket-error', (error: any) => this._onClientError(error))
 			this.ddpClient.on('info', (message: any) => this._onClientInfo(message))
-
 		} else {
 
 			if (this.ddpClient.socket) {
@@ -84,6 +83,7 @@ export class DDPConnector extends EventEmitter {
 					}
 					this._setupDDPEvents()
 					this._connecting = true
+					console.log('About to call connect')
 					this.ddpClient.connect((error?: Error/*, isReconnecting: boolean*/) => {
 						this._connecting = false
 

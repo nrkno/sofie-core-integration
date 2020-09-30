@@ -1,9 +1,8 @@
 import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
-import { DDPClient as MockDDP } from '../lib/__mocks__/ddpClient'
 import * as _ from 'underscore'
 import { DDPConnectorOptions } from '../lib/ddpClient'
-jest.mock('../lib/ddpClient')
+jest.mock('faye-websocket')
 
 process.on('unhandledRejection', (reason) => {
 	console.log('Unhandled Promise rejection!', reason)
@@ -19,8 +18,6 @@ describe('coreConnection', () => {
 	function prepareNextMockDDP () {
 
 		let device: any = {}
-		// MockDDP.initialize()
-		// jest.mock('../lib/ddpClient')
 
 		function checkDevice (deviceId: any, token: any) {
 			if (!deviceId) throw { error: 400, reason: 'id missing!' }
@@ -87,24 +84,24 @@ describe('coreConnection', () => {
 
 		console.log('HHHHHHEEEEEELLLLLLLOOOOOOO!')
 		// @ts-ignore
-		MockDDP.mockConstructNext((ddp: MockDDP) => {
-			console.log('node constructing ....')
-			_.each(methods, (method, key) => {
-				ddp.mockCall(key, method)
-			})
+		// MockDDP.mockConstructNext((ddp: MockDDP) => {
+		// 	console.log('node constructing ....')
+		// 	_.each(methods, (method, key) => {
+		// 		ddp.mockCall(key, method)
+		// 	})
 
-			ddp.mockSetHost(coreHost, corePort)
+		// 	ddp.mockSetHost(coreHost, corePort)
 
-			ddp.mockPublication('peripheralDevices', (subscription: any, device: any, token: any) => {
-				checkDevice(device._id, token)
+		// 	ddp.mockPublication('peripheralDevices', (subscription: any, device: any, token: any) => {
+		// 		checkDevice(device._id, token)
 
-				peripheralDeviceSubscription = subscription
+		// 		peripheralDeviceSubscription = subscription
 
-				if (device && !_.isEmpty(device)) {
-					subscription.mockCollectionAdd('peripheralDevices', device)
-				}
-			})
-		})
+		// 		if (device && !_.isEmpty(device)) {
+		// 			subscription.mockCollectionAdd('peripheralDevices', device)
+		// 		}
+		// 	})
+		// })
 
 		return {
 			device,
