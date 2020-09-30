@@ -157,6 +157,7 @@ export class CoreConnection extends EventEmitter {
 				this._ddp.on('message', () => {
 					if (this._watchDog) this._watchDog.receivedData()
 				})
+				
 				resolve()
 			}).then(() => {
 				return this._ddp.createClient()
