@@ -83,8 +83,7 @@ export class DDPConnector extends EventEmitter {
 					}
 					this._setupDDPEvents()
 					this._connecting = true
-					console.log('About to call connect')
-					this.ddpClient.connect((error?: Error/*, isReconnecting: boolean*/) => {
+						this.ddpClient.connect((error?: Error/*, isReconnecting: boolean*/) => {
 						this._connecting = false
 
 						if (error) {

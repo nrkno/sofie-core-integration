@@ -36,4 +36,5 @@ test('timeSync', async () => {
 		(Date.now() + serverDiff))
 	).toBeLessThan(5)
 
+	ts.stop()
 })

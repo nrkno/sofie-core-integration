@@ -122,8 +122,6 @@ export class CoreConnection extends EventEmitter {
 			if (!_.has(ddpOptions, 'autoReconnectTimer')) 	ddpOptions.autoReconnectTimer = 1000
 			this._ddp = new DDPConnector(ddpOptions)
 
-			console.log('New ddp constructed', this._ddp)
-
 			this._ddp.on('error', (err) => {
 				this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
 			})
@@ -138,7 +136,7 @@ export class CoreConnection extends EventEmitter {
 
 				this._maybeSendInit()
 				.catch((err) => {
-					this._emitError('_maybesendInit ' + err)
+					this._emitError('_maybesendInit ' + JSON.stringify(err))
 				})
 			})
 			this._ddp.on('connected', () => {
@@ -153,9 +151,7 @@ export class CoreConnection extends EventEmitter {
 				if (this._watchDog) this._watchDog.receivedData()
 			})
 			await this._ddp.createClient()
-			console.log('DDP connector with client created', this._ddp)
 			await this._ddp.connect()
-			console.log('Connect request completed')
 			this._setConnected(this._ddp.connected) // ensure that connection status is synced
 			let deviceId = await this._sendInit()
 			this._timeSync = new TimeSync({
@@ -193,6 +189,8 @@ export class CoreConnection extends EventEmitter {
 			clearTimeout(this._pingTimeout)
 			this._pingTimeout = null
 		}
+
+		this._timeSync.stop()
 
 		await Promise.all(
 			_.map(this._children, (child: CoreConnection) => {
@@ -324,7 +322,7 @@ export class CoreConnection extends EventEmitter {
 		}
 		return c
 	}
-	subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
+	async subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
 		return new Promise((resolve, reject) => {
 			if (!this.ddp.ddpClient) {
 				reject('subscribe: DDP client is not initialized')
