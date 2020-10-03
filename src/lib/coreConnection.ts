@@ -119,7 +119,7 @@ export class CoreConnection extends EventEmitter {
 				port: 3000
 			}
 			// TODO: The following line is ignored - autoReconnect ends up as false - which is what the tests want. Why?
-			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true 
+			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true
 			if (!_.has(ddpOptions, 'autoReconnectTimer')) 	ddpOptions.autoReconnectTimer = 1000
 			this._ddp = new DDPConnector(ddpOptions)
 
@@ -190,7 +190,7 @@ export class CoreConnection extends EventEmitter {
 			clearTimeout(this._pingTimeout)
 			this._pingTimeout = null
 		}
-	
+
 		if (this._timeSync) {
 			this._timeSync.stop()
 			this._timeSync = null
