@@ -168,7 +168,7 @@ export interface UnSub extends Message {
 }
 
 /**
- * Message sent when a subscription is unsubscribed. Contains an optional error if a 
+ * Message sent when a subscription is unsubscribed. Contains an optional error if a
  * problem occurred.
  */
 export interface NoSub extends Message {
@@ -360,7 +360,7 @@ export class DDPClient extends EventEmitter {
 		this.sslInt = opts.ssl || this.port === 443
 		this.tlsOpts = opts.tlsOpts || {}
 		this.useSockJSInt = opts.useSockJs || false
-		this.autoReconnectInt = opts.autoReconnect || true
+		this.autoReconnectInt = opts.autoReconnect === false ? false : true
 		this.autoReconnectTimerInt = opts.autoReconnectTimer || 500
 		this.maintainCollectionsInt = opts.maintainCollections || true
 		this.urlInt = opts.url
@@ -406,11 +406,16 @@ export class DDPClient extends EventEmitter {
 		}
 	}
 
-	private recoverNetworkError (): void {
+	private recoverNetworkError (err?: any): void {
+		// console.log('autoReconnect', this.autoReconnect, 'connectionFailed', this.connectionFailed, 'isClosing', this.isClosing)
 		if (this.autoReconnect && !this.connectionFailed && !this.isClosing) {
 			this.clearReconnectTimeout()
 			this.reconnectTimeout = setTimeout(() => { this.connect() }, this.autoReconnectTimer)
 			this.isReconnecting = true
+		} else {
+			if (err) {
+				throw err
+			}
 		}
 	}
 
@@ -549,7 +554,7 @@ export class DDPClient extends EventEmitter {
 			}
 
 			if (this.observers[name]) {
-				Object.values(this.observers[name]).forEach(ob => 
+				Object.values(this.observers[name]).forEach(ob =>
 					ob.changed(id, oldFields, clearedFields, newFields))
 			}
 		}
@@ -676,7 +681,7 @@ export class DDPClient extends EventEmitter {
 		const protocol = this.ssl ? 'https://' : 'http://'
 		if (this.path && !this.path?.endsWith('/')) {
 			this.pathInt = this.path + '/'
-		} 
+		}
 		const url = `${protocol}${this.host}:${this.port}/${this.path || ''}sockjs/info`
 
 		try {
@@ -704,8 +709,7 @@ export class DDPClient extends EventEmitter {
 				this.makeWebSocketConnection(url)
 			}
 		} catch (err) {
-			this.recoverNetworkError()
-
+			this.recoverNetworkError(err)
 		}
 	}
 
@@ -729,7 +733,7 @@ export class DDPClient extends EventEmitter {
 
 	close (): void {
 		this.isClosing = true
-		this.socket.close()
+		this.socket && this.socket.close() // with mockJS connection, might not get created
 		this.removeAllListeners('connected')
 		this.removeAllListeners('failed')
 	}

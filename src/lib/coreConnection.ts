@@ -53,7 +53,7 @@ export class CoreConnection extends EventEmitter {
 	private _parent: CoreConnection | null = null
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
-	private _timeSync: TimeSync
+	private _timeSync: TimeSync | null = null
 	private _watchDog?: WatchDog
 	private _watchDogPingResponse: string = ''
 	private _connected: boolean = false
@@ -118,7 +118,8 @@ export class CoreConnection extends EventEmitter {
 				host: '127.0.0.1',
 				port: 3000
 			}
-			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true
+			// TODO: The following line is ignored - autoReconnect ends up as false - which is what the tests want. Why?
+			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true 
 			if (!_.has(ddpOptions, 'autoReconnectTimer')) 	ddpOptions.autoReconnectTimer = 1000
 			this._ddp = new DDPConnector(ddpOptions)
 
@@ -189,8 +190,11 @@ export class CoreConnection extends EventEmitter {
 			clearTimeout(this._pingTimeout)
 			this._pingTimeout = null
 		}
-
-		this._timeSync.stop()
+	
+		if (this._timeSync) {
+			this._timeSync.stop()
+			this._timeSync = null
+		}
 
 		await Promise.all(
 			_.map(this._children, (child: CoreConnection) => {
@@ -363,13 +367,13 @@ export class CoreConnection extends EventEmitter {
 		return this.ddp.ddpClient.observe(collectionName)
 	}
 	getCurrentTime (): number {
-		return this._timeSync.currentTime()
+		return this._timeSync && this._timeSync.currentTime() || 0
 	}
 	hasSyncedTime (): boolean {
-		return this._timeSync.isGood()
+		return this._timeSync && this._timeSync.isGood() || false
 	}
 	syncTimeQuality (): number | null {
-		return this._timeSync.quality
+		return this._timeSync && this._timeSync.quality || null
 	}
 	setPingResponse (message: string) {
 		this._watchDogPingResponse = message
