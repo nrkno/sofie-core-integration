@@ -83,6 +83,7 @@
     "/LICENSE"
   ],
   "devDependencies": {
+    "@types/ejson": "^2.1.2",
     "@types/got": "^9.6.11",
     "@types/jest": "^25.2.3",
     "@types/node": "^12.11.7",
