@@ -6,7 +6,7 @@
  *
  * Brought into this project for maintenance reasons, including conversion to Typescript.
  */
-/// <reference types="../faye-websocket" />
+/// <reference types="../types/faye-websocket" />
 
 import * as WebSocket from 'faye-websocket'
 import * as EJSON from 'ejson'
