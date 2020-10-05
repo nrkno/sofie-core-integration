@@ -24,6 +24,10 @@
     {
       "name": "Stephan Nordnes Eriksen",
       "email": "Stephanruler@gmail.com"
+    },
+    {
+      "name": "Richard Cartwright",
+      "email": "spark@superfly.tv"
     }
   ],
   "scripts": {
@@ -99,7 +103,7 @@
     "ts-jest": "^26.1.0",
     "tslint": "^6.1.2",
     "tslint-config-standard": "^9.0.0",
-    "typedoc": "^0.16.0",
+    "typedoc": "^0.19.0",
     "typescript": "^3.9.7"
   },
   "keywords": [
