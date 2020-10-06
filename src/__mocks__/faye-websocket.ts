@@ -1,16 +1,6 @@
 import { EventEmitter } from 'events'
 import {
-	Connected,
-	Result,
-	Message,
-	Method,
-	Ready,
-	Sub,
-	Added,
-	UnSub,
-	NoSub,
-	Removed,
-	Changed
+	AnyMessage
 } from '../lib/ddpClient'
 import * as EJSON from 'ejson'
 // import * as util from 'util'
@@ -33,12 +23,12 @@ export class Client extends EventEmitter {
 	}
 
 	send (data: string): void {
-		const message = EJSON.parse(data) as Message
+		const message = EJSON.parse(data) as AnyMessage
 		// console.log(util.inspect(message, { depth: 10 }))
 		if (message.msg === 'connect') {
 			this.emit('message', {
 				data: EJSON.stringify(
-					literal<Connected>({
+					literal<AnyMessage>({
 						msg: 'connected',
 						session: 'wibble'
 					})
@@ -47,54 +37,53 @@ export class Client extends EventEmitter {
 			return
 		}
 		if (message.msg === 'method') {
-			const methodMessage = message as Method
-			if (methodMessage.method === 'peripheralDevice.initialize') {
+			if (message.method === 'peripheralDevice.initialize') {
 				this.initialized = true
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Result>({
+						literal<AnyMessage>({
 							msg: 'result',
-							id: methodMessage.id,
-							result: methodMessage.params![0]
+							id: message.id,
+							result: message.params![0]
 						})
 					)
 				})
 				return
 			}
-			if (methodMessage.method === 'systemTime.getTimeDiff') {
+			if (message.method === 'systemTime.getTimeDiff') {
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Result>({
+						literal<AnyMessage>({
 							msg: 'result',
-							id: methodMessage.id,
+							id: message.id,
 							result: { currentTime: Date.now() }
 						})
 					)
 				})
 				return
 			}
-			if (methodMessage.method === 'peripheralDevice.status') {
+			if (message.method === 'peripheralDevice.status') {
 				if (this.initialized) {
 					this.emit('message', {
 						data: EJSON.stringify(
-							literal<Result>({
+							literal<AnyMessage>({
 								msg: 'result',
-								id: methodMessage.id,
+								id: message.id,
 								result: {
-									statusCode: (methodMessage.params![2] as any)
+									statusCode: (message.params![2] as any)
 										.statusCode
 								}
 							})
 						)
 					})
 					if (
-						(methodMessage.params![2] as any).messages[0].indexOf(
+						(message.params![2] as any).messages[0].indexOf(
 							'Jest '
 						) >= 0
 					) {
 						this.emit('message', {
 							data: EJSON.stringify(
-								literal<Changed>({
+								literal<AnyMessage>({
 									msg: 'changed',
 									collection: 'peripheralDevices',
 									id: 'JestTest'
@@ -105,9 +94,9 @@ export class Client extends EventEmitter {
 				} else {
 					this.emit('message', {
 						data: EJSON.stringify(
-							literal<Result>({
+							literal<AnyMessage>({
 								msg: 'result',
-								id: methodMessage.id,
+								id: message.id,
 								error: {
 									error: 404,
 									errorType: 'Meteor.Error'
@@ -118,16 +107,16 @@ export class Client extends EventEmitter {
 				}
 				return
 			}
-			if (methodMessage.method === 'peripheralDevice.testMethod') {
+			if (message.method === 'peripheralDevice.testMethod') {
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Result>({
+						literal<AnyMessage>({
 							msg: 'result',
-							id: methodMessage.id,
-							result: methodMessage.params![3]
+							id: message.id,
+							result: message.params![3]
 								? undefined
-								: methodMessage.params![2],
-							error: methodMessage.params![3]
+								: message.params![2],
+							error: message.params![3]
 								? {
 									error: 418,
 									reason: 'Bad Wolf error',
@@ -139,14 +128,14 @@ export class Client extends EventEmitter {
 				})
 				return
 			}
-			if (methodMessage.method === 'peripheralDevice.unInitialize') {
+			if (message.method === 'peripheralDevice.unInitialize') {
 				this.initialized = false
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Result>({
+						literal<AnyMessage>({
 							msg: 'result',
-							id: methodMessage.id,
-							result: methodMessage.params![0]
+							id: message.id,
+							result: message.params![0]
 						})
 					)
 				})
@@ -154,9 +143,9 @@ export class Client extends EventEmitter {
 			}
 			this.emit('message', {
 				data: EJSON.stringify(
-					literal<Result>({
+					literal<AnyMessage>({
 						msg: 'result',
-						id: methodMessage.id,
+						id: message.id,
 						error: {
 							error: 404,
 							reason: 'Where have you gone error',
@@ -168,14 +157,13 @@ export class Client extends EventEmitter {
 			return
 		}
 		if (message.msg === 'sub') {
-			const subMessage = message as Sub
-			this.cachedId = (subMessage.params![0] as any)._id
+			this.cachedId = (message.params![0] as any)._id
 			setTimeout(() => {
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Added>({
+						literal<AnyMessage>({
 							msg: 'added',
-							collection: subMessage.name,
+							collection: message.name,
 							id: this.cachedId
 						})
 					)
@@ -184,9 +172,9 @@ export class Client extends EventEmitter {
 			setTimeout(() => {
 				this.emit('message', {
 					data: EJSON.stringify(
-						literal<Ready>({
+						literal<AnyMessage>({
 							msg: 'ready',
-							subs: [subMessage.id]
+							subs: [message.id]
 						})
 					)
 				})
@@ -194,10 +182,9 @@ export class Client extends EventEmitter {
 			return
 		}
 		if (message.msg === 'unsub') {
-			const unsubMessage = message as UnSub
 			this.emit('message', {
 				data: JSON.stringify(
-					literal<Removed>({
+					literal<AnyMessage>({
 						msg: 'removed',
 						collection: 'peripheralDevices',
 						id: this.cachedId
@@ -206,9 +193,9 @@ export class Client extends EventEmitter {
 			})
 			this.emit('message', {
 				data: JSON.stringify(
-					literal<NoSub>({
+					literal<AnyMessage>({
 						msg: 'nosub',
-						id: unsubMessage.id
+						id: message.id
 					})
 				)
 			})

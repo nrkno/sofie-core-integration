@@ -279,7 +279,7 @@ interface ErrorMessage extends Message {
 	offendingMessage?: Message
 }
 
-type AnyMessage =
+export type AnyMessage =
 	Connect |
 	Connected |
 	Failed |
