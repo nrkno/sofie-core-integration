@@ -279,6 +279,24 @@ interface ErrorMessage extends Message {
 	offendingMessage?: Message
 }
 
+type AnyMessage =
+	Connect |
+	Connected |
+	Failed |
+	Ping |
+	Pong |
+	Sub |
+	UnSub |
+	NoSub |
+	Added |
+	Changed |
+	Removed |
+	Ready |
+	Method |
+	Result |
+	Updated |
+	ErrorMessage
+
 /**
  * Class reprsenting a DDP client and its connection.
  */
@@ -422,7 +440,7 @@ export class DDPClient extends EventEmitter {
 
 	///////////////////////////////////////////////////////////////////////////
 	// RAW, low level functions
-	private send <M extends Message> (data: M): void {
+	private send (data: AnyMessage): void {
 		if (data.msg !== 'connect' && this.isConnecting) {
 			this.endPendingMethodCalls()
 		} else {
