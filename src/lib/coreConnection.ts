@@ -357,7 +357,7 @@ export class CoreConnection extends EventEmitter {
 		return subscriptionId
 	}
 	unsubscribe (subscriptionId: string): void {
-		this.ddp.ddpClient && this.ddp.ddpClient.unsubscribe(subscriptionId)
+		this.ddp.ddpClient?.unsubscribe(subscriptionId)
 		delete this._autoSubscriptions[subscriptionId]
 	}
 	observe (collectionName: string): Observer {
@@ -367,13 +367,13 @@ export class CoreConnection extends EventEmitter {
 		return this.ddp.ddpClient.observe(collectionName)
 	}
 	getCurrentTime (): number {
-		return this._timeSync && this._timeSync.currentTime() || 0
+		return this._timeSync?.currentTime() || 0
 	}
 	hasSyncedTime (): boolean {
-		return this._timeSync && this._timeSync.isGood() || false
+		return this._timeSync?.isGood() || false
 	}
 	syncTimeQuality (): number | null {
-		return this._timeSync && this._timeSync.quality || null
+		return this._timeSync?.quality || null
 	}
 	setPingResponse (message: string) {
 		this._watchDogPingResponse = message
@@ -419,7 +419,7 @@ export class CoreConnection extends EventEmitter {
 
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId,
-			parentDeviceId: (this._parent && this._parent.deviceId) || undefined,
+			parentDeviceId: (this._parent?.deviceId) || undefined,
 			versions: this._coreOptions.versions,
 
 			configManifest: this._coreOptions.configManifest
