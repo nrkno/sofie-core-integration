@@ -97,7 +97,7 @@ export interface DDPError {
 /**
  * Request message to initiate a connection from a client to a server.
  */
-export interface Connect extends Message {
+interface Connect extends Message {
 	msg: 'connect'
 	/** If trying to reconnect to an existing DDP session */
 	session?: string
@@ -110,7 +110,7 @@ export interface Connect extends Message {
 /**
  * Response message sent when a client's connection request was successful.
  */
-export interface Connected extends Message {
+interface Connected extends Message {
 	msg: 'connected'
 	/** An identifier for the DDP session */
 	session: string
@@ -119,7 +119,7 @@ export interface Connected extends Message {
 /**
  * Response message when a client's connection request was unsuccessful.
  */
-export interface Failed extends Message {
+interface Failed extends Message {
 	msg: 'failed'
 	/** A suggested protocol version to connect with */
 	version: string
@@ -128,7 +128,7 @@ export interface Failed extends Message {
 /**
  * Heartbeat request message. Can be sent from server to client or client to server.
  */
-export interface Ping extends Message {
+interface Ping extends Message {
 	msg: 'ping'
 	/** Identifier used to correlate with response */
 	id?: string
@@ -138,7 +138,7 @@ export interface Ping extends Message {
  * Heartbeat response message.
  */
 
-export interface Pong extends Message {
+interface Pong extends Message {
 	msg: 'pong'
 	/** Same as received in the `ping` message */
 	id?: string
@@ -149,7 +149,7 @@ export interface Pong extends Message {
  * The server should then send `added`, `changed` and `removed` messages matching
  * the subscribed types.
  */
-export interface Sub extends Message {
+interface Sub extends Message {
 	msg: 'sub'
 	/** An arbitrary client-determined identifier for this subscription */
 	id: string
@@ -162,7 +162,7 @@ export interface Sub extends Message {
 /**
  * Request to unsubscribe from messages related to an existing subscription.
  */
-export interface UnSub extends Message {
+interface UnSub extends Message {
 	msg: 'unsub'
 	/** The `id` passed to `sub` */
 	id: string
@@ -172,7 +172,7 @@ export interface UnSub extends Message {
  * Message sent when a subscription is unsubscribed. Contains an optional error if a
  * problem occurred.
  */
-export interface NoSub extends Message {
+interface NoSub extends Message {
 	msg: 'nosub'
 	/** The client `id` passed to `sub` for this subscription. */
 	id: string
@@ -183,7 +183,7 @@ export interface NoSub extends Message {
 /**
  * Notification that a document has been added to a collection.
  */
-export interface Added extends Message {
+interface Added extends Message {
 	msg: 'added'
 	/** Collection name */
 	collection: string
@@ -196,7 +196,7 @@ export interface Added extends Message {
 /**
  * Notification that a document has changed within a collection.
  */
-export interface Changed extends Message {
+interface Changed extends Message {
 	msg: 'changed'
 	/** Collection name */
 	collection: string
@@ -211,7 +211,7 @@ export interface Changed extends Message {
 /**
  * Notification that a document has been removed from a collection.
  */
-export interface Removed extends Message {
+interface Removed extends Message {
 	msg: 'removed'
 	/** Collection name */
 	collection: string
@@ -223,7 +223,7 @@ export interface Removed extends Message {
  * Message sent to client after an initial salvo of updates have sent a
  * complete set of initial data.
  */
-export interface Ready extends Message {
+interface Ready extends Message {
 	msg: 'ready'
 	/** Identifiers passed to `sub` which have sent their initial batch of data */
 	subs: Array<string>
@@ -232,7 +232,7 @@ export interface Ready extends Message {
 /**
  * Remote procedure call request request.
  */
-export interface Method extends Message {
+interface Method extends Message {
 	msg: 'method'
 	/** Method name */
 	method: string
@@ -247,7 +247,7 @@ export interface Method extends Message {
 /**
  * Remote procedure call response message, either an error or a return value _result_.
  */
-export interface Result extends Message {
+interface Result extends Message {
 	msg: 'result'
 	/** Method name */
 	id: string
@@ -261,7 +261,7 @@ export interface Result extends Message {
  * Message sent to indicate that all side-effect changes to subscribed data caused by
  * a method have completed.
  */
-export interface Updated extends Message {
+interface Updated extends Message {
 	msg: 'updated'
 	/** Identifiers passed to `method`, all of whose writes have been reflected in data messages */
 	methods: Array<string>
@@ -271,7 +271,7 @@ export interface Updated extends Message {
  * Erroneous messages sent from the client to the server can result in receiving a top-level
  * `error` message in response.
  */
-export interface ErrorMessage extends Message {
+interface ErrorMessage extends Message {
 	msg: 'error'
 	/** Description of the error */
 	reason: string
