@@ -343,7 +343,6 @@ export class DDPClient extends EventEmitter {
 		}
 	}
 	public static readonly supportedDdpVersions = [ '1', 'pre2', 'pre1']
-	public static EJSON = EJSON
 
 	private tlsOpts: TLSOpts
 	private isConnecting: boolean = false
