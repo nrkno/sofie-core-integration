@@ -57,7 +57,7 @@ export class DDPConnector extends EventEmitter {
 
 		if (doConnect) {
 			return new Promise((resolve, reject) => {
-				this.ddpClient && this.ddpClient.connect((err) => {
+				this.ddpClient?.connect((err) => {
 					// connected
 					if (err) reject(err)
 					else resolve()
@@ -120,8 +120,8 @@ export class DDPConnector extends EventEmitter {
 		return this._connectionId
 	}
 	private _setupDDPEvents () {
-		this.ddpClient && this.ddpClient.on('connected', () => this._onclientConnectionChange(true))
-		this.ddpClient && this.ddpClient.on('failed', (error: any) => this._onClientConnectionFailed(error))
+		this.ddpClient?.on('connected', () => this._onclientConnectionChange(true))
+		this.ddpClient?.on('failed', (error: any) => this._onClientConnectionFailed(error))
 	}
 	private _monitorDDPConnection (): void {
 
@@ -147,7 +147,7 @@ export class DDPConnector extends EventEmitter {
 			this._connected = connected
 
 			if (connected) {
-				this._connectionId = this.ddpClient && this.ddpClient.session
+				this._connectionId = this.ddpClient?.session
 			}
 
 			// log.debug("DDP: _onclientConnectionChange "+connected);
