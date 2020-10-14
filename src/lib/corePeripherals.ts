@@ -127,9 +127,11 @@ export enum methods {
 	'mosRoReadyToAir' 	= 'peripheralDevice.mos.roReadyToAir',
 	'mosRoFullStory' 	= 'peripheralDevice.mos.roFullStory',
 
+	'dataRundownGet'	= 'peripheralDevice.rundown.rundownGet',
 	'dataRundownDelete'	= 'peripheralDevice.rundown.rundownDelete',
 	'dataRundownCreate'	= 'peripheralDevice.rundown.rundownCreate',
 	'dataRundownUpdate'	= 'peripheralDevice.rundown.rundownUpdate',
+	'dataSegmentGet'	= 'peripheralDevice.rundown.segmentGet',
 	'dataSegmentDelete'	= 'peripheralDevice.rundown.segmentDelete',
 	'dataSegmentCreate'	= 'peripheralDevice.rundown.segmentCreate',
 	'dataSegmentUpdate'	= 'peripheralDevice.rundown.segmentUpdate',
