@@ -33,6 +33,7 @@ export class TimeSync {
 	private _syncDiff: number 		     // difference local time vs server time
 	private _syncQuality: number | null  // how good the synced time probably is (in ms)
 	private _lastSyncTime: number 	     // timestamp (in local time)
+	private _timeInterval: NodeJS.Timeout | undefined = undefined
 	constructor (
 		options: TimeSyncOptionsOptional,
 		timeSource: () => Promise<number>,
@@ -72,11 +73,16 @@ export class TimeSync {
 	}
 	public async init (): Promise<boolean> {
 
-		setInterval(() => {
+		this._timeInterval = setInterval(() => {
 			this.maybeTriggerSync()
 		}, this._options.syncPeriod / 2)
 
 		return this.syncTime()
+	}
+	public stop (): void {
+		if (this._timeInterval) {
+			clearInterval(this._timeInterval)
+		}
 	}
 	public maybeTriggerSync () {
 		if (this.localTime() - this._lastSyncTime > this._options.syncPeriod) {

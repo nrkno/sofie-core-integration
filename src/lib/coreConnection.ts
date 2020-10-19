@@ -1,15 +1,16 @@
 import { EventEmitter } from 'events'
 import * as _ from 'underscore'
 
-import { DDPConnector, DDPConnectorOptions, Observer } from './ddpConnector'
+import { DDPConnector } from './ddpConnector'
+import { DDPConnectorOptions, Observer } from './ddpClient'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from './corePeripherals'
 import { TimeSync } from './timeSync'
 import { WatchDog } from './watchDog'
 import { Queue } from './queue'
 import { DeviceConfigManifest } from './configManifest'
+import { Random } from './random'
 
 const DataStore = require('data-store')
-const Random = require('ddp-random')
 
 // low-prio calls:
 const TIMEOUTCALL = 200 // ms, time to wait after a call
@@ -52,7 +53,7 @@ export class CoreConnection extends EventEmitter {
 	private _parent: CoreConnection | null = null
 	private _children: Array<CoreConnection> = []
 	private _coreOptions: CoreOptions
-	private _timeSync: TimeSync
+	private _timeSync: TimeSync | null = null
 	private _watchDog?: WatchDog
 	private _watchDogPingResponse: string = ''
 	private _connected: boolean = false
@@ -105,84 +106,68 @@ export class CoreConnection extends EventEmitter {
 			deviceToken: Random.id()
 		}
 	}
-	init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
+	async init (ddpOptionsORParent?: DDPConnectorOptions | CoreConnection): Promise<string> {
 		this._destroyed = false
 		this.on('connected', () => this._renewAutoSubscriptions())
 
 		if (ddpOptionsORParent instanceof CoreConnection) {
 			this._setParent(ddpOptionsORParent)
-
-			return Promise.resolve()
-				.then(() => {
-					return this._sendInit()
-				})
+			return this._sendInit()
 		} else {
 			let ddpOptions = ddpOptionsORParent || {
 				host: '127.0.0.1',
 				port: 3000
 			}
+			// TODO: The following line is ignored - autoReconnect ends up as false - which is what the tests want. Why?
 			if (!_.has(ddpOptions, 'autoReconnect')) 		ddpOptions.autoReconnect = true
 			if (!_.has(ddpOptions, 'autoReconnectTimer')) 	ddpOptions.autoReconnectTimer = 1000
-			return new Promise((resolve) => {
-				this._ddp = new DDPConnector(ddpOptions)
+			this._ddp = new DDPConnector(ddpOptions)
 
-				this._ddp.on('error', (err) => {
-					this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
-				})
-				this._ddp.on('failed', (err) => {
-					this.emit('failed', err)
-				})
-				this._ddp.on('info', (message: any) => {
-					this.emit('info', message)
-				})
-				this._ddp.on('connectionChanged', (connected: boolean) => {
-					this._setConnected(connected)
+			this._ddp.on('error', (err) => {
+				this._emitError('ddpError: ' + (_.isObject(err) && err.message) || err.toString())
+			})
+			this._ddp.on('failed', (err) => {
+				this.emit('failed', err)
+			})
+			this._ddp.on('info', (message: any) => {
+				this.emit('info', message)
+			})
+			this._ddp.on('connectionChanged', (connected: boolean) => {
+				this._setConnected(connected)
 
-					this._maybeSendInit()
-					.catch((err) => {
-						this._emitError('_maybesendInit ' + err)
-					})
-				})
-				this._ddp.on('connected', () => {
-					// this.emit('connected')
-					if (this._watchDog) this._watchDog.addCheck(() => this._watchDogCheck())
-				})
-				this._ddp.on('disconnected', () => {
-					// this.emit('disconnected')
-					if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
-				})
-				this._ddp.on('message', () => {
-					if (this._watchDog) this._watchDog.receivedData()
-				})
-				resolve()
-			}).then(() => {
-				return this._ddp.createClient()
-			}).then(() => {
-				return this._ddp.connect()
-			}).then(() => {
-				this._setConnected(this._ddp.connected) // ensure that connection status is synced
-				return this._sendInit()
-			}).then((deviceId) => {
-				this._timeSync = new TimeSync({
-					serverDelayTime: 0
-				}, () => {
-					return this.callMethod(PeripheralDeviceAPI.methods.getTimeDiff)
-					.then((stat) => {
-						return stat.currentTime
-					})
-				})
-
-				return this._timeSync.init()
-				.then(() => {
-					this._triggerPing()
-				})
-				.then(() => {
-					return deviceId
+				this._maybeSendInit()
+				.catch((err) => {
+					this._emitError('_maybesendInit ' + JSON.stringify(err))
 				})
 			})
+			this._ddp.on('connected', () => {
+				// this.emit('connected')
+				if (this._watchDog) this._watchDog.addCheck(() => this._watchDogCheck())
+			})
+			this._ddp.on('disconnected', () => {
+				// this.emit('disconnected')
+				if (this._watchDog) this._watchDog.removeCheck(() => this._watchDogCheck())
+			})
+			this._ddp.on('message', () => {
+				if (this._watchDog) this._watchDog.receivedData()
+			})
+			await this._ddp.createClient()
+			await this._ddp.connect()
+			this._setConnected(this._ddp.connected) // ensure that connection status is synced
+			let deviceId = await this._sendInit()
+			this._timeSync = new TimeSync({
+				serverDelayTime: 0
+			}, async () => {
+				let stat = await this.callMethod(PeripheralDeviceAPI.methods.getTimeDiff)
+				return stat.currentTime
+			})
+
+			await this._timeSync.init()
+			this._triggerPing()
+			return deviceId
 		}
 	}
-	destroy (): Promise<void> {
+	async destroy (): Promise<void> {
 		this._destroyed = true
 		if (this._parent) {
 			this._removeParent()
@@ -206,14 +191,17 @@ export class CoreConnection extends EventEmitter {
 			this._pingTimeout = null
 		}
 
-		return Promise.all(
+		if (this._timeSync) {
+			this._timeSync.stop()
+			this._timeSync = null
+		}
+
+		await Promise.all(
 			_.map(this._children, (child: CoreConnection) => {
 				return child.destroy()
 			})
-		).then(() => {
-			this._children = []
-			return Promise.resolve()
-		})
+		)
+		this._children = []
 	}
 	addChild (child: CoreConnection) {
 		this._children.push(child)
@@ -278,6 +266,10 @@ export class CoreConnection extends EventEmitter {
 			].concat(attrs || [])
 
 			this._timeLastMethodCall = Date.now()
+			if (!this.ddp.ddpClient) {
+				reject('callMehod: DDP client has not been initialized')
+				return
+			}
 			this.ddp.ddpClient.call(methodName, fullAttrs, (err: Error, id: string) => {
 				this._timeLastMethodReply = Date.now()
 				if (err) {
@@ -310,6 +302,9 @@ export class CoreConnection extends EventEmitter {
 		return this.callMethod(P.methods.getPeripheralDevice)
 	}
 	getCollection (collectionName: string): Collection {
+		if (!this.ddp.ddpClient) {
+			throw new Error('getCollection: DDP client not initialized')
+		}
 		const collections = this.ddp.ddpClient.collections
 
 		let c: Collection = {
@@ -331,8 +326,12 @@ export class CoreConnection extends EventEmitter {
 		}
 		return c
 	}
-	subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
+	async subscribe (publicationName: string, ...params: Array<any>): Promise<string> {
 		return new Promise((resolve, reject) => {
+			if (!this.ddp.ddpClient) {
+				reject('subscribe: DDP client is not initialized')
+				return
+			}
 			try {
 				let subscriptionId = this.ddp.ddpClient.subscribe(
 					publicationName,	// name of Meteor Publish function to subscribe to
@@ -349,31 +348,32 @@ export class CoreConnection extends EventEmitter {
 	/**
 	 * Like a subscribe, but automatically renews it upon reconnection
 	 */
-	autoSubscribe (publicationName: string, ...params: Array<any>): Promise<string> {
-		return this.subscribe(publicationName, ...params)
-		.then((subscriptionId: string) => {
-			this._autoSubscriptions[subscriptionId] = {
-				publicationName: publicationName,
-				params: params
-			}
-			return subscriptionId
-		})
+	async autoSubscribe (publicationName: string, ...params: Array<any>): Promise<string> {
+		const subscriptionId = await this.subscribe(publicationName, ...params)
+		this._autoSubscriptions[subscriptionId] = {
+			publicationName: publicationName,
+			params: params
+		}
+		return subscriptionId
 	}
 	unsubscribe (subscriptionId: string): void {
-		this.ddp.ddpClient.unsubscribe(subscriptionId)
+		this.ddp.ddpClient?.unsubscribe(subscriptionId)
 		delete this._autoSubscriptions[subscriptionId]
 	}
 	observe (collectionName: string): Observer {
+		if (!this.ddp.ddpClient) {
+			throw new Error('observe: DDP client not initialised')
+		}
 		return this.ddp.ddpClient.observe(collectionName)
 	}
 	getCurrentTime (): number {
-		return this._timeSync.currentTime()
+		return this._timeSync?.currentTime() || 0
 	}
 	hasSyncedTime (): boolean {
-		return this._timeSync.isGood()
+		return this._timeSync?.isGood() || false
 	}
 	syncTimeQuality (): number | null {
-		return this._timeSync.quality
+		return this._timeSync?.quality || null
 	}
 	setPingResponse (message: string) {
 		this._watchDogPingResponse = message
@@ -410,7 +410,7 @@ export class CoreConnection extends EventEmitter {
 		}
 	}
 	private _sendInit (): Promise<string> {
-		if (!this.ddp) throw Error('Not connected to Core')
+		if (!this.ddp || !this.ddp.connectionId) throw Error('Not connected to Core')
 
 		let options: P.InitOptions = {
 			category: this._coreOptions.deviceCategory,
@@ -419,7 +419,7 @@ export class CoreConnection extends EventEmitter {
 
 			name: this._coreOptions.deviceName,
 			connectionId: this.ddp.connectionId,
-			parentDeviceId: (this._parent && this._parent.deviceId) || undefined,
+			parentDeviceId: (this._parent?.deviceId) || undefined,
 			versions: this._coreOptions.versions,
 
 			configManifest: this._coreOptions.configManifest

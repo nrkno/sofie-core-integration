@@ -1,7 +1,9 @@
 import { CoreConnection } from '../index'
 import { PeripheralDeviceAPI as P, PeripheralDeviceAPI } from '../lib/corePeripherals'
-import * as MockDDP from '../__mocks__/ddp'
 import * as _ from 'underscore'
+import { DDPConnectorOptions } from '../lib/ddpClient'
+jest.mock('faye-websocket')
+jest.mock('got')
 
 process.on('unhandledRejection', (reason) => {
 	console.log('Unhandled Promise rejection!', reason)
@@ -11,102 +13,8 @@ const orgSetTimeout = setTimeout
 
 describe('coreConnection', () => {
 
-	jest.mock('ddp')
-
 	const coreHost = '127.0.0.1'
 	const corePort = 3000
-
-	function prepareNextMockDDP () {
-
-		let device: any = {}
-
-		function checkDevice (deviceId: any, token: any) {
-			if (!deviceId) throw { error: 400, reason: 'id missing!' }
-			if (!token) throw { error: 400, reason: 'token missing!' }
-
-			if (device._id !== deviceId) throw { error: 404, reason:  'PeripheralDevice "' + deviceId + '" not found' }
-
-			if (device._token !== token) throw { error: 401, reason: 'Not allowed access to peripheralDevice' }
-		}
-
-		let peripheralDeviceSubscription: any = null
-
-		let methods = {
-			'peripheralDevice.initialize': (deviceId: any, token: any, deviceData: any) => {
-
-				device._id = deviceId
-				device._token = token
-				_.each(deviceData, (value, key) => {
-					device[key] = value
-				})
-
-				if (peripheralDeviceSubscription) {
-					peripheralDeviceSubscription.mockCollectionAdd('peripheralDevices', device)
-				}
-
-				return deviceId
-			},
-			'peripheralDevice.unInitialize': (deviceId: any, token: any) => {
-				checkDevice(deviceId, token)
-
-				device = {}
-
-				if (peripheralDeviceSubscription) {
-					peripheralDeviceSubscription.mockCollectionRemove('peripheralDevices', deviceId)
-				}
-
-				return deviceId
-			},
-			'systemTime.getTimeDiff': (deviceId: any, token: any) => {
-				checkDevice(deviceId, token)
-
-				return {
-					currentTime: 1000
-				}
-			},
-			'peripheralDevice.status': (deviceId: any, token: any, statusObj: any) => {
-				checkDevice(deviceId, token)
-
-				device.status = statusObj
-
-				if (peripheralDeviceSubscription) {
-					peripheralDeviceSubscription.mockCollectionChange('peripheralDevices', device)
-				}
-				return device.status
-			},
-			'peripheralDevice.testMethod': (deviceId: any, token: any, returnValue: any, throwError: any) => {
-				checkDevice(deviceId, token)
-
-				if (throwError) throw { 'error': 418, 'reason': 'Error thrown' }
-				return returnValue
-			},
-			'myunknownMethod123': null
-		}
-
-		// @ts-ignore
-		MockDDP.mockConstructNext((ddp: MockDDP) => {
-			_.each(methods, (method, key) => {
-				ddp.mockCall(key, method)
-			})
-
-			ddp.mockSetHost(coreHost, corePort)
-
-			ddp.mockPublication('peripheralDevices', (subscription: any, device: any, token: any) => {
-				checkDevice(device._id, token)
-
-				peripheralDeviceSubscription = subscription
-
-				if (device && !_.isEmpty(device)) {
-					subscription.mockCollectionAdd('peripheralDevices', device)
-				}
-			})
-		})
-
-		return {
-			device,
-			methods
-		}
-	}
 
 	function wait (time: number): Promise<void> {
 		return new Promise((resolve) => {
@@ -117,8 +25,6 @@ describe('coreConnection', () => {
 	}
 
 	test('Just setup CoreConnection', async () => {
-
-		prepareNextMockDDP()
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -140,8 +46,6 @@ describe('coreConnection', () => {
 	})
 
 	test('Test connection and basic Core functionality', async () => {
-
-		prepareNextMockDDP()
 
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
@@ -260,9 +164,9 @@ describe('coreConnection', () => {
 
 		expect(onError).toHaveBeenCalledTimes(0)
 	})
+
 	test('Connection timeout', async () => {
 
-		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -295,15 +199,15 @@ describe('coreConnection', () => {
 		} catch (e) {
 			err = e
 		}
-		expect(err).toMatch('Network error')
+		expect(err.message).toMatch(/Network error/)
 
 		expect(core.connected).toEqual(false)
 
 		await core.destroy()
 	})
+
 	test('Connection recover from close', async () => {
 
-		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -334,7 +238,7 @@ describe('coreConnection', () => {
 		expect(core.connected).toEqual(true)
 
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -346,9 +250,9 @@ describe('coreConnection', () => {
 
 		await core.destroy()
 	})
+
 	test('autoSubscription', async () => {
 
-		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -398,7 +302,7 @@ describe('coreConnection', () => {
 		expect(observerChanged).toHaveBeenCalledTimes(1)
 
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -417,9 +321,9 @@ describe('coreConnection', () => {
 
 		await core.destroy()
 	})
+
 	test('Connection recover from a close that lasts some time', async () => {
 
-		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -443,18 +347,20 @@ describe('coreConnection', () => {
 		expect(core.connected).toEqual(false)
 		// Initiate connection to Core:
 
-		await core.init({
+		let options: DDPConnectorOptions = {
 			host: coreHost,
 			port: corePort,
 			autoReconnect: true,
 			autoReconnectTimer: 100
-		})
+		}
+		await core.init(options)
 		expect(core.connected).toEqual(true)
 
 		// temporary scramble the ddp host:
-		core.ddp.ddpClient.host = '127.0.0.9'
+		options.host = '127.0.0.9'
+		core.ddp.ddpClient && core.ddp.ddpClient.resetOptions(options)
 		// Force-close the socket:
-		core.ddp.ddpClient.socket.close()
+		core.ddp.ddpClient && core.ddp.ddpClient.socket.close()
 
 		await wait(10)
 		expect(core.connected).toEqual(false)
@@ -462,7 +368,8 @@ describe('coreConnection', () => {
 		await wait(1000) // allow for some reconnections
 
 		// restore ddp host:
-		core.ddp.ddpClient.host = '127.0.0.1'
+		options.host = '127.0.0.1'
+		core.ddp.ddpClient && core.ddp.ddpClient.resetOptions(options)
 		await wait(1000)
 		// should have reconnected by now
 
@@ -470,8 +377,8 @@ describe('coreConnection', () => {
 
 		await core.destroy()
 	})
+
 	test('Parent connections', async () => {
-		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -493,7 +400,6 @@ describe('coreConnection', () => {
 		expect(coreParent.connected).toEqual(true)
 
 		// Set child connection:
-		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -561,7 +467,6 @@ describe('coreConnection', () => {
 	})
 
 	test('Parent destroy', async () => {
-		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -578,7 +483,6 @@ describe('coreConnection', () => {
 			port: corePort
 		})
 		// Set child connection:
-		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -639,9 +543,9 @@ describe('coreConnection', () => {
 		expect(onChildError).toHaveBeenCalledTimes(0)
 		expect(onParentError).toHaveBeenCalledTimes(0)
 	})
+
 	test('Child destroy', async () => {
 
-		prepareNextMockDDP()
 		let coreParent = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',
@@ -657,7 +561,6 @@ describe('coreConnection', () => {
 			port: corePort
 		})
 		// Set child connection:
-		prepareNextMockDDP()
 		let coreChild = new CoreConnection({
 			deviceId: 'JestTestChild',
 			deviceToken: 'abcd2',
@@ -694,9 +597,9 @@ describe('coreConnection', () => {
 		expect(onParentError).toHaveBeenCalledTimes(0)
 		expect(onChildError).toHaveBeenCalledTimes(0)
 	})
+
 	test('Test callMethodLowPrio', async () => {
 
-		prepareNextMockDDP()
 		let core = new CoreConnection({
 			deviceId: 'JestTest',
 			deviceToken: 'abcd',

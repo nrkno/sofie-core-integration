@@ -47,3 +47,33 @@ core.init({
   * Build, `yarn build`
   * Run tests, `yarn test`
   * Run tests & watch, `yarn watch`
+
+## DDP Client
+
+This library has a self-contained DDP client that can be used independently of the rest of the module.
+
+```typescript
+import { DDPClient, DDPConnectorOptions } from 'tv-automation-server-integration'
+
+let options: DDPConnectorOptions = {
+	host: '127.0.0.1',
+	port: 5432
+}
+
+let ddp = new DDPClient(options)
+ddp.on('connected', /* ... */ )
+ddp.connect((err: any) => {
+	if (err) {
+		/* ... handle error ... */
+		return
+	} 
+	let subId = ddp.subscribe('expectedMediaItems')
+	ddp.observe('expectedMediaItems', /* added cb */, /* changed cb */, /* removed cb */)
+	
+	/* ... then later ... */
+	ddp.unsub(subId)
+	ddp.close()
+})
+```
+
+See the documentation on the [DDP client class](./docs/classes/ddpclient.html) for more details.
