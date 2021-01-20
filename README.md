@@ -2,6 +2,12 @@
 [![CircleCI](https://circleci.com/gh/nrkno/tv-automation-server-core-integration.svg?style=svg)](https://circleci.com/gh/nrkno/tv-automation-server-core-integration)
 [![codecov](https://codecov.io/gh/nrkno/tv-automation-server-core-integration/branch/master/graph/badge.svg)](https://codecov.io/gh/nrkno/tv-automation-server-core-integration)
 
+# This library has moved
+
+As of release28 of Sofie, this library has been absorbed into the [main Sofie repository](https://github.com/nrkno/tv-automation-server-core/tree/master/packages/server-core-integration)
+
+## 
+
 This library is used to connect to the [**Sofie Server Core**](https://github.com/nrkno/tv-automation-server-core) from other Node processes.
 
 This is a part of the [**Sofie** TV News Studio Automation System](https://github.com/nrkno/Sofie-TV-automation/).
